@@ -1,0 +1,275 @@
+[
+  {
+    "id": "dev-001",
+    "serialNumber": "PV-2024-001",
+    "type": "pigvision",
+    "state": "in_production",
+    "locationId": "loc-004",
+    "companyId": "company-001",
+    "configuration": {
+      "type": "pigvision",
+      "cameraHeight": 120,
+      "detectionZone": "full",
+      "sensitivity": "medium"
+    },
+    "lastSeen": "2024-12-19T14:30:00Z",
+    "health": "online",
+    "createdAt": "2024-01-20T08:00:00Z"
+  },
+  {
+    "id": "dev-002",
+    "serialNumber": "PV-2024-002",
+    "type": "pigvision",
+    "state": "in_production",
+    "locationId": "loc-005",
+    "companyId": "company-001",
+    "configuration": {
+      "type": "pigvision",
+      "cameraHeight": 115,
+      "detectionZone": "full",
+      "sensitivity": "high"
+    },
+    "lastSeen": "2024-12-19T14:25:00Z",
+    "health": "online",
+    "createdAt": "2024-01-20T08:15:00Z"
+  },
+  {
+    "id": "dev-003",
+    "serialNumber": "PV-2024-003",
+    "type": "pigvision",
+    "state": "installed",
+    "locationId": "loc-006",
+    "companyId": "company-001",
+    "configuration": null,
+    "lastSeen": "2024-12-19T10:00:00Z",
+    "health": "online",
+    "createdAt": "2024-01-20T08:30:00Z"
+  },
+  {
+    "id": "dev-004",
+    "serialNumber": "SC-2024-001",
+    "type": "scale",
+    "state": "in_production",
+    "locationId": "loc-004",
+    "companyId": "company-001",
+    "configuration": {
+      "type": "scale",
+      "maxWeight": 500,
+      "tareWeight": 2.5,
+      "unit": "kg",
+      "calibrationDate": "2024-11-01"
+    },
+    "lastSeen": "2024-12-19T14:28:00Z",
+    "health": "online",
+    "createdAt": "2024-02-01T08:00:00Z"
+  },
+  {
+    "id": "dev-005",
+    "serialNumber": "SC-2024-002",
+    "type": "scale",
+    "state": "configured",
+    "locationId": "loc-005",
+    "companyId": "company-001",
+    "configuration": {
+      "type": "scale",
+      "maxWeight": 500,
+      "tareWeight": 2.3,
+      "unit": "kg"
+    },
+    "lastSeen": null,
+    "health": "unknown",
+    "createdAt": "2024-02-01T08:15:00Z"
+  },
+  {
+    "id": "dev-006",
+    "serialNumber": "SN-2024-001",
+    "type": "sensor",
+    "state": "in_production",
+    "locationId": "loc-002",
+    "companyId": "company-001",
+    "configuration": {
+      "type": "sensor",
+      "sensorType": "temperature",
+      "alertThresholdMin": 18,
+      "alertThresholdMax": 28,
+      "readingInterval": 300
+    },
+    "lastSeen": "2024-12-19T14:29:00Z",
+    "health": "online",
+    "createdAt": "2024-02-10T08:00:00Z"
+  },
+  {
+    "id": "dev-007",
+    "serialNumber": "SN-2024-002",
+    "type": "sensor",
+    "state": "in_production",
+    "locationId": "loc-002",
+    "companyId": "company-001",
+    "configuration": {
+      "type": "sensor",
+      "sensorType": "humidity",
+      "alertThresholdMin": 40,
+      "alertThresholdMax": 70,
+      "readingInterval": 300
+    },
+    "lastSeen": "2024-12-19T14:29:30Z",
+    "health": "online",
+    "createdAt": "2024-02-10T08:15:00Z"
+  },
+  {
+    "id": "dev-008",
+    "serialNumber": "SN-2024-003",
+    "type": "sensor",
+    "state": "maintenance",
+    "locationId": "loc-003",
+    "companyId": "company-001",
+    "configuration": {
+      "type": "sensor",
+      "sensorType": "ammonia",
+      "alertThresholdMax": 25,
+      "readingInterval": 600
+    },
+    "lastSeen": "2024-12-18T10:00:00Z",
+    "health": "offline",
+    "createdAt": "2024-02-10T08:30:00Z"
+  },
+  {
+    "id": "dev-009",
+    "serialNumber": "PV-2024-004",
+    "type": "pigvision",
+    "state": "registered",
+    "locationId": null,
+    "companyId": "company-001",
+    "configuration": null,
+    "lastSeen": null,
+    "health": "unknown",
+    "createdAt": "2024-03-01T08:00:00Z"
+  },
+  {
+    "id": "dev-010",
+    "serialNumber": "PV-2024-005",
+    "type": "pigvision",
+    "state": "registered",
+    "locationId": null,
+    "companyId": "company-001",
+    "configuration": null,
+    "lastSeen": null,
+    "health": "unknown",
+    "createdAt": "2024-03-01T08:15:00Z"
+  },
+  {
+    "id": "dev-011",
+    "serialNumber": "SC-2024-003",
+    "type": "scale",
+    "state": "available",
+    "locationId": null,
+    "companyId": "company-001",
+    "configuration": null,
+    "lastSeen": null,
+    "health": "unknown",
+    "createdAt": "2024-03-05T08:00:00Z"
+  },
+  {
+    "id": "dev-012",
+    "serialNumber": "SN-2024-004",
+    "type": "sensor",
+    "state": "in_production",
+    "locationId": "loc-011",
+    "companyId": "company-001",
+    "configuration": {
+      "type": "sensor",
+      "sensorType": "temperature",
+      "alertThresholdMin": 20,
+      "alertThresholdMax": 32,
+      "readingInterval": 180
+    },
+    "lastSeen": "2024-12-19T14:20:00Z",
+    "health": "online",
+    "createdAt": "2024-03-10T08:00:00Z"
+  },
+  {
+    "id": "dev-013",
+    "serialNumber": "SN-2024-005",
+    "type": "sensor",
+    "state": "in_production",
+    "locationId": "loc-011",
+    "companyId": "company-001",
+    "configuration": {
+      "type": "sensor",
+      "sensorType": "co2",
+      "alertThresholdMax": 3000,
+      "readingInterval": 300
+    },
+    "lastSeen": "2024-12-19T14:22:00Z",
+    "health": "online",
+    "createdAt": "2024-03-10T08:15:00Z"
+  },
+  {
+    "id": "dev-014",
+    "serialNumber": "SN-2024-006",
+    "type": "sensor",
+    "state": "installed",
+    "locationId": "loc-012",
+    "companyId": "company-001",
+    "configuration": null,
+    "health": "unknown",
+    "createdAt": "2024-03-15T08:00:00Z"
+  },
+  {
+    "id": "dev-015",
+    "serialNumber": "SC-2024-004",
+    "type": "scale",
+    "state": "in_production",
+    "locationId": "loc-021",
+    "companyId": "company-001",
+    "configuration": {
+      "type": "scale",
+      "maxWeight": 50,
+      "tareWeight": 0.5,
+      "unit": "kg",
+      "calibrationDate": "2024-10-15"
+    },
+    "lastSeen": "2024-12-19T14:15:00Z",
+    "health": "online",
+    "createdAt": "2024-04-01T08:00:00Z"
+  },
+  {
+    "id": "dev-016",
+    "serialNumber": "SN-2024-007",
+    "type": "sensor",
+    "state": "registered",
+    "locationId": null,
+    "companyId": "company-001",
+    "configuration": null,
+    "health": "unknown",
+    "createdAt": "2024-04-10T08:00:00Z"
+  },
+  {
+    "id": "dev-017",
+    "serialNumber": "PV-2024-006",
+    "type": "pigvision",
+    "state": "in_production",
+    "locationId": "loc-013",
+    "companyId": "company-001",
+    "configuration": {
+      "type": "pigvision",
+      "cameraHeight": 100,
+      "detectionZone": "partial",
+      "sensitivity": "low"
+    },
+    "lastSeen": "2024-12-19T14:10:00Z",
+    "health": "online",
+    "createdAt": "2024-04-15T08:00:00Z"
+  },
+  {
+    "id": "dev-018",
+    "serialNumber": "PV-2024-007",
+    "type": "pigvision",
+    "state": "uninstalled",
+    "locationId": null,
+    "companyId": "company-001",
+    "configuration": null,
+    "health": "unknown",
+    "createdAt": "2024-05-01T08:00:00Z"
+  }
+]

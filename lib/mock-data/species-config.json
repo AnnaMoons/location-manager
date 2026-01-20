@@ -1,0 +1,37 @@
+{
+  "pigs": {
+    "name": "Cerdos",
+    "nameEn": "Pigs",
+    "icon": "pig",
+    "levels": ["farm", "barn", "pen"],
+    "labels": {
+      "farm": { "es": "Granja", "en": "Farm" },
+      "barn": { "es": "Galpón", "en": "Barn" },
+      "pen": { "es": "Corral", "en": "Pen" }
+    },
+    "deviceTypes": ["pigvision", "scale", "sensor"]
+  },
+  "broilers": {
+    "name": "Pollos de engorde",
+    "nameEn": "Broilers",
+    "icon": "bird",
+    "levels": ["farm", "barn", "section"],
+    "labels": {
+      "farm": { "es": "Granja", "en": "Farm" },
+      "barn": { "es": "Galpón", "en": "Barn" },
+      "section": { "es": "Sección", "en": "Section" }
+    },
+    "deviceTypes": ["scale", "sensor"]
+  },
+  "layers": {
+    "name": "Ponedoras",
+    "nameEn": "Layers",
+    "icon": "egg",
+    "levels": ["farm", "barn"],
+    "labels": {
+      "farm": { "es": "Granja", "en": "Farm" },
+      "barn": { "es": "Galpón", "en": "Barn" }
+    },
+    "deviceTypes": ["scale", "sensor"]
+  }
+}

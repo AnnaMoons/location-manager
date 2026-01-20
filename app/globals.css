@@ -1,0 +1,178 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Asimetrix Design System Colors */
+
+    /* Default Background: Portal light mode, forms, text on primary button */
+    --background: 0 0% 98.4%; /* #FBFBFB */
+
+    /* Default Background 1: Website bg, primary text/icons */
+    --foreground: 232 87% 12%; /* #040939 */
+
+    /* Primary: Button backgrounds on light bg */
+    --primary: 197 100% 25%; /* #005980 */
+    --primary-foreground: 0 0% 98.4%; /* #FBFBFB */
+
+    /* Secondary: Cyan accent for primary actions on dark bg */
+    --secondary: 186 100% 80%; /* #97F4FF */
+    --secondary-foreground: 232 87% 12%; /* #040939 */
+
+    /* Muted: Frames, dialogs, menus, input fields */
+    --muted: 0 0% 95%; /* #F2F2F2 */
+    --muted-foreground: 0 0% 38%; /* #616161 - tertiary text */
+
+    /* Accent: Selectors and highlights */
+    --accent: 207 75% 87%; /* #C7E2F7 */
+    --accent-foreground: 232 87% 12%; /* #040939 */
+
+    /* Cards and KPIs */
+    --card: 0 0% 100%;
+    --card-foreground: 232 87% 12%; /* #040939 */
+
+    /* Popovers */
+    --popover: 0 0% 100%;
+    --popover-foreground: 232 87% 12%; /* #040939 */
+
+    /* Destructive */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Success - using Asimetrix info green */
+    --success: 163 64% 45%; /* Based on #D0F4EA but darker for contrast */
+    --success-foreground: 0 0% 98.4%;
+
+    /* Warning */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 15%;
+
+    /* Info - tooltips, updates */
+    --info: 163 64% 89%; /* #D0F4EA */
+    --info-foreground: 232 87% 12%;
+
+    /* Border and input */
+    --border: 0 0% 82%; /* #D1D1D1 */
+    --input: 0 0% 82%; /* #D1D1D1 */
+    --ring: 197 100% 25%; /* Primary color */
+
+    /* Disabled state */
+    --disabled: 0 0% 78%; /* #C7C7C7 */
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark mode - Asimetrix */
+    --background: 220 4% 13%; /* #202124 */
+    --foreground: 0 0% 98.4%; /* #FBFBFB */
+
+    --primary: 186 100% 80%; /* #97F4FF - cyan on dark */
+    --primary-foreground: 232 87% 12%; /* #040939 */
+
+    --secondary: 0 0% 95%; /* #F2F2F2 */
+    --secondary-foreground: 232 87% 12%;
+
+    --muted: 220 6% 20%;
+    --muted-foreground: 0 0% 78%; /* #C7C7C7 */
+
+    --accent: 207 50% 30%;
+    --accent-foreground: 0 0% 98.4%;
+
+    --card: 220 6% 17%;
+    --card-foreground: 0 0% 98.4%;
+
+    --popover: 220 6% 17%;
+    --popover-foreground: 0 0% 98.4%;
+
+    --border: 220 6% 25%;
+    --input: 220 6% 25%;
+    --ring: 186 100% 80%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  /* Asimetrix Typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  h1 {
+    @apply text-2xl; /* 24px */
+  }
+
+  h2 {
+    @apply text-xl; /* 20px */
+  }
+
+  h3, .card-title {
+    font-size: 18px;
+    line-height: 1.4;
+  }
+
+  p, span, label, input, textarea, select {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+/* Mobile-first touch targets */
+@layer components {
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Asimetrix specific component styles */
+  .asimetrix-card {
+    @apply bg-card rounded-lg border shadow-sm;
+    background-color: hsl(205 35% 77% / 0.3); /* Subtle #B0C8DA tint */
+  }
+
+  .asimetrix-info {
+    background-color: #D0F4EA;
+    @apply rounded-lg p-4;
+  }
+
+  .asimetrix-pigvision {
+    background-color: #D1C2CE;
+    @apply rounded-lg;
+  }
+}
+
+/* Leaflet map fixes */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+}
+
+/* Skeleton animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 25%,
+    hsl(var(--muted-foreground) / 0.1) 50%,
+    hsl(var(--muted)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
