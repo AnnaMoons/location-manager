@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Location, CreateLocationInput, UpdateLocationInput } from '../types/location';
-import { Device, DeviceConfig, DeviceState } from '../types/device';
+import { Device, DeviceConfig, DeviceState, DeviceHistoryEntry, DeviceHistoryAction } from '../types/device';
 import { Batch, CreateBatchInput, UpdateBatchInput } from '../types/batch';
 import initialLocations from '../mock-data/locations.json';
 import initialDevices from '../mock-data/devices.json';
@@ -92,6 +92,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const simulateDelay = () => new Promise<void>((resolve) => setTimeout(resolve, 300 + Math.random() * 200));
 
+  const createHistoryEntry = (
+    action: DeviceHistoryAction,
+    details?: DeviceHistoryEntry['details']
+  ): DeviceHistoryEntry => ({
+    id: `hist-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    action,
+    timestamp: new Date().toISOString(),
+    details,
+  });
+
+  const addDeviceHistory = (device: Device, entry: DeviceHistoryEntry): Device => ({
+    ...device,
+    history: [...(device.history || []), entry],
+  });
+
   const createLocation = async (input: CreateLocationInput): Promise<Location> => {
     await simulateDelay();
 
@@ -172,11 +187,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setDevices((prev) =>
       prev.map((device) => {
         if (device.id === deviceId) {
-          updatedDevice = {
-            ...device,
-            locationId,
-            state: 'installed',
-          };
+          const isLocationChange = device.locationId !== null && device.locationId !== locationId;
+          const historyEntry = createHistoryEntry(
+            isLocationChange ? 'location_changed' : 'installed',
+            isLocationChange
+              ? { fromLocationId: device.locationId, toLocationId: locationId }
+              : { toLocationId: locationId }
+          );
+          updatedDevice = addDeviceHistory(
+            {
+              ...device,
+              locationId,
+              state: 'installed',
+            },
+            historyEntry
+          );
           return updatedDevice;
         }
         return device;
@@ -198,13 +223,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setDevices((prev) =>
       prev.map((device) => {
         if (device.id === deviceId) {
-          updatedDevice = {
-            ...device,
-            configuration: config,
-            state: 'in_production',
-            health: 'online',
-            lastSeen: new Date().toISOString(),
-          };
+          const historyEntry = createHistoryEntry('configured', {
+            configType: config.type,
+            fromState: device.state,
+            toState: 'in_production',
+          });
+          updatedDevice = addDeviceHistory(
+            {
+              ...device,
+              configuration: config,
+              state: 'in_production',
+              health: 'online',
+              lastSeen: new Date().toISOString(),
+            },
+            historyEntry
+          );
           return updatedDevice;
         }
         return device;
@@ -226,12 +259,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setDevices((prev) =>
       prev.map((device) => {
         if (device.id === deviceId) {
-          updatedDevice = {
-            ...device,
-            locationId: null,
-            configuration: null,
-            state: 'uninstalled',
-          };
+          const historyEntry = createHistoryEntry('uninstalled', {
+            fromLocationId: device.locationId,
+            fromState: device.state,
+            toState: 'uninstalled',
+          });
+          updatedDevice = addDeviceHistory(
+            {
+              ...device,
+              locationId: null,
+              configuration: null,
+              state: 'uninstalled',
+            },
+            historyEntry
+          );
           return updatedDevice;
         }
         return device;
@@ -253,10 +294,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setDevices((prev) =>
       prev.map((device) => {
         if (device.id === deviceId) {
-          updatedDevice = {
-            ...device,
-            state,
-          };
+          const historyEntry = createHistoryEntry('state_changed', {
+            fromState: device.state,
+            toState: state,
+          });
+          updatedDevice = addDeviceHistory(
+            {
+              ...device,
+              state,
+            },
+            historyEntry
+          );
           return updatedDevice;
         }
         return device;

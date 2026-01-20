@@ -47,6 +47,25 @@
       "installDevice": "Instala tu primer dispositivo",
       "configureDevice": "Configura un dispositivo",
       "progress": "{completed} de {total} completados"
+    },
+    "recentBatches": {
+      "title": "Lotes recientes",
+      "name": "Nombre",
+      "species": "Especie",
+      "farm": "Granja",
+      "barn": "Galpón",
+      "animals": "Animales",
+      "status": "Estado",
+      "viewAll": "Ver todos"
+    },
+    "recentDevices": {
+      "title": "Dispositivos recientes",
+      "serialNumber": "Número de serie",
+      "type": "Tipo",
+      "location": "Ubicación",
+      "state": "Estado",
+      "health": "Salud",
+      "viewAll": "Ver todos"
     }
   },
   "locations": {
@@ -192,7 +211,10 @@
         "heightPlaceholder": "Ingresa la altura",
         "unitPlaceholder": "Unidad de medida",
         "unitMeters": "Metros (m)",
-        "unitCentimeters": "Centímetros (cm)"
+        "unitCentimeters": "Centímetros (cm)",
+        "cameraHeight": "Altura de cámara",
+        "detectionZone": "Zona de detección",
+        "sensitivity": "Sensibilidad"
       },
       "scale": {
         "title": "Configuración de Báscula",
@@ -226,7 +248,26 @@
       }
     },
     "uninstallConfirm": "¿Estás seguro de desinstalar este dispositivo?",
-    "uninstallWarning": "El dispositivo se desasociará de su ubicación actual."
+    "uninstallWarning": "El dispositivo se desasociará de su ubicación actual.",
+    "history": {
+      "title": "Historial de cambios",
+      "noHistory": "Sin historial de cambios",
+      "actions": {
+        "created": "Dispositivo creado",
+        "installed": "Instalado en ubicación",
+        "uninstalled": "Desinstalado",
+        "configured": "Configurado",
+        "state_changed": "Estado cambiado",
+        "location_changed": "Ubicación cambiada"
+      },
+      "details": {
+        "fromState": "Estado anterior",
+        "toState": "Nuevo estado",
+        "fromLocation": "Ubicación anterior",
+        "toLocation": "Nueva ubicación",
+        "configType": "Tipo de configuración"
+      }
+    }
   },
   "batches": {
     "title": "Lotes",

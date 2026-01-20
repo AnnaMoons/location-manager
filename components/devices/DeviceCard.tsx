@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Camera, Scale, Thermometer, MapPin, Wifi, WifiOff } from 'lucide-react';
+import { Camera, Scale, Thermometer, MapPin, Wifi, WifiOff, Activity } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { DeviceStateChip } from './DeviceStateChip';
 import { NextActionCTA } from './NextActionCTA';
@@ -62,6 +62,14 @@ export function DeviceCard({ device, showLocation = true }: DeviceCardProps) {
             </div>
             <div className="flex flex-col items-end gap-2">
               <DeviceStateChip state={device.state} size="sm" />
+              {device.lastMeasurement && (
+                <div className="flex items-center gap-1 text-sm font-medium">
+                  <Activity className="h-3 w-3 text-muted-foreground" />
+                  <span>
+                    {device.lastMeasurement.value} {device.lastMeasurement.unit}
+                  </span>
+                </div>
+              )}
               <NextActionCTA device={device} variant="inline" />
             </div>
           </div>

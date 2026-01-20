@@ -13,6 +13,33 @@ export type DeviceHealth = 'online' | 'offline' | 'unknown';
 
 export type SensorType = 'temperature' | 'humidity' | 'co2' | 'ammonia';
 
+export type DeviceHistoryAction =
+  | 'created'
+  | 'installed'
+  | 'uninstalled'
+  | 'configured'
+  | 'state_changed'
+  | 'location_changed';
+
+export interface DeviceHistoryEntry {
+  id: string;
+  action: DeviceHistoryAction;
+  timestamp: string;
+  details?: {
+    fromState?: DeviceState;
+    toState?: DeviceState;
+    fromLocationId?: string | null;
+    toLocationId?: string | null;
+    configType?: string;
+  };
+}
+
+export interface DeviceMeasurement {
+  value: number;
+  unit: string;
+  timestamp: string;
+}
+
 export interface PigVisionConfig {
   type: 'pigvision';
   barnId: string;
@@ -53,6 +80,8 @@ export interface Device {
   lastSeen?: string;
   health: DeviceHealth;
   createdAt: string;
+  history?: DeviceHistoryEntry[];
+  lastMeasurement?: DeviceMeasurement;
 }
 
 export interface CreateDeviceInput {

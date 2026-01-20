@@ -18,12 +18,15 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import { LoadingState } from '@/components/shared/LoadingState';
 import { LocationCard } from '@/components/locations/LocationCard';
 import { useLocations } from '@/lib/hooks/useLocations';
+import { useDevices } from '@/lib/hooks/useDevices';
 import { Species } from '@/lib/types/species';
 import { LocationWithChildren } from '@/lib/types/location';
+import { Device } from '@/lib/types/device';
 
 export default function LocationsPage() {
   const t = useTranslations('locations');
   const { locations, locationTree, isLoading, getChildren } = useLocations();
+  const { devices } = useDevices();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [speciesFilter, setSpeciesFilter] = useState<Species | 'all'>('all');
@@ -133,6 +136,7 @@ export default function LocationsPage() {
               location={location}
               getChildren={getChildren}
               searchQuery={searchQuery}
+              devices={devices}
             />
           ))}
         </div>
@@ -141,19 +145,36 @@ export default function LocationsPage() {
   );
 }
 
+// Helper to get all location IDs in a subtree (including the root)
+function getAllLocationIds(location: LocationWithChildren): string[] {
+  const ids = [location.id];
+  for (const child of location.children) {
+    ids.push(...getAllLocationIds(child));
+  }
+  return ids;
+}
+
 function LocationTreeItem({
   location,
   getChildren,
   depth = 0,
   searchQuery = '',
+  devices,
 }: {
   location: LocationWithChildren;
   getChildren: (id: string) => any[];
   depth?: number;
   searchQuery?: string;
+  devices: Device[];
 }) {
   const children = location.children;
-  const canCollapse = children.length > 0 && (location.type === 'farm' || location.type === 'barn');
+  const locationDevices = devices.filter((d) => d.locationId === location.id);
+  const hasChildren = children.length > 0;
+  const canCollapse = hasChildren && (location.type === 'farm' || location.type === 'barn');
+
+  // Calculate total devices in this location and all descendants
+  const allLocationIds = getAllLocationIds(location);
+  const totalDeviceCount = devices.filter((d) => d.locationId && allLocationIds.includes(d.locationId)).length;
 
   // Auto-expand if searching and a child matches
   const hasMatchingChild = (loc: LocationWithChildren): boolean => {
@@ -202,11 +223,13 @@ function LocationTreeItem({
           <LocationCard
             location={location}
             childCount={children.length}
+            devices={locationDevices}
+            totalDeviceCount={totalDeviceCount}
             indent={depth}
           />
         </div>
       </div>
-      {children.length > 0 && (
+      {hasChildren && (
         <div
           className={`ml-6 overflow-hidden transition-all duration-300 ease-in-out ${
             isExpanded ? 'opacity-100 mt-2' : 'opacity-0 max-h-0'
@@ -224,6 +247,7 @@ function LocationTreeItem({
                 getChildren={getChildren}
                 depth={depth + 1}
                 searchQuery={searchQuery}
+                devices={devices}
               />
             ))}
           </div>

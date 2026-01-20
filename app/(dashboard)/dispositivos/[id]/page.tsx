@@ -14,6 +14,8 @@ import {
   Wifi,
   WifiOff,
   RefreshCw,
+  History,
+  ArrowRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -294,6 +296,89 @@ export default function DeviceDetailPage({
           </AlertDialog>
         )}
       </div>
+
+      {/* History Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <History className="h-5 w-5" />
+            {t('history.title')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!device.history || device.history.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              {t('history.noHistory')}
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {[...device.history].reverse().map((entry) => {
+                const fromLocation = entry.details?.fromLocationId
+                  ? getLocation(entry.details.fromLocationId)
+                  : null;
+                const toLocation = entry.details?.toLocationId
+                  ? getLocation(entry.details.toLocationId)
+                  : null;
+
+                return (
+                  <div key={entry.id} className="flex gap-3">
+                    <div className="flex flex-col items-center">
+                      <div className="w-2 h-2 rounded-full bg-primary mt-2" />
+                      <div className="w-px h-full bg-border" />
+                    </div>
+                    <div className="flex-1 pb-4">
+                      <p className="font-medium text-sm">
+                        {t(`history.actions.${entry.action}`)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(entry.timestamp).toLocaleString()}
+                      </p>
+                      {entry.details && (
+                        <div className="mt-2 text-xs space-y-1">
+                          {entry.details.fromState && entry.details.toState && (
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                              <Badge variant="outline" className="text-xs">
+                                {t(`states.${entry.details.fromState}`)}
+                              </Badge>
+                              <ArrowRight className="h-3 w-3" />
+                              <Badge variant="outline" className="text-xs">
+                                {t(`states.${entry.details.toState}`)}
+                              </Badge>
+                            </div>
+                          )}
+                          {(fromLocation || toLocation) && (
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                              {fromLocation && (
+                                <span>{fromLocation.name}</span>
+                              )}
+                              {fromLocation && toLocation && (
+                                <ArrowRight className="h-3 w-3" />
+                              )}
+                              {toLocation && (
+                                <span>{toLocation.name}</span>
+                              )}
+                              {!fromLocation && toLocation && (
+                                <span className="text-muted-foreground">
+                                  → {toLocation.name}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          {entry.details.configType && (
+                            <p className="text-muted-foreground">
+                              {t(`types.${entry.details.configType}`)}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

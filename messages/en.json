@@ -47,6 +47,25 @@
       "installDevice": "Install your first device",
       "configureDevice": "Configure a device",
       "progress": "{completed} of {total} completed"
+    },
+    "recentBatches": {
+      "title": "Recent batches",
+      "name": "Name",
+      "species": "Species",
+      "farm": "Farm",
+      "barn": "Barn",
+      "animals": "Animals",
+      "status": "Status",
+      "viewAll": "View all"
+    },
+    "recentDevices": {
+      "title": "Recent devices",
+      "serialNumber": "Serial number",
+      "type": "Type",
+      "location": "Location",
+      "state": "State",
+      "health": "Health",
+      "viewAll": "View all"
     }
   },
   "locations": {
@@ -192,7 +211,10 @@
         "heightPlaceholder": "Enter the height",
         "unitPlaceholder": "Unit of measurement",
         "unitMeters": "Meters (m)",
-        "unitCentimeters": "Centimeters (cm)"
+        "unitCentimeters": "Centimeters (cm)",
+        "cameraHeight": "Camera height",
+        "detectionZone": "Detection zone",
+        "sensitivity": "Sensitivity"
       },
       "scale": {
         "title": "Scale Configuration",
@@ -226,7 +248,26 @@
       }
     },
     "uninstallConfirm": "Are you sure you want to uninstall this device?",
-    "uninstallWarning": "The device will be disassociated from its current location."
+    "uninstallWarning": "The device will be disassociated from its current location.",
+    "history": {
+      "title": "Change history",
+      "noHistory": "No change history",
+      "actions": {
+        "created": "Device created",
+        "installed": "Installed at location",
+        "uninstalled": "Uninstalled",
+        "configured": "Configured",
+        "state_changed": "State changed",
+        "location_changed": "Location changed"
+      },
+      "details": {
+        "fromState": "Previous state",
+        "toState": "New state",
+        "fromLocation": "Previous location",
+        "toLocation": "New location",
+        "configType": "Configuration type"
+      }
+    }
   },
   "batches": {
     "title": "Batches",
