@@ -11,7 +11,10 @@ import {
   Clock,
   Edit,
   Trash2,
-  CheckCircle,
+  Building2,
+  Cpu,
+  Scale,
+  Thermometer,
   XCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -31,9 +34,9 @@ import {
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { LoadingSpinner } from '@/components/shared/LoadingState';
+import { CloseBatchDialog } from '@/components/batches/CloseBatchDialog';
 import { useBatches } from '@/lib/hooks/useBatches';
-import { useLocations } from '@/lib/hooks/useLocations';
-import { getLocationPath } from '@/lib/types/location';
+import { CloseBatchInput } from '@/lib/types/batch';
 
 export default function BatchDetailPage({
   params,
@@ -43,15 +46,21 @@ export default function BatchDetailPage({
   const { id } = params;
   const t = useTranslations('batches');
   const tSpecies = useTranslations('locations.species');
+  const tTypes = useTranslations('locations.types');
+  const tDevices = useTranslations('devices');
   const router = useRouter();
-  const { getBatchWithDetails, updateBatch, deleteBatch, isLoading } =
-    useBatches();
-  const { locations } = useLocations();
+  const {
+    getBatchWithFullDetails,
+    updateBatch,
+    deleteBatch,
+    closeBatch,
+    isLoading,
+  } = useBatches();
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const batchDetails = getBatchWithDetails(id);
+  const batchDetails = getBatchWithFullDetails(id);
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -68,9 +77,7 @@ export default function BatchDetailPage({
     );
   }
 
-  const locationPath = batchDetails.location
-    ? getLocationPath(locations, batchDetails.locationId)
-    : [];
+  const { locations, devices: batchDevices } = batchDetails;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -97,14 +104,21 @@ export default function BatchDetailPage({
     }
   };
 
-  const handleStatusChange = async (
-    newStatus: 'active' | 'completed' | 'cancelled'
-  ) => {
+  const handleCloseBatch = async (input: CloseBatchInput) => {
     setIsUpdating(true);
     try {
-      await updateBatch(id, { status: newStatus });
+      await closeBatch(id, input);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleReactivate = async () => {
+    setIsUpdating(true);
+    try {
+      await updateBatch(id, { status: 'active', closedDate: undefined, closeReason: undefined });
     } catch (error) {
-      console.error('Error updating batch:', error);
+      console.error('Error reactivating batch:', error);
     } finally {
       setIsUpdating(false);
     }
@@ -166,17 +180,6 @@ export default function BatchDetailPage({
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Location Path */}
-            <div className="flex items-start gap-3">
-              <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
-              <div>
-                <p className="font-medium">{t('location')}</p>
-                <p className="text-sm text-muted-foreground">
-                  {locationPath.map((l) => l.name).join(' → ')}
-                </p>
-              </div>
-            </div>
-
             {/* Animal Count */}
             <div className="flex items-start gap-3">
               <Users className="h-5 w-5 text-muted-foreground mt-0.5" />
@@ -229,7 +232,7 @@ export default function BatchDetailPage({
                   <p className="font-medium">{t('estimatedEndDate')}</p>
                   <p className="text-sm text-muted-foreground">
                     {new Date(batchDetails.estimatedEndDate).toLocaleDateString()}
-                    {batchDetails.daysRemaining !== null && (
+                    {batchDetails.daysRemaining !== null && batchDetails.status === 'active' && (
                       <span className="ml-2">
                         ({batchDetails.daysRemaining} {t('daysRemaining')})
                       </span>
@@ -238,6 +241,150 @@ export default function BatchDetailPage({
                 </div>
               </div>
             )}
+
+            {/* Closure Info (if closed) */}
+            {batchDetails.closedDate && (
+              <div className="pt-4 border-t space-y-4">
+                <div className="flex items-start gap-3">
+                  <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="font-medium">{t('closedDate')}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(batchDetails.closedDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+                {batchDetails.closeReason && (
+                  <div className="flex items-start gap-3">
+                    <XCircle className="h-5 w-5 text-muted-foreground mt-0.5" />
+                    <div>
+                      <p className="font-medium">{t('closeReason')}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {batchDetails.closeReason}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Distribution Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Building2 className="h-5 w-5" />
+              {t('distribution')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Farm */}
+            {locations.farm && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">
+                  {tTypes('farm')}
+                </p>
+                <Badge variant="outline" className="text-base py-1 px-3">
+                  {locations.farm.name}
+                </Badge>
+              </div>
+            )}
+
+            {/* Barns */}
+            {locations.barns.length > 0 && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">
+                  {t('barns')} ({locations.barns.length})
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {locations.barns.map((barn) => (
+                    <Badge key={barn.id} variant="secondary">
+                      {barn.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Pens */}
+            {locations.pens.length > 0 && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">
+                  {t('pens')} ({locations.pens.length})
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {locations.pens.map((pen) => (
+                    <Badge key={pen.id} variant="secondary">
+                      {pen.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Devices Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Cpu className="h-5 w-5" />
+              {t('devices')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Weight Devices */}
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
+                <Scale className="h-4 w-4" />
+                {t('weightDevices')}
+              </p>
+              {batchDevices.weightDevices.length > 0 ? (
+                <div className="space-y-2">
+                  {batchDevices.weightDevices.map((device) => (
+                    <Link
+                      key={device.id}
+                      href={`/dispositivos/${device.id}`}
+                      className="flex items-center gap-2 p-2 rounded-lg hover:bg-accent transition-colors"
+                    >
+                      <Badge variant="outline">
+                        {tDevices(`types.${device.type}`)}
+                      </Badge>
+                      <span className="text-sm">{device.serialNumber}</span>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">{t('noDevices')}</p>
+              )}
+            </div>
+
+            {/* Environment Devices */}
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
+                <Thermometer className="h-4 w-4" />
+                {t('environmentDevices')}
+              </p>
+              {batchDevices.environmentDevices.length > 0 ? (
+                <div className="space-y-2">
+                  {batchDevices.environmentDevices.map((device) => (
+                    <Link
+                      key={device.id}
+                      href={`/dispositivos/${device.id}`}
+                      className="flex items-center gap-2 p-2 rounded-lg hover:bg-accent transition-colors"
+                    >
+                      <Badge variant="outline">
+                        {tDevices(`types.${device.type}`)}
+                      </Badge>
+                      <span className="text-sm">{device.serialNumber}</span>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">{t('noDevices')}</p>
+              )}
+            </div>
           </CardContent>
         </Card>
 
@@ -248,43 +395,26 @@ export default function BatchDetailPage({
           </CardHeader>
           <CardContent className="space-y-3">
             {batchDetails.status === 'active' && (
-              <>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start"
-                  onClick={() => handleStatusChange('completed')}
-                  disabled={isUpdating}
-                >
-                  <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
-                  {t('markCompleted')}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start"
-                  onClick={() => handleStatusChange('cancelled')}
-                  disabled={isUpdating}
-                >
-                  <XCircle className="h-4 w-4 mr-2 text-red-600" />
-                  {t('markCancelled')}
-                </Button>
-              </>
+              <CloseBatchDialog
+                batch={batchDetails}
+                onClose={handleCloseBatch}
+                trigger={
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start"
+                    disabled={isUpdating}
+                  >
+                    <XCircle className="h-4 w-4 mr-2" />
+                    {t('closeBatch')}
+                  </Button>
+                }
+              />
             )}
-            {batchDetails.status === 'completed' && (
+            {(batchDetails.status === 'completed' || batchDetails.status === 'cancelled') && (
               <Button
                 variant="outline"
                 className="w-full justify-start"
-                onClick={() => handleStatusChange('active')}
-                disabled={isUpdating}
-              >
-                <Clock className="h-4 w-4 mr-2" />
-                {t('reactivate')}
-              </Button>
-            )}
-            {batchDetails.status === 'cancelled' && (
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                onClick={() => handleStatusChange('active')}
+                onClick={handleReactivate}
                 disabled={isUpdating}
               >
                 <Clock className="h-4 w-4 mr-2" />

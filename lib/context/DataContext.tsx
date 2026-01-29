@@ -3,7 +3,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Location, CreateLocationInput, UpdateLocationInput } from '../types/location';
 import { Device, DeviceConfig, DeviceState, DeviceHistoryEntry, DeviceHistoryAction } from '../types/device';
-import { Batch, CreateBatchInput, UpdateBatchInput } from '../types/batch';
+import { Batch, CreateBatchInput, UpdateBatchInput, CloseBatchInput } from '../types/batch';
+import { migrateAllBatches, needsBatchMigration } from '../utils/migration';
 import initialLocations from '../mock-data/locations.json';
 import initialDevices from '../mock-data/devices.json';
 import initialBatches from '../mock-data/batches.json';
@@ -33,6 +34,7 @@ interface DataContextType {
   updateBatch: (id: string, input: UpdateBatchInput) => Promise<Batch>;
   deleteBatch: (id: string) => Promise<void>;
   getBatch: (id: string) => Batch | undefined;
+  closeBatch: (id: string, input: CloseBatchInput) => Promise<Batch>;
   // Utility
   simulateDelay: () => Promise<void>;
 }
@@ -53,15 +55,36 @@ export function DataProvider({ children }: { children: ReactNode }) {
         const storedDevices = localStorage.getItem(STORAGE_KEY_DEVICES);
         const storedBatches = localStorage.getItem(STORAGE_KEY_BATCHES);
 
-        setLocations(
-          storedLocations ? JSON.parse(storedLocations) : (initialLocations as Location[])
-        );
+        const loadedLocations = storedLocations
+          ? JSON.parse(storedLocations)
+          : (initialLocations as Location[]);
+
+        setLocations(loadedLocations);
         setDevices(storedDevices ? JSON.parse(storedDevices) : (initialDevices as Device[]));
-        setBatches(storedBatches ? JSON.parse(storedBatches) : (initialBatches as Batch[]));
+
+        // Load and migrate batches if needed
+        let loadedBatches = storedBatches
+          ? JSON.parse(storedBatches)
+          : (initialBatches as Batch[]);
+
+        // Check if any batch needs migration
+        const needsMigration = loadedBatches.some((b: Batch) => needsBatchMigration(b));
+        if (needsMigration) {
+          loadedBatches = migrateAllBatches(loadedBatches, loadedLocations);
+          // Save migrated batches
+          localStorage.setItem(STORAGE_KEY_BATCHES, JSON.stringify(loadedBatches));
+        }
+
+        setBatches(loadedBatches);
       } catch {
         setLocations(initialLocations as Location[]);
         setDevices(initialDevices as Device[]);
-        setBatches(initialBatches as Batch[]);
+        // Migrate initial batches too
+        const migratedBatches = migrateAllBatches(
+          initialBatches as Batch[],
+          initialLocations as Location[]
+        );
+        setBatches(migratedBatches);
       }
       setIsLoading(false);
     };
@@ -327,7 +350,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
     const newBatch: Batch = {
       id: `batch-${Date.now()}`,
-      ...input,
+      name: input.name,
+      species: input.species,
+      farmId: input.farmId,
+      barnIds: input.barnIds,
+      penIds: input.penIds || [],
+      animalCount: input.animalCount,
+      averageAgeAtStart: input.averageAgeAtStart,
+      startDate: input.startDate,
+      estimatedEndDate: input.estimatedEndDate,
       status: 'active',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -372,6 +403,34 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return batches.find((batch) => batch.id === id);
   };
 
+  const closeBatch = async (id: string, input: CloseBatchInput): Promise<Batch> => {
+    await simulateDelay();
+
+    let closedBatch: Batch | undefined;
+
+    setBatches((prev) =>
+      prev.map((batch) => {
+        if (batch.id === id) {
+          closedBatch = {
+            ...batch,
+            status: input.closeType,
+            closedDate: input.closedDate,
+            closeReason: input.closeReason,
+            updatedAt: new Date().toISOString(),
+          };
+          return closedBatch;
+        }
+        return batch;
+      })
+    );
+
+    if (!closedBatch) {
+      throw new Error('Batch not found');
+    }
+
+    return closedBatch;
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -392,6 +451,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         updateBatch,
         deleteBatch,
         getBatch,
+        closeBatch,
         simulateDelay,
       }}
     >

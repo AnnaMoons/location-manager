@@ -44,11 +44,23 @@ export default function DashboardPage() {
     return location?.name || '-';
   };
 
-  const getBatchFarmAndBarn = (locationId: string) => {
-    const path = getLocationPath(locations, locationId);
-    const farm = path.find((l) => l.type === 'farm');
-    const barn = path.find((l) => l.type === 'barn');
-    return { farm: farm?.name || '-', barn: barn?.name || '-' };
+  const getBatchFarmAndBarn = (batch: typeof batches[0]) => {
+    // Use new multi-location fields if available
+    if (batch.farmId) {
+      const farm = locations.find((l) => l.id === batch.farmId);
+      const barn = batch.barnIds?.length
+        ? locations.find((l) => l.id === batch.barnIds[0])
+        : undefined;
+      return { farm: farm?.name || '-', barn: barn?.name || '-' };
+    }
+    // Fallback to legacy locationId
+    if (batch.locationId) {
+      const path = getLocationPath(locations, batch.locationId);
+      const farm = path.find((l) => l.type === 'farm');
+      const barn = path.find((l) => l.type === 'barn');
+      return { farm: farm?.name || '-', barn: barn?.name || '-' };
+    }
+    return { farm: '-', barn: '-' };
   };
 
   const getBatchStatusVariant = (status: string) => {
@@ -184,7 +196,7 @@ export default function DashboardPage() {
                   </thead>
                   <tbody>
                     {recentBatches.map((batch) => {
-                      const { farm, barn } = getBatchFarmAndBarn(batch.locationId);
+                      const { farm, barn } = getBatchFarmAndBarn(batch);
                       return (
                         <tr key={batch.id} className="border-b last:border-0">
                           <td className="py-2">

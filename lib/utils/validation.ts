@@ -1,6 +1,7 @@
 import { PigVisionConfig, ScaleConfig, SensorConfig, DeviceConfig } from '../types/device';
 import { CreateLocationInput } from '../types/location';
-import { CreateBatchInput } from '../types/batch';
+import { CreateBatchInput, CloseBatchInput, Batch, requiresCloseReason } from '../types/batch';
+import { Location } from '../types/location';
 import { speciesHierarchies } from '../types/species';
 
 export interface ValidationResult {
@@ -163,7 +164,10 @@ export function validateLocationInput(input: Partial<CreateLocationInput>): Vali
   };
 }
 
-export function validateBatchInput(input: Partial<CreateBatchInput>): ValidationResult {
+export function validateBatchInput(
+  input: Partial<CreateBatchInput>,
+  locations?: Location[]
+): ValidationResult {
   const errors: Record<string, string> = {};
 
   if (!input.name || input.name.trim() === '') {
@@ -174,8 +178,35 @@ export function validateBatchInput(input: Partial<CreateBatchInput>): Validation
     errors.species = 'La especie es obligatoria';
   }
 
-  if (!input.locationId) {
-    errors.locationId = 'La ubicación es obligatoria';
+  // Validate multi-location fields
+  if (!input.farmId) {
+    errors.farmId = 'La granja es obligatoria';
+  }
+
+  if (!input.barnIds || input.barnIds.length === 0) {
+    errors.barnIds = 'Debes seleccionar al menos un galpón';
+  }
+
+  // Validate that barns belong to the selected farm
+  if (locations && input.farmId && input.barnIds && input.barnIds.length > 0) {
+    const invalidBarns = input.barnIds.filter((barnId) => {
+      const barn = locations.find((l) => l.id === barnId);
+      return !barn || barn.parentId !== input.farmId;
+    });
+    if (invalidBarns.length > 0) {
+      errors.barnIds = 'Los galpones seleccionados no pertenecen a la granja';
+    }
+  }
+
+  // Validate that pens belong to the selected barns
+  if (locations && input.penIds && input.penIds.length > 0 && input.barnIds) {
+    const invalidPens = input.penIds.filter((penId) => {
+      const pen = locations.find((l) => l.id === penId);
+      return !pen || !input.barnIds!.includes(pen.parentId || '');
+    });
+    if (invalidPens.length > 0) {
+      errors.penIds = 'Los corrales seleccionados no pertenecen a los galpones';
+    }
   }
 
   if (input.animalCount === undefined || input.animalCount === null) {
@@ -199,6 +230,46 @@ export function validateBatchInput(input: Partial<CreateBatchInput>): Validation
     const end = new Date(input.estimatedEndDate);
     if (end <= start) {
       errors.estimatedEndDate = 'La fecha de fin debe ser posterior a la fecha de inicio';
+    }
+  }
+
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors,
+  };
+}
+
+export function validateCloseBatchInput(
+  input: Partial<CloseBatchInput>,
+  batch: Batch
+): ValidationResult {
+  const errors: Record<string, string> = {};
+
+  if (!input.closeType) {
+    errors.closeType = 'El tipo de cierre es obligatorio';
+  }
+
+  if (!input.closedDate) {
+    errors.closedDate = 'La fecha de cierre es obligatoria';
+  } else {
+    const closedDate = new Date(input.closedDate);
+    const startDate = new Date(batch.startDate);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // Allow today
+
+    if (closedDate < startDate) {
+      errors.closedDate = 'La fecha de cierre no puede ser anterior a la fecha de inicio';
+    }
+
+    if (closedDate > today) {
+      errors.closedDate = 'La fecha de cierre no puede ser futura';
+    }
+  }
+
+  // Check if close reason is required (closing before estimated end date)
+  if (input.closedDate && requiresCloseReason(batch, input.closedDate)) {
+    if (!input.closeReason || input.closeReason.trim() === '') {
+      errors.closeReason = 'El motivo es obligatorio cuando se cierra antes de la fecha estimada';
     }
   }
 

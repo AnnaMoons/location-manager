@@ -10,15 +10,50 @@ import { Location } from '@/lib/types/location';
 
 interface BatchCardProps {
   batch: Batch;
-  location?: Location;
+  location?: Location; // For backwards compatibility (farm)
+  farm?: Location;
+  barns?: Location[];
+  pens?: Location[];
 }
 
-export function BatchCard({ batch, location }: BatchCardProps) {
+function formatLocationSummary(
+  farm: Location | undefined,
+  barns: Location[],
+  pens: Location[],
+  t: (key: string, values?: Record<string, number>) => string
+): string {
+  if (!farm) return '';
+
+  const parts: string[] = [farm.name];
+
+  if (barns.length > 0) {
+    parts.push(
+      barns.length === 1
+        ? `1 ${t('barn')}`
+        : `${barns.length} ${t('barnsPlural')}`
+    );
+  }
+
+  if (pens.length > 0) {
+    parts.push(
+      pens.length === 1
+        ? `1 ${t('pen')}`
+        : `${pens.length} ${t('pensPlural')}`
+    );
+  }
+
+  return parts.join(' • ');
+}
+
+export function BatchCard({ batch, location, farm, barns = [], pens = [] }: BatchCardProps) {
   const t = useTranslations('batches');
   const tSpecies = useTranslations('locations.species');
 
   const currentAge = calculateCurrentAge(batch);
   const daysRemaining = calculateDaysRemaining(batch);
+
+  // Use farm prop or fall back to location for backwards compatibility
+  const displayFarm = farm || location;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -32,6 +67,8 @@ export function BatchCard({ batch, location }: BatchCardProps) {
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  const locationSummary = formatLocationSummary(displayFarm, barns, pens, t);
 
   return (
     <Link href={`/lotes/${batch.id}`}>
@@ -48,11 +85,11 @@ export function BatchCard({ batch, location }: BatchCardProps) {
           </p>
         </CardHeader>
         <CardContent className="space-y-3">
-          {/* Location */}
-          {location && (
+          {/* Location Summary */}
+          {locationSummary && (
             <div className="flex items-center gap-2 text-sm">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
-              <span>{location.name}</span>
+              <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <span className="truncate">{locationSummary}</span>
             </div>
           )}
 

@@ -136,6 +136,9 @@ export default function BatchesPage() {
                   key={batch.id}
                   batch={batch}
                   location={batch.location}
+                  farm={batch.farm}
+                  barns={batch.barns}
+                  pens={batch.pens}
                 />
               ))}
             </div>

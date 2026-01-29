@@ -4,11 +4,20 @@ export interface Batch {
   id: string;
   name: string;
   species: Species;
-  locationId: string;
+  // New multi-location fields
+  farmId: string;
+  barnIds: string[];
+  penIds: string[];
+  // Legacy field - kept for migration
+  /** @deprecated Use farmId, barnIds, penIds instead */
+  locationId?: string;
   animalCount: number;
   averageAgeAtStart: number; // days
   startDate: string;
   estimatedEndDate?: string;
+  // Closure fields
+  closedDate?: string;
+  closeReason?: string;
   // sex: 'male' | 'female' | 'mixed'; // Not in MVP
   status: BatchStatus;
   createdAt: string;
@@ -20,7 +29,9 @@ export type BatchStatus = 'active' | 'completed' | 'cancelled';
 export interface CreateBatchInput {
   name: string;
   species: Species;
-  locationId: string;
+  farmId: string;
+  barnIds: string[];
+  penIds?: string[];
   animalCount: number;
   averageAgeAtStart: number;
   startDate: string;
@@ -29,16 +40,59 @@ export interface CreateBatchInput {
 
 export interface UpdateBatchInput {
   name?: string;
-  locationId?: string;
+  farmId?: string;
+  barnIds?: string[];
+  penIds?: string[];
   animalCount?: number;
   averageAgeAtStart?: number;
   startDate?: string;
   estimatedEndDate?: string;
   status?: BatchStatus;
+  closedDate?: string;
+  closeReason?: string;
+}
+
+export interface CloseBatchInput {
+  closeType: 'completed' | 'cancelled';
+  closedDate: string;
+  closeReason?: string;
 }
 
 export function getBatchesByLocation(batches: Batch[], locationId: string): Batch[] {
-  return batches.filter((b) => b.locationId === locationId);
+  return batches.filter((b) => {
+    // Check new multi-location fields
+    if (b.farmId === locationId) return true;
+    if (b.barnIds?.includes(locationId)) return true;
+    if (b.penIds?.includes(locationId)) return true;
+    // Legacy support
+    if (b.locationId === locationId) return true;
+    return false;
+  });
+}
+
+/**
+ * Get all location IDs associated with a batch
+ */
+export function getBatchLocationIds(batch: Batch): string[] {
+  const ids: string[] = [];
+  if (batch.farmId) ids.push(batch.farmId);
+  if (batch.barnIds) ids.push(...batch.barnIds);
+  if (batch.penIds) ids.push(...batch.penIds);
+  // Legacy support
+  if (batch.locationId && !ids.includes(batch.locationId)) {
+    ids.push(batch.locationId);
+  }
+  return ids;
+}
+
+/**
+ * Check if a batch requires a close reason (closing before estimated end date)
+ */
+export function requiresCloseReason(batch: Batch, closedDate: string): boolean {
+  if (!batch.estimatedEndDate) return false;
+  const closeDate = new Date(closedDate);
+  const estimatedEnd = new Date(batch.estimatedEndDate);
+  return closeDate < estimatedEnd;
 }
 
 export function getBatchesBySpecies(batches: Batch[], species: Species): Batch[] {

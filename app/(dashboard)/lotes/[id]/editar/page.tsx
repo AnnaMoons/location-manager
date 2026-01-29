@@ -35,7 +35,9 @@ export default function EditBatchPage({
       setFormData({
         name: batch.name,
         species: batch.species,
-        locationId: batch.locationId,
+        farmId: batch.farmId,
+        barnIds: batch.barnIds || [],
+        penIds: batch.penIds || [],
         animalCount: batch.animalCount,
         averageAgeAtStart: batch.averageAgeAtStart,
         startDate: batch.startDate,
