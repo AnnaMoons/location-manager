@@ -12,18 +12,6 @@ export interface ValidationResult {
 export function validatePigVisionConfig(config: Partial<PigVisionConfig>): ValidationResult {
   const errors: Record<string, string> = {};
 
-  if (!config.barnId) {
-    errors.barnId = 'Galpón es requerido';
-  }
-
-  if (!config.penId) {
-    errors.penId = 'Corral es requerido';
-  }
-
-  if (!config.penSex) {
-    errors.penSex = 'Sexo del corral es requerido';
-  }
-
   if (config.installationHeight === undefined || config.installationHeight === null) {
     errors.installationHeight = 'Altura de instalación es requerida';
   } else {

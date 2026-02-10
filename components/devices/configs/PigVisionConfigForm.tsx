@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Lightbulb } from 'lucide-react';
 import { Label } from '@/components/ui/label';
@@ -13,7 +12,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { PigVisionConfig } from '@/lib/types/device';
-import { useLocations } from '@/lib/hooks/useLocations';
 
 interface PigVisionConfigFormProps {
   config: Partial<PigVisionConfig>;
@@ -29,24 +27,10 @@ export function PigVisionConfigForm({
   deviceSerialNumber,
 }: PigVisionConfigFormProps) {
   const t = useTranslations('devices.configuration.pigvision');
-  const { locations, filterByType, getChildren } = useLocations();
-
-  const barns = filterByType('barn');
-  const pens = config.barnId ? getChildren(config.barnId).filter(l => l.type === 'pen') : [];
 
   const updateConfig = (updates: Partial<PigVisionConfig>) => {
     onChange({ ...config, ...updates, type: 'pigvision' });
   };
-
-  // Reset pen when barn changes
-  useEffect(() => {
-    if (config.barnId && config.penId) {
-      const penBelongsToBarn = pens.some(p => p.id === config.penId);
-      if (!penBelongsToBarn) {
-        updateConfig({ penId: undefined });
-      }
-    }
-  }, [config.barnId]);
 
   return (
     <div className="space-y-8">
@@ -56,81 +40,6 @@ export function PigVisionConfigForm({
           {deviceSerialNumber}
         </div>
       )}
-
-      {/* Ubicación Section */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">{t('locationSection')}</h3>
-
-        {/* Galpón */}
-        <div className="space-y-2">
-          <Label>{t('barn')} (*)</Label>
-          <Select
-            value={config.barnId || ''}
-            onValueChange={(value) => updateConfig({ barnId: value, penId: undefined })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t('barnPlaceholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              {barns.map((barn) => (
-                <SelectItem key={barn.id} value={barn.id}>
-                  {barn.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.barnId && (
-            <p className="text-sm text-destructive">{errors.barnId}</p>
-          )}
-        </div>
-
-        {/* Corral */}
-        <div className="space-y-2">
-          <Label>{t('pen')} (*)</Label>
-          <Select
-            value={config.penId || ''}
-            onValueChange={(value) => updateConfig({ penId: value })}
-            disabled={!config.barnId}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t('penPlaceholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              {pens.map((pen) => (
-                <SelectItem key={pen.id} value={pen.id}>
-                  {pen.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.penId && (
-            <p className="text-sm text-destructive">{errors.penId}</p>
-          )}
-        </div>
-
-        {/* Sexo del corral */}
-        <div className="space-y-2">
-          <Label>{t('penSex')} (*)</Label>
-          <Select
-            value={config.penSex || ''}
-            onValueChange={(value: 'male' | 'female' | 'mixed') =>
-              updateConfig({ penSex: value })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t('penSexPlaceholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="male">{t('penSexMale')}</SelectItem>
-              <SelectItem value="female">{t('penSexFemale')}</SelectItem>
-              <SelectItem value="mixed">{t('penSexMixed')}</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors.penSex && (
-            <p className="text-sm text-destructive">{errors.penSex}</p>
-          )}
-        </div>
-      </div>
 
       {/* PigVision Section */}
       <div className="space-y-4">

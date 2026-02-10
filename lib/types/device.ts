@@ -42,9 +42,6 @@ export interface DeviceMeasurement {
 
 export interface PigVisionConfig {
   type: 'pigvision';
-  barnId: string;
-  penId: string;
-  penSex: 'male' | 'female' | 'mixed';
   installationHeight: number;
   installationHeightUnit: 'm' | 'cm';
   installationHeightConfirmation: number;
