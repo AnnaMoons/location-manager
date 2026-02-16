@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { LoadingState } from '@/components/shared/LoadingState';
-import { DeviceCard } from '@/components/devices/DeviceCard';
+import { DeviceTable } from '@/components/devices/DeviceTable';
 import { useDevices } from '@/lib/hooks/useDevices';
 import { DeviceState, DeviceType } from '@/lib/types/device';
 
@@ -144,11 +144,7 @@ export default function DevicesPage() {
               description="No se encontraron dispositivos con los filtros aplicados"
             />
           ) : (
-            <div className="space-y-3">
-              {filteredDevices.map((device) => (
-                <DeviceCard key={device.id} device={device} />
-              ))}
-            </div>
+            <DeviceTable devices={filteredDevices} />
           )}
         </TabsContent>
 
@@ -160,11 +156,7 @@ export default function DevicesPage() {
               description={t('noOrphansDesc')}
             />
           ) : (
-            <div className="space-y-3">
-              {filteredDevices.map((device) => (
-                <DeviceCard key={device.id} device={device} />
-              ))}
-            </div>
+            <DeviceTable devices={filteredDevices} />
           )}
         </TabsContent>
       </Tabs>

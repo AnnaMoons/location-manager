@@ -181,6 +181,13 @@
       "ready": "Activar producción",
       "checkMaintenance": "Revisar estado"
     },
+    "deviceTable": {
+      "device": "Dispositivo",
+      "state": "Estado",
+      "location": "Ubicación",
+      "lastUpdate": "Última actualización",
+      "action": "Acción"
+    },
     "installation": {
       "title": "Instalar dispositivo",
       "selectLocation": "Selecciona la ubicación",
