@@ -80,6 +80,8 @@
     "form": {
       "name": "Nombre",
       "namePlaceholder": "Ej: Granja San José",
+      "barnName": "Nombre del galpón",
+      "barnNamePlaceholder": "Ej: Galpón Norte",
       "species": "Especie",
       "selectSpecies": "Selecciona una especie",
       "locationType": "Tipo de ubicación",

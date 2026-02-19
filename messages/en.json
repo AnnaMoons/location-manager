@@ -80,6 +80,8 @@
     "form": {
       "name": "Name",
       "namePlaceholder": "Ex: San José Farm",
+      "barnName": "Barn name",
+      "barnNamePlaceholder": "Ex: North Barn",
       "species": "Species",
       "selectSpecies": "Select a species",
       "locationType": "Location type",

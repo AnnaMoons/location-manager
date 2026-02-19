@@ -170,10 +170,12 @@ export function LocationForm({
 
           {/* Name */}
           <div className="space-y-2">
-            <Label htmlFor="name">{t('name')}</Label>
+            <Label htmlFor="name">
+              {barnFromWizard ? t('barnName') : t('name')}
+            </Label>
             <Input
               id="name"
-              placeholder={t('namePlaceholder')}
+              placeholder={barnFromWizard ? t('barnNamePlaceholder') : t('namePlaceholder')}
               value={name}
               onChange={(e) => setName(e.target.value)}
               className={errors.name ? 'border-destructive' : ''}
@@ -199,17 +201,13 @@ export function LocationForm({
 
           {/* Info when creating barn from installation wizard */}
           {mode === 'create' && barnFromWizard && parentId && (
-            <div className="space-y-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-800">
+            <div className="space-y-2 p-4 bg-primary/10 border border-primary/20 rounded-lg">
+              <p className="text-sm text-primary dark:text-primary-foreground">
                 {t('creatingBarnForDevice')}
               </p>
               <p className="text-sm">
                 <span className="text-muted-foreground">{tLoc('types.farm')}:</span>{' '}
                 <span className="font-medium">{getLocation(parentId)?.name}</span>
-              </p>
-              <p className="text-sm">
-                <span className="text-muted-foreground">{tLoc('species.label')}:</span>{' '}
-                <span className="font-medium">{tLoc(`species.${species}`)}</span>
               </p>
             </div>
           )}
