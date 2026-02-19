@@ -82,6 +82,8 @@
       "namePlaceholder": "Ex: San José Farm",
       "barnName": "Barn name",
       "barnNamePlaceholder": "Ex: North Barn",
+      "penName": "Pen name",
+      "penNamePlaceholder": "Ex: Pen A1",
       "species": "Species",
       "selectSpecies": "Select a species",
       "locationType": "Location type",
@@ -204,7 +206,10 @@
       "gatewayPlaceholder": "Select a farm for the Gateway",
       "noBarnsInFarm": "This farm has no barns created. To install this device, you need to create at least one barn.",
       "createBarn": "Create barn",
-      "creatingBarnForDevice": "You are creating a barn to be able to install the device. The data has been automatically completed based on the selected farm."
+      "creatingBarnForDevice": "You are creating a barn to be able to install the device. The data has been automatically completed based on the selected farm.",
+      "noPensInBarn": "This barn has no pens created. PigVision and Scale devices must be installed at pen level. Please create a pen first.",
+      "createPen": "Create pen",
+      "creatingPenForDevice": "You are creating a pen to be able to install the device. The data has been automatically completed based on the selected barn."
     },
     "configuration": {
       "title": "Configure device",

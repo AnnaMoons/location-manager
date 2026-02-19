@@ -34,6 +34,10 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
 
   const isGateway = device.type === 'gateway';
 
+  // Device types that require pen/section level installation
+  const REQUIRES_PEN_LEVEL = ['pigvision', 'scale'];
+  const requiresPenLevel = REQUIRES_PEN_LEVEL.includes(device.type);
+
   // Ensure we have all farms (fallback to filtering locations if farms array is empty)
   const allFarms = farms.length > 0 ? farms : locations.filter((l) => l.type === 'farm');
 
@@ -207,24 +211,46 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
               )}
 
               {/* Pen/Section Selection - Hidden for Gateways */}
-              {!isGateway && selectedBarn && pens.length > 0 && (
+              {!isGateway && selectedBarn && (
                 <div className="space-y-2">
-                  <Label>Corral / Sección</Label>
-                  <Select
-                    value={selectedLocation === selectedBarn ? '' : selectedLocation || ''}
-                    onValueChange={handlePenChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona un corral (opcional)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {pens.map((pen) => (
-                        <SelectItem key={pen.id} value={pen.id}>
-                          {pen.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {pens.length > 0 ? (
+                    <>
+                      <Label>Corral / Sección</Label>
+                      <Select
+                        value={selectedLocation === selectedBarn ? '' : selectedLocation || ''}
+                        onValueChange={handlePenChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona un corral (opcional)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {pens.map((pen) => (
+                            <SelectItem key={pen.id} value={pen.id}>
+                              {pen.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </>
+                  ) : requiresPenLevel ? (
+                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <p className="text-sm text-yellow-800 mb-3">
+                        {t('noPensInBarn')}
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          sessionStorage.setItem('redirectAfterLocation', `/dispositivos/${device.id}/instalar${isChangingLocation ? '?cambiar=true' : ''}`);
+                          sessionStorage.setItem('createPenParentId', selectedBarn);
+                          router.push('/ubicaciones/nueva');
+                        }}
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        {t('createPen')}
+                      </Button>
+                    </div>
+                  ) : null}
                 </div>
               )}
 

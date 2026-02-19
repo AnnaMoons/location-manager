@@ -50,6 +50,8 @@ export function LocationForm({
 
   // Check for barn creation from installation wizard
   const [barnFromWizard, setBarnFromWizard] = useState(false);
+  // Check for pen creation from installation wizard
+  const [penFromWizard, setPenFromWizard] = useState(false);
 
   const [name, setName] = useState(initialData?.name || '');
   const [species, setSpecies] = useState<Species | null>(
@@ -79,11 +81,23 @@ export function LocationForm({
           setSpecies(parentFarm.species);
         }
       }
+
+      // Check for pen creation from installation wizard
+      const penParentId = sessionStorage.getItem('createPenParentId');
+      if (penParentId) {
+        const parentBarn = getLocation(penParentId);
+        if (parentBarn) {
+          setPenFromWizard(true);
+          setParentId(penParentId);
+          setLocationType('pen');
+          setSpecies(parentBarn.species);
+        }
+      }
     }
   }, [mode, getLocation]);
 
-  // Check if form was pre-filled (locked mode for child locations or barn from wizard)
-  const isPreFilled = !!(initialParentId && initialSpecies && initialType) || barnFromWizard;
+  // Check if form was pre-filled (locked mode for child locations or from wizard)
+  const isPreFilled = !!(initialParentId && initialSpecies && initialType) || barnFromWizard || penFromWizard;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,11 +129,15 @@ export function LocationForm({
       // Check if we should redirect back to device installation
       const redirectTo = sessionStorage.getItem('redirectAfterLocation');
       const isBarnFromWizard = sessionStorage.getItem('createBarnParentId');
+      const isPenFromWizard = sessionStorage.getItem('createPenParentId');
       
       if (redirectTo) {
         sessionStorage.removeItem('redirectAfterLocation');
         if (isBarnFromWizard) {
           sessionStorage.removeItem('createBarnParentId');
+        }
+        if (isPenFromWizard) {
+          sessionStorage.removeItem('createPenParentId');
         }
         router.push(redirectTo);
       } else {
@@ -171,11 +189,11 @@ export function LocationForm({
           {/* Name */}
           <div className="space-y-2">
             <Label htmlFor="name">
-              {barnFromWizard ? t('barnName') : t('name')}
+              {penFromWizard ? t('penName') : barnFromWizard ? t('barnName') : t('name')}
             </Label>
             <Input
               id="name"
-              placeholder={barnFromWizard ? t('barnNamePlaceholder') : t('namePlaceholder')}
+              placeholder={penFromWizard ? t('penNamePlaceholder') : barnFromWizard ? t('barnNamePlaceholder') : t('namePlaceholder')}
               value={name}
               onChange={(e) => setName(e.target.value)}
               className={errors.name ? 'border-destructive' : ''}
@@ -207,6 +225,19 @@ export function LocationForm({
               </p>
               <p className="text-sm">
                 <span className="text-muted-foreground">{tLoc('types.farm')}:</span>{' '}
+                <span className="font-medium">{getLocation(parentId)?.name}</span>
+              </p>
+            </div>
+          )}
+
+          {/* Info when creating pen from installation wizard */}
+          {mode === 'create' && penFromWizard && parentId && (
+            <div className="space-y-2 p-4 bg-primary/10 border border-primary/20 rounded-lg">
+              <p className="text-sm text-primary dark:text-primary-foreground">
+                {t('creatingPenForDevice')}
+              </p>
+              <p className="text-sm">
+                <span className="text-muted-foreground">{tLoc('types.barn')}:</span>{' '}
                 <span className="font-medium">{getLocation(parentId)?.name}</span>
               </p>
             </div>

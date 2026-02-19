@@ -82,6 +82,8 @@
       "namePlaceholder": "Ej: Granja San José",
       "barnName": "Nombre del galpón",
       "barnNamePlaceholder": "Ej: Galpón Norte",
+      "penName": "Nombre del corral",
+      "penNamePlaceholder": "Ej: Corral A1",
       "species": "Especie",
       "selectSpecies": "Selecciona una especie",
       "locationType": "Tipo de ubicación",
@@ -204,7 +206,10 @@
       "gatewayPlaceholder": "Selecciona una granja para el Gateway",
       "noBarnsInFarm": "Esta granja no tiene galpones creados. Para instalar este dispositivo, necesitas crear al menos un galpón.",
       "createBarn": "Crear galpón",
-      "creatingBarnForDevice": "Estás creando un galpón para poder instalar el dispositivo. Los datos se han completado automáticamente basados en la granja seleccionada."
+      "creatingBarnForDevice": "Estás creando un galpón para poder instalar el dispositivo. Los datos se han completado automáticamente basados en la granja seleccionada.",
+      "noPensInBarn": "Este galpón no tiene corrales creados. Los dispositivos PigVision y Báscula deben instalarse a nivel de corral. Por favor, crea un corral primero.",
+      "createPen": "Crear corral",
+      "creatingPenForDevice": "Estás creando un corral para poder instalar el dispositivo. Los datos se han completado automáticamente basados en el galpón seleccionado."
     },
     "configuration": {
       "title": "Configurar dispositivo",
