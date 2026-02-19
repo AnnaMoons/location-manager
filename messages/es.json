@@ -100,6 +100,7 @@
       "addressPlaceholder": "Ej: Carretera Nacional km 15",
       "searchAddress": "Buscar dirección",
       "creatingBarnForDevice": "Estás creando un galpón para poder instalar el dispositivo. Los datos se han completado automáticamente basados en la granja seleccionada.",
+      "creatingPenForDevice": "Estás creando un corral para poder instalar el dispositivo. Los datos se han completado automáticamente basados en el galpón seleccionado.",
       "validation": {
         "nameRequired": "El nombre es obligatorio",
         "speciesRequired": "La especie es obligatoria",

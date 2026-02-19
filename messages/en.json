@@ -100,6 +100,7 @@
       "addressPlaceholder": "Ex: National Highway km 15",
       "searchAddress": "Search address",
       "creatingBarnForDevice": "You are creating a barn to be able to install the device. The data has been automatically completed based on the selected farm.",
+      "creatingPenForDevice": "You are creating a pen to be able to install the device. The data has been automatically completed based on the selected barn.",
       "validation": {
         "nameRequired": "Name is required",
         "speciesRequired": "Species is required",
