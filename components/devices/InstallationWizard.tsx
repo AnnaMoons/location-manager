@@ -29,10 +29,13 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
   const t = useTranslations('devices.installation');
   const tLoc = useTranslations('locations');
   const router = useRouter();
-  const { farms, getChildren } = useLocations();
+  const { farms, getChildren, locations } = useLocations();
   const { installDevice } = useDevices();
 
   const isGateway = device.type === 'gateway';
+
+  // Ensure we have all farms (fallback to filtering locations if farms array is empty)
+  const allFarms = farms.length > 0 ? farms : locations.filter((l) => l.type === 'farm');
 
   const [selectedFarm, setSelectedFarm] = useState<string | null>(null);
   const [selectedBarn, setSelectedBarn] = useState<string | null>(null);
@@ -117,7 +120,7 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
           <p className="text-sm text-muted-foreground">{t('selectLocationDesc')}</p>
         </CardHeader>
         <CardContent className="space-y-4">
-          {farms.length === 0 ? (
+          {allFarms.length === 0 ? (
             <div className="text-center py-6">
               <p className="text-muted-foreground mb-4">
                 No hay ubicaciones creadas
@@ -145,7 +148,7 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
                     <SelectValue placeholder={isGateway ? t('gatewayPlaceholder') : "Selecciona una granja"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {farms.map((farm) => (
+                    {allFarms.map((farm) => (
                       <SelectItem key={farm.id} value={farm.id}>
                         {farm.name}
                       </SelectItem>
