@@ -281,6 +281,18 @@
     "allSpecies": "Todas las especies",
     "allStatuses": "Todos los estados",
     "noResults": "No se encontraron lotes con los filtros seleccionados",
+    "viewGrid": "Vista de tarjetas",
+    "viewTable": "Vista de tabla",
+    "batchTable": {
+      "name": "Lote",
+      "species": "Especie",
+      "status": "Estado",
+      "location": "Ubicación",
+      "animals": "Animales",
+      "age": "Edad actual",
+      "startDate": "Fecha de inicio",
+      "remaining": "Días restantes"
+    },
     "batchInfo": "Información del lote",
     "details": "Detalles del lote",
     "actions": "Acciones",

@@ -281,6 +281,18 @@
     "allSpecies": "All species",
     "allStatuses": "All statuses",
     "noResults": "No batches found with the selected filters",
+    "viewGrid": "Grid view",
+    "viewTable": "Table view",
+    "batchTable": {
+      "name": "Batch",
+      "species": "Species",
+      "status": "Status",
+      "location": "Location",
+      "animals": "Animals",
+      "age": "Current age",
+      "startDate": "Start date",
+      "remaining": "Days remaining"
+    },
     "batchInfo": "Batch information",
     "details": "Batch details",
     "actions": "Actions",

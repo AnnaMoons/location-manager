@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useData } from '../context/DataContext';
 import {
   Batch,
@@ -140,7 +140,7 @@ export function useBatches() {
     return batches.filter((b) => b.name.toLowerCase().includes(lowerQuery));
   };
 
-  const getBatchesWithLocation = () => {
+  const getBatchesWithLocation = useCallback(() => {
     return batches.map((batch) => {
       const batchLocations = getBatchLocations(batch);
       return {
@@ -153,7 +153,7 @@ export function useBatches() {
         daysRemaining: calculateDaysRemaining(batch),
       };
     });
-  };
+  }, [batches, locations]);
 
   const closeBatch = async (id: string, input: CloseBatchInput): Promise<Batch> => {
     return contextCloseBatch(id, input);

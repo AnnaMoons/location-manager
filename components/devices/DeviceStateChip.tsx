@@ -17,10 +17,10 @@ export function DeviceStateChip({ state, size = 'md' }: DeviceStateChipProps) {
 
   return (
     <Badge
+      variant="outline"
       className={cn(
         colors.bg,
         colors.text,
-        'border',
         colors.border,
         size === 'sm' && 'text-xs px-2 py-0'
       )}
