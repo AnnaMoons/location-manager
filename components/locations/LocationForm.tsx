@@ -66,9 +66,6 @@ export function LocationForm({
   );
   const [address, setAddress] = useState<string | undefined>(initialData?.address);
 
-  // Check if form was pre-filled (locked mode for child locations)
-  const isPreFilled = !!(initialParentId && initialSpecies && initialType);
-
   // Check if we're creating a barn from the installation wizard
   useEffect(() => {
     if (typeof window !== 'undefined' && mode === 'create') {
@@ -84,6 +81,9 @@ export function LocationForm({
       }
     }
   }, [mode, getLocation]);
+
+  // Check if form was pre-filled (locked mode for child locations or barn from wizard)
+  const isPreFilled = !!(initialParentId && initialSpecies && initialType) || barnFromWizard;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
