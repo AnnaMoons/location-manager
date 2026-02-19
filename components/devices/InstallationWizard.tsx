@@ -33,6 +33,8 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
   const { farms, getChildren } = useLocations();
   const { installDevice } = useDevices();
 
+  const isGateway = device.type === 'gateway';
+
   const [selectedFarm, setSelectedFarm] = useState<string | null>(null);
   const [selectedBarn, setSelectedBarn] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
@@ -43,8 +45,13 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
 
   const handleFarmChange = (farmId: string) => {
     setSelectedFarm(farmId);
-    setSelectedBarn(null);
-    setSelectedLocation(null);
+    if (isGateway) {
+      // For gateways, the location is the farm itself
+      setSelectedLocation(farmId);
+    } else {
+      setSelectedBarn(null);
+      setSelectedLocation(null);
+    }
   };
 
   const handleBarnChange = (barnId: string) => {
@@ -90,7 +97,12 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
             </div>
             <div className="flex justify-between">
               <dt className="text-sm text-muted-foreground">Tipo</dt>
-              <dd className="font-medium">{device.type}</dd>
+              <dd className="font-medium">
+                {device.type === 'gateway' ? 'Gateway' : device.type}
+                {isGateway && (
+                  <span className="ml-2 text-xs text-muted-foreground">({tLoc('types.farm')} only)</span>
+                )}
+              </dd>
             </div>
           </dl>
         </CardContent>
@@ -122,13 +134,13 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
             <>
               {/* Farm Selection */}
               <div className="space-y-2">
-                <Label>{tLoc('types.farm')}</Label>
+                <Label>{tLoc('types.farm')}{isGateway && ' *'}</Label>
                 <Select
                   value={selectedFarm || ''}
                   onValueChange={handleFarmChange}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona una granja" />
+                    <SelectValue placeholder={isGateway ? t('gatewayPlaceholder') : "Selecciona una granja"} />
                   </SelectTrigger>
                   <SelectContent>
                     {farms.map((farm) => (
@@ -138,10 +150,15 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
                     ))}
                   </SelectContent>
                 </Select>
+                {isGateway && (
+                  <p className="text-xs text-muted-foreground">
+                    {t('gatewayRestriction')}
+                  </p>
+                )}
               </div>
 
-              {/* Barn Selection */}
-              {selectedFarm && barns.length > 0 && (
+              {/* Barn Selection - Hidden for Gateways */}
+              {!isGateway && selectedFarm && barns.length > 0 && (
                 <div className="space-y-2">
                   <Label>{tLoc('types.barn')}</Label>
                   <Select
@@ -162,8 +179,8 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
                 </div>
               )}
 
-              {/* Pen/Section Selection */}
-              {selectedBarn && pens.length > 0 && (
+              {/* Pen/Section Selection - Hidden for Gateways */}
+              {!isGateway && selectedBarn && pens.length > 0 && (
                 <div className="space-y-2">
                   <Label>Corral / Sección</Label>
                   <Select

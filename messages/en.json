@@ -196,7 +196,9 @@
       "createLocation": "Create new farm",
       "confirm": "Confirm",
       "success": "Device installed. Next step is to configure it.",
-      "deviceInfo": "Device information"
+      "deviceInfo": "Device information",
+      "gatewayRestriction": "Gateways can only be associated with Farms, not Barns or Pens.",
+      "gatewayPlaceholder": "Select a farm for the Gateway"
     },
     "configuration": {
       "title": "Configure device",

@@ -196,7 +196,9 @@
       "createLocation": "Crear nueva granja",
       "confirm": "Confirmar",
       "success": "Dispositivo instalado. El siguiente paso es configurarlo.",
-      "deviceInfo": "Información del dispositivo"
+      "deviceInfo": "Información del dispositivo",
+      "gatewayRestriction": "Los Gateways solo pueden asociarse a Granjas, no a Galpones ni Corrales.",
+      "gatewayPlaceholder": "Selecciona una granja para el Gateway"
     },
     "configuration": {
       "title": "Configurar dispositivo",
