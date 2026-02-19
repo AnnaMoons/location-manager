@@ -208,14 +208,29 @@ export default function DeviceDetailPage({
             <div className="space-y-2">
               {Object.entries(device.configuration)
                 .filter(([key]) => key !== 'type')
-                .map(([key, value]) => (
-                  <div key={key} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      {t(`configuration.${device.type}.${key}`)}
-                    </span>
-                    <span className="font-medium">{String(value)}</span>
-                  </div>
-                ))}
+                .map(([key, value]) => {
+                  // Format lastSyncAt date for gateways
+                  let displayValue = String(value);
+                  if (device.type === 'gateway' && key === 'lastSyncAt' && value) {
+                    displayValue = new Date(value as string).toLocaleString('es-ES', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      second: '2-digit',
+                      hour12: true
+                    });
+                  }
+                  return (
+                    <div key={key} className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        {t(`configuration.${device.type}.${key}`)}
+                      </span>
+                      <span className="font-medium">{displayValue}</span>
+                    </div>
+                  );
+                })}
               {device.type !== 'gateway' && (
                 <>
                   <Separator className="my-3" />
@@ -287,29 +302,6 @@ export default function DeviceDetailPage({
                       </Badge>
                     </Link>
                   ))}
-                  <Separator className="my-3" />
-                  <div className="text-sm text-muted-foreground">
-                    <p>
-                      <span className="font-medium">{t('firmwareVersion')}:</span>{' '}
-                      {config.firmwareVersion}
-                    </p>
-                    <p>
-                      <span className="font-medium">{t('networkStatus')}:</span>{' '}
-                      {config.networkStatus}
-                    </p>
-                    {config.signalStrength && (
-                      <p>
-                        <span className="font-medium">{t('signalStrength')}:</span>{' '}
-                        {config.signalStrength}%
-                      </p>
-                    )}
-                    {config.lastSyncAt && (
-                      <p>
-                        <span className="font-medium">{t('lastSync')}:</span>{' '}
-                        {new Date(config.lastSyncAt).toLocaleString()}
-                      </p>
-                    )}
-                  </div>
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground text-center py-4">
