@@ -277,7 +277,18 @@ export function LocationForm({
         <Button
           type="button"
           variant="outline"
-          onClick={() => router.back()}
+          onClick={() => {
+            const redirectTo = sessionStorage.getItem('redirectAfterLocation');
+            if (redirectTo) {
+              // Clear session storage and redirect to device wizard
+              sessionStorage.removeItem('redirectAfterLocation');
+              sessionStorage.removeItem('createBarnParentId');
+              sessionStorage.removeItem('createPenParentId');
+              router.push(redirectTo);
+            } else {
+              router.back();
+            }
+          }}
           className="flex-1"
           disabled={isSubmitting}
         >
