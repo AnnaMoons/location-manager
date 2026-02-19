@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { MapPin, Check, Plus, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -123,12 +122,15 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
               <p className="text-muted-foreground mb-4">
                 No hay ubicaciones creadas
               </p>
-              <Link href="/ubicaciones/nueva">
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  {t('createLocation')}
-                </Button>
-              </Link>
+              <Button
+                onClick={() => {
+                  sessionStorage.setItem('redirectAfterLocation', `/dispositivos/${device.id}/instalar${isChangingLocation ? '?cambiar=true' : ''}`);
+                  router.push('/ubicaciones/nueva');
+                }}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {t('createLocation')}
+              </Button>
             </div>
           ) : (
             <>
@@ -202,13 +204,16 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
               )}
 
               {/* Create new location link */}
-              <Link
-                href="/ubicaciones/nueva"
+              <button
+                onClick={() => {
+                  sessionStorage.setItem('redirectAfterLocation', `/dispositivos/${device.id}/instalar${isChangingLocation ? '?cambiar=true' : ''}`);
+                  router.push('/ubicaciones/nueva');
+                }}
                 className="flex items-center text-sm text-primary hover:underline"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 {t('createLocation')}
-              </Link>
+              </button>
             </>
           )}
         </CardContent>

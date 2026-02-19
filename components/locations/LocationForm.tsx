@@ -93,7 +93,14 @@ export function LocationForm({
       } else if (initialData) {
         await updateLocation(initialData.id, { name, coordinates, address });
       }
-      router.push('/ubicaciones');
+      // Check if we should redirect back to device installation
+      const redirectTo = sessionStorage.getItem('redirectAfterLocation');
+      if (redirectTo) {
+        sessionStorage.removeItem('redirectAfterLocation');
+        router.push(redirectTo);
+      } else {
+        router.push('/ubicaciones');
+      }
     } catch (error) {
       setErrors({ submit: 'Error al guardar la ubicación' });
     } finally {
