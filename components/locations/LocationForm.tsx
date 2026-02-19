@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
@@ -43,10 +43,13 @@ export function LocationForm({
   const tLoc = useTranslations('locations');
   const tCommon = useTranslations('common');
   const router = useRouter();
-  const { createLocation, updateLocation } = useLocations();
+  const { createLocation, updateLocation, getLocation } = useLocations();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Check for barn creation from installation wizard
+  const [barnFromWizard, setBarnFromWizard] = useState(false);
 
   const [name, setName] = useState(initialData?.name || '');
   const [species, setSpecies] = useState<Species | null>(
@@ -65,6 +68,22 @@ export function LocationForm({
 
   // Check if form was pre-filled (locked mode for child locations)
   const isPreFilled = !!(initialParentId && initialSpecies && initialType);
+
+  // Check if we're creating a barn from the installation wizard
+  useEffect(() => {
+    if (typeof window !== 'undefined' && mode === 'create') {
+      const barnParentId = sessionStorage.getItem('createBarnParentId');
+      if (barnParentId) {
+        const parentFarm = getLocation(barnParentId);
+        if (parentFarm) {
+          setBarnFromWizard(true);
+          setParentId(barnParentId);
+          setLocationType('barn');
+          setSpecies(parentFarm.species);
+        }
+      }
+    }
+  }, [mode, getLocation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,8 +114,13 @@ export function LocationForm({
       }
       // Check if we should redirect back to device installation
       const redirectTo = sessionStorage.getItem('redirectAfterLocation');
+      const isBarnFromWizard = sessionStorage.getItem('createBarnParentId');
+      
       if (redirectTo) {
         sessionStorage.removeItem('redirectAfterLocation');
+        if (isBarnFromWizard) {
+          sessionStorage.removeItem('createBarnParentId');
+        }
         router.push(redirectTo);
       } else {
         router.push('/ubicaciones');
@@ -169,6 +193,23 @@ export function LocationForm({
               <p className="text-sm">
                 <span className="text-muted-foreground">Tipo:</span>{' '}
                 <span className="font-medium">{tLoc(`types.${locationType}`)}</span>
+              </p>
+            </div>
+          )}
+
+          {/* Info when creating barn from installation wizard */}
+          {mode === 'create' && barnFromWizard && parentId && (
+            <div className="space-y-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                {t('creatingBarnForDevice')}
+              </p>
+              <p className="text-sm">
+                <span className="text-muted-foreground">{tLoc('types.farm')}:</span>{' '}
+                <span className="font-medium">{getLocation(parentId)?.name}</span>
+              </p>
+              <p className="text-sm">
+                <span className="text-muted-foreground">{tLoc('species.label')}:</span>{' '}
+                <span className="font-medium">{tLoc(`species.${species}`)}</span>
               </p>
             </div>
           )}

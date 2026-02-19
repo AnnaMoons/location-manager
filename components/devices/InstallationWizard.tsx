@@ -163,24 +163,46 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
               </div>
 
               {/* Barn Selection - Hidden for Gateways */}
-              {!isGateway && selectedFarm && barns.length > 0 && (
+              {!isGateway && selectedFarm && (
                 <div className="space-y-2">
-                  <Label>{tLoc('types.barn')}</Label>
-                  <Select
-                    value={selectedBarn || ''}
-                    onValueChange={handleBarnChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona un galpón" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {barns.map((barn) => (
-                        <SelectItem key={barn.id} value={barn.id}>
-                          {barn.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {barns.length > 0 ? (
+                    <>
+                      <Label>{tLoc('types.barn')}</Label>
+                      <Select
+                        value={selectedBarn || ''}
+                        onValueChange={handleBarnChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona un galpón" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {barns.map((barn) => (
+                            <SelectItem key={barn.id} value={barn.id}>
+                              {barn.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </>
+                  ) : (
+                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <p className="text-sm text-yellow-800 mb-3">
+                        {t('noBarnsInFarm')}
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          sessionStorage.setItem('redirectAfterLocation', `/dispositivos/${device.id}/instalar${isChangingLocation ? '?cambiar=true' : ''}`);
+                          sessionStorage.setItem('createBarnParentId', selectedFarm);
+                          router.push('/ubicaciones/nueva');
+                        }}
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        {t('createBarn')}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -95,6 +95,7 @@
       "address": "Dirección",
       "addressPlaceholder": "Ej: Carretera Nacional km 15",
       "searchAddress": "Buscar dirección",
+      "creatingBarnForDevice": "Estás creando un galpón para poder instalar el dispositivo. Los datos se han completado automáticamente basados en la granja seleccionada.",
       "validation": {
         "nameRequired": "El nombre es obligatorio",
         "speciesRequired": "La especie es obligatoria",
@@ -198,7 +199,10 @@
       "success": "Dispositivo instalado. El siguiente paso es configurarlo.",
       "deviceInfo": "Información del dispositivo",
       "gatewayRestriction": "Los Gateways solo pueden asociarse a Granjas, no a Galpones ni Corrales.",
-      "gatewayPlaceholder": "Selecciona una granja para el Gateway"
+      "gatewayPlaceholder": "Selecciona una granja para el Gateway",
+      "noBarnsInFarm": "Esta granja no tiene galpones creados. Para instalar este dispositivo, necesitas crear al menos un galpón.",
+      "createBarn": "Crear galpón",
+      "creatingBarnForDevice": "Estás creando un galpón para poder instalar el dispositivo. Los datos se han completado automáticamente basados en la granja seleccionada."
     },
     "configuration": {
       "title": "Configurar dispositivo",

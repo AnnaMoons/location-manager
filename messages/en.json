@@ -95,6 +95,7 @@
       "address": "Address",
       "addressPlaceholder": "Ex: National Highway km 15",
       "searchAddress": "Search address",
+      "creatingBarnForDevice": "You are creating a barn to be able to install the device. The data has been automatically completed based on the selected farm.",
       "validation": {
         "nameRequired": "Name is required",
         "speciesRequired": "Species is required",
@@ -198,7 +199,10 @@
       "success": "Device installed. Next step is to configure it.",
       "deviceInfo": "Device information",
       "gatewayRestriction": "Gateways can only be associated with Farms, not Barns or Pens.",
-      "gatewayPlaceholder": "Select a farm for the Gateway"
+      "gatewayPlaceholder": "Select a farm for the Gateway",
+      "noBarnsInFarm": "This farm has no barns created. To install this device, you need to create at least one barn.",
+      "createBarn": "Create barn",
+      "creatingBarnForDevice": "You are creating a barn to be able to install the device. The data has been automatically completed based on the selected farm."
     },
     "configuration": {
       "title": "Configure device",
