@@ -131,6 +131,9 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
               </p>
               <Button
                 onClick={() => {
+                  // Clear any previous barn/pen creation flags before creating a new farm
+                  sessionStorage.removeItem('createBarnParentId');
+                  sessionStorage.removeItem('createPenParentId');
                   sessionStorage.setItem('redirectAfterLocation', `/dispositivos/${device.id}/instalar${isChangingLocation ? '?cambiar=true' : ''}`);
                   router.push('/ubicaciones/nueva');
                 }}
@@ -257,6 +260,9 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
               {/* Create new location link */}
               <button
                 onClick={() => {
+                  // Clear any previous barn/pen creation flags before creating a new farm
+                  sessionStorage.removeItem('createBarnParentId');
+                  sessionStorage.removeItem('createPenParentId');
                   sessionStorage.setItem('redirectAfterLocation', `/dispositivos/${device.id}/instalar${isChangingLocation ? '?cambiar=true' : ''}`);
                   router.push('/ubicaciones/nueva');
                 }}
