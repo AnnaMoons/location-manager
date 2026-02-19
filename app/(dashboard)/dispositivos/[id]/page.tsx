@@ -7,6 +7,7 @@ import {
   Camera,
   Scale,
   Thermometer,
+  Router,
   MapPin,
   Settings,
   Power,
@@ -16,6 +17,7 @@ import {
   RefreshCw,
   History,
   ArrowRight,
+  Radio,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -40,11 +42,13 @@ import { NextActionCTA } from '@/components/devices/NextActionCTA';
 import { useDevices } from '@/lib/hooks/useDevices';
 import { useLocations } from '@/lib/hooks/useLocations';
 import { cn } from '@/lib/utils';
+import { GatewayConfig } from '@/lib/types/device';
 
 const deviceIcons = {
   pigvision: Camera,
   scale: Scale,
   sensor: Thermometer,
+  gateway: Router,
 };
 
 export default function DeviceDetailPage({
@@ -212,13 +216,17 @@ export default function DeviceDetailPage({
                     <span className="font-medium">{String(value)}</span>
                   </div>
                 ))}
-              <Separator className="my-3" />
-              <Link href={`/dispositivos/${id}/configurar`}>
-                <Button variant="outline" size="sm" className="w-full">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Modificar configuración
-                </Button>
-              </Link>
+              {device.type !== 'gateway' && (
+                <>
+                  <Separator className="my-3" />
+                  <Link href={`/dispositivos/${id}/configurar`}>
+                    <Button variant="outline" size="sm" className="w-full">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Modificar configuración
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           ) : (
             <div className="text-center py-4">
@@ -235,6 +243,83 @@ export default function DeviceDetailPage({
           )}
         </CardContent>
       </Card>
+
+      {/* Connected Sensors Card - Only for Gateways */}
+      {device.type === 'gateway' && device.configuration && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Radio className="h-5 w-5" />
+              {t('connectedSensors')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(() => {
+              const config = device.configuration as GatewayConfig;
+              const connectedDevices = config.connectedSensors
+                .map((sensorId) => getDevice(sensorId))
+                .filter(Boolean);
+
+              return connectedDevices.length > 0 ? (
+                <div className="space-y-3">
+                  {connectedDevices.map((sensor) => sensor && (
+                    <Link
+                      key={sensor.id}
+                      href={`/dispositivos/${sensor.id}`}
+                      className="flex items-center justify-between p-3 rounded-md hover:bg-muted transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-full bg-primary/10">
+                          <Thermometer className="h-4 w-4 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{sensor.serialNumber}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {t(`types.${sensor.type}`)}
+                          </p>
+                        </div>
+                      </div>
+                      <Badge
+                        variant={sensor.health === 'online' ? 'success' : 'secondary'}
+                        className="text-xs"
+                      >
+                        {sensor.health === 'online' ? t('health.online') : t('health.offline')}
+                      </Badge>
+                    </Link>
+                  ))}
+                  <Separator className="my-3" />
+                  <div className="text-sm text-muted-foreground">
+                    <p>
+                      <span className="font-medium">{t('firmwareVersion')}:</span>{' '}
+                      {config.firmwareVersion}
+                    </p>
+                    <p>
+                      <span className="font-medium">{t('networkStatus')}:</span>{' '}
+                      {config.networkStatus}
+                    </p>
+                    {config.signalStrength && (
+                      <p>
+                        <span className="font-medium">{t('signalStrength')}:</span>{' '}
+                        {config.signalStrength}%
+                      </p>
+                    )}
+                    {config.lastSyncAt && (
+                      <p>
+                        <span className="font-medium">{t('lastSync')}:</span>{' '}
+                        {new Date(config.lastSyncAt).toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  {t('noConnectedSensors')}
+                </p>
+              );
+            })()}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Actions */}
       <div className="flex flex-wrap gap-3">

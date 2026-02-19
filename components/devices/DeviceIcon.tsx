@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Camera, Scale, Thermometer, Activity } from 'lucide-react';
+import { Camera, Scale, Thermometer, Activity, Router } from 'lucide-react';
 import { DeviceType } from '@/lib/types/device';
 
 interface DeviceIconProps {
@@ -10,7 +10,8 @@ interface DeviceIconProps {
 const iconMap = {
   pigvision: Camera,
   scale: Scale,
-  sensor: Thermometer
+  sensor: Thermometer,
+  gateway: Router
 };
 
 export function DeviceIcon({ type, className }: DeviceIconProps) {

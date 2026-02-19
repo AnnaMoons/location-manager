@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Camera, Scale, Thermometer, MapPin, Wifi, WifiOff, Activity } from 'lucide-react';
+import { Camera, Scale, Thermometer, MapPin, Wifi, WifiOff, Activity, Router } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { DeviceStateChip } from './DeviceStateChip';
 import { NextActionCTA } from './NextActionCTA';
@@ -19,6 +19,7 @@ const deviceIcons = {
   pigvision: Camera,
   scale: Scale,
   sensor: Thermometer,
+  gateway: Router,
 };
 
 const healthIndicator = {

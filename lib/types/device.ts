@@ -1,4 +1,4 @@
-export type DeviceType = 'pigvision' | 'scale' | 'sensor';
+export type DeviceType = 'pigvision' | 'scale' | 'sensor' | 'gateway';
 
 export type DeviceState =
   | 'available'
@@ -64,7 +64,16 @@ export interface SensorConfig {
   readingInterval: number;
 }
 
-export type DeviceConfig = PigVisionConfig | ScaleConfig | SensorConfig;
+export interface GatewayConfig {
+  type: 'gateway';
+  firmwareVersion: string;
+  connectedSensors: string[];
+  lastSyncAt?: string;
+  networkStatus: 'online' | 'offline' | 'unstable';
+  signalStrength?: number;
+}
+
+export type DeviceConfig = PigVisionConfig | ScaleConfig | SensorConfig | GatewayConfig;
 
 export interface Device {
   id: string;

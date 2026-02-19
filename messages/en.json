@@ -159,7 +159,8 @@
     "types": {
       "pigvision": "PigVision",
       "scale": "Scale",
-      "sensor": "Sensor"
+      "sensor": "Sensor",
+      "gateway": "Gateway"
     },
     "states": {
       "available": "Available",
@@ -236,6 +237,13 @@
         "readingInterval": "Reading interval",
         "readingIntervalDesc": "Seconds between readings"
       },
+      "gateway": {
+        "firmwareVersion": "Firmware version",
+        "connectedSensors": "Connected sensors",
+        "lastSyncAt": "Last sync",
+        "networkStatus": "Network status",
+        "signalStrength": "Signal strength"
+      },
       "success": "Device configured successfully",
       "validation": {
         "cameraHeightRange": "Height must be between 90 and 150 cm",
@@ -244,6 +252,12 @@
         "intervalRequired": "Reading interval is required"
       }
     },
+    "connectedSensors": "Connected Sensors",
+    "noConnectedSensors": "No sensors connected",
+    "firmwareVersion": "Firmware version",
+    "networkStatus": "Network status",
+    "signalStrength": "Signal strength",
+    "lastSync": "Last sync",
     "uninstallConfirm": "Are you sure you want to uninstall this device?",
     "uninstallWarning": "The device will be disassociated from its current location.",
     "history": {

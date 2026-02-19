@@ -706,5 +706,146 @@
         }
       }
     ]
+  },
+  {
+    "id": "dev-019",
+    "serialNumber": "GW-2024-001",
+    "type": "gateway",
+    "state": "in_production",
+    "locationId": "loc-001",
+    "companyId": "company-001",
+    "configuration": {
+      "type": "gateway",
+      "firmwareVersion": "2.4.1",
+      "connectedSensors": ["dev-006", "dev-007", "dev-008"],
+      "lastSyncAt": "2024-12-19T14:30:00Z",
+      "networkStatus": "online",
+      "signalStrength": 85
+    },
+    "lastSeen": "2024-12-19T14:30:00Z",
+    "health": "online",
+    "createdAt": "2024-05-20T08:00:00Z",
+    "history": [
+      {
+        "id": "hist-019-1",
+        "action": "created",
+        "timestamp": "2024-05-20T08:00:00Z"
+      },
+      {
+        "id": "hist-019-2",
+        "action": "installed",
+        "timestamp": "2024-05-22T10:00:00Z",
+        "details": {
+          "toLocationId": "loc-001"
+        }
+      },
+      {
+        "id": "hist-019-3",
+        "action": "configured",
+        "timestamp": "2024-05-22T10:30:00Z",
+        "details": {
+          "configType": "gateway",
+          "fromState": "installed",
+          "toState": "in_production"
+        }
+      }
+    ]
+  },
+  {
+    "id": "dev-020",
+    "serialNumber": "GW-2024-002",
+    "type": "gateway",
+    "state": "in_production",
+    "locationId": "loc-010",
+    "companyId": "company-001",
+    "configuration": {
+      "type": "gateway",
+      "firmwareVersion": "2.4.1",
+      "connectedSensors": ["dev-012", "dev-013"],
+      "lastSyncAt": "2024-12-19T14:25:00Z",
+      "networkStatus": "online",
+      "signalStrength": 92
+    },
+    "lastSeen": "2024-12-19T14:25:00Z",
+    "health": "online",
+    "createdAt": "2024-06-15T08:00:00Z",
+    "history": [
+      {
+        "id": "hist-020-1",
+        "action": "created",
+        "timestamp": "2024-06-15T08:00:00Z"
+      },
+      {
+        "id": "hist-020-2",
+        "action": "installed",
+        "timestamp": "2024-06-18T09:00:00Z",
+        "details": {
+          "toLocationId": "loc-010"
+        }
+      },
+      {
+        "id": "hist-020-3",
+        "action": "configured",
+        "timestamp": "2024-06-18T09:45:00Z",
+        "details": {
+          "configType": "gateway",
+          "fromState": "installed",
+          "toState": "in_production"
+        }
+      }
+    ]
+  },
+  {
+    "id": "dev-021",
+    "serialNumber": "GW-2024-003",
+    "type": "gateway",
+    "state": "maintenance",
+    "locationId": "loc-020",
+    "companyId": "company-001",
+    "configuration": {
+      "type": "gateway",
+      "firmwareVersion": "2.3.8",
+      "connectedSensors": ["dev-015"],
+      "lastSyncAt": "2024-12-18T16:00:00Z",
+      "networkStatus": "unstable",
+      "signalStrength": 45
+    },
+    "lastSeen": "2024-12-18T16:00:00Z",
+    "health": "offline",
+    "createdAt": "2024-07-10T08:00:00Z",
+    "history": [
+      {
+        "id": "hist-021-1",
+        "action": "created",
+        "timestamp": "2024-07-10T08:00:00Z"
+      },
+      {
+        "id": "hist-021-2",
+        "action": "installed",
+        "timestamp": "2024-07-12T10:00:00Z",
+        "details": {
+          "toLocationId": "loc-020"
+        }
+      },
+      {
+        "id": "hist-021-3",
+        "action": "configured",
+        "timestamp": "2024-07-12T10:30:00Z",
+        "details": {
+          "configType": "gateway",
+          "fromState": "installed",
+          "toState": "in_production"
+        }
+      },
+      {
+        "id": "hist-021-4",
+        "action": "state_changed",
+        "timestamp": "2024-12-18T16:30:00Z",
+        "details": {
+          "fromState": "in_production",
+          "toState": "maintenance"
+        }
+      }
+    ]
   }
 ]

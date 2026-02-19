@@ -126,6 +126,7 @@ export default function DevicesPage() {
                 <SelectItem value="pigvision">{t('types.pigvision')}</SelectItem>
                 <SelectItem value="scale">{t('types.scale')}</SelectItem>
                 <SelectItem value="sensor">{t('types.sensor')}</SelectItem>
+                <SelectItem value="gateway">{t('types.gateway')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
