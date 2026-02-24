@@ -121,17 +121,32 @@ export function LocationForm({
     setErrors({});
 
     try {
+      let newLocation: Location | undefined;
       if (mode === 'create') {
-        await createLocation(input as CreateLocationInput);
+        newLocation = await createLocation(input as CreateLocationInput);
       } else if (initialData) {
         await updateLocation(initialData.id, { name, coordinates, address });
       }
+      
       // Check if we should redirect back to device installation
       const redirectTo = sessionStorage.getItem('redirectAfterLocation');
       const isBarnFromWizard = sessionStorage.getItem('createBarnParentId');
       const isPenFromWizard = sessionStorage.getItem('createPenParentId');
       
       if (redirectTo) {
+        // Store the created location ID for pre-selection in wizard
+        if (newLocation && mode === 'create') {
+          if (isPenFromWizard) {
+            sessionStorage.setItem('lastCreatedLocationId', newLocation.id);
+            sessionStorage.setItem('lastCreatedPenParentId', isPenFromWizard);
+          } else if (isBarnFromWizard) {
+            sessionStorage.setItem('lastCreatedLocationId', newLocation.id);
+            sessionStorage.setItem('lastCreatedBarnParentId', isBarnFromWizard);
+          } else {
+            sessionStorage.setItem('lastCreatedFarmId', newLocation.id);
+          }
+        }
+        
         sessionStorage.removeItem('redirectAfterLocation');
         if (isBarnFromWizard) {
           sessionStorage.removeItem('createBarnParentId');

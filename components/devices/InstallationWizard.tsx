@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { MapPin, Check, Plus, ChevronRight } from 'lucide-react';
@@ -29,7 +29,7 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
   const t = useTranslations('devices.installation');
   const tLoc = useTranslations('locations');
   const router = useRouter();
-  const { farms, getChildren, locations } = useLocations();
+  const { farms, getChildren, locations, getLocation } = useLocations();
   const { installDevice } = useDevices();
 
   const isGateway = device.type === 'gateway';
@@ -48,6 +48,43 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
 
   const barns = selectedFarm ? getChildren(selectedFarm) : [];
   const pens = selectedBarn ? getChildren(selectedBarn) : [];
+
+  // Check for pre-selected locations after redirect from creating location
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Check if we just created a pen
+      const createdPenParentId = sessionStorage.getItem('lastCreatedPenParentId');
+      if (createdPenParentId) {
+        const penParentBarn = getLocation(createdPenParentId);
+        if (penParentBarn && penParentBarn.parentId) {
+          setSelectedFarm(penParentBarn.parentId);
+          setSelectedBarn(createdPenParentId);
+          setSelectedLocation(sessionStorage.getItem('lastCreatedLocationId'));
+          sessionStorage.removeItem('lastCreatedPenParentId');
+          sessionStorage.removeItem('lastCreatedLocationId');
+          return;
+        }
+      }
+
+      // Check if we just created a barn
+      const createdBarnParentId = sessionStorage.getItem('lastCreatedBarnParentId');
+      if (createdBarnParentId) {
+        setSelectedFarm(createdBarnParentId);
+        setSelectedBarn(sessionStorage.getItem('lastCreatedLocationId'));
+        setSelectedLocation(null);
+        sessionStorage.removeItem('lastCreatedBarnParentId');
+        sessionStorage.removeItem('lastCreatedLocationId');
+        return;
+      }
+
+      // Check if we just created a farm
+      const createdFarmId = sessionStorage.getItem('lastCreatedFarmId');
+      if (createdFarmId) {
+        setSelectedFarm(createdFarmId);
+        sessionStorage.removeItem('lastCreatedFarmId');
+      }
+    }
+  }, [getLocation]);
 
   const handleFarmChange = (farmId: string) => {
     setSelectedFarm(farmId);
