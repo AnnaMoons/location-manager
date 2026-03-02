@@ -38,14 +38,35 @@ export default function DashboardLayout({
         )}
       >
         <div className="flex flex-col flex-grow border-r bg-primary dark:bg-card pt-5 relative">
+          {/* Logo */}
+          <div className="flex items-center justify-center mb-6 px-4">
+            <div
+              className={cn(
+                'transition-all duration-300 overflow-hidden',
+                isCollapsed ? 'w-12 h-12' : 'w-full'
+              )}
+            >
+              <Image
+                src="/logo.webp"
+                alt="Logo"
+                width={isCollapsed ? 48 : 180}
+                height={isCollapsed ? 48 : 180}
+                className={cn(
+                  'rounded mx-auto',
+                  isCollapsed ? 'w-12 h-12' : 'w-[180px] h-auto'
+                )}
+              />
+            </div>
+          </div>
+
           {/* Collapse toggle button */}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setIsCollapsed(!isCollapsed)}
             className={cn(
-              'absolute -right-3 top-6 z-50 h-6 w-6 rounded-full border bg-background shadow-md',
-              'hover:bg-muted text-foreground'
+              'absolute top-6 z-50 h-6 w-6 rounded-md bg-white/10 hover:bg-white/20 text-white',
+              isCollapsed ? 'left-1/2 -translate-x-1/2' : 'right-2'
             )}
           >
             {isCollapsed ? (
@@ -54,24 +75,6 @@ export default function DashboardLayout({
               <ChevronLeft className="h-4 w-4" />
             )}
           </Button>
-
-          {/* Logo */}
-          <div className="flex items-center justify-center mb-6 px-4 h-[180px]">
-            <div
-              className={cn(
-                'transition-all duration-300',
-                isCollapsed ? 'opacity-0 scale-0' : 'opacity-100 scale-100'
-              )}
-            >
-              <Image
-                src="/logo.webp"
-                alt="Logo"
-                width={180}
-                height={180}
-                className="rounded w-[180px] h-auto"
-              />
-            </div>
-          </div>
 
           {/* Navigation */}
           <nav className="flex-1 px-2 space-y-1">
