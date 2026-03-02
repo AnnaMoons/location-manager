@@ -98,7 +98,7 @@ export function DeviceTable({ devices }: DeviceTableProps) {
 
                 {/* Acción */}
                 <TableCell className="text-right">
-                  <NextActionCTA device={device} variant="button" />
+                  <NextActionCTA device={device} variant="tertiary" />
                 </TableCell>
               </TableRow>
             );

@@ -8,7 +8,7 @@ import { Device, getNextAction } from '@/lib/types/device';
 
 interface NextActionCTAProps {
   device: Device;
-  variant?: 'button' | 'inline';
+  variant?: 'button' | 'inline' | 'tertiary';
 }
 
 const actionConfig = {
@@ -50,6 +50,18 @@ export function NextActionCTA({ device, variant = 'button' }: NextActionCTAProps
         <Icon className="h-4 w-4 mr-1" />
         {t(config.labelKey)}
         <ChevronRight className="h-4 w-4" />
+      </Link>
+    );
+  }
+
+  if (variant === 'tertiary') {
+    return (
+      <Link 
+        href={href}
+        className="text-[#005980] hover:underline font-roboto text-base leading-[20px]"
+        style={{ fontFeatureSettings: '"liga" off, "clig" off' }}
+      >
+        {t(config.labelKey)}
       </Link>
     );
   }
