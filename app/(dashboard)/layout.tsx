@@ -38,10 +38,10 @@ export default function DashboardLayout({
         )}
       >
         <div className="flex flex-col flex-grow border-r bg-primary dark:bg-card pt-5">
-          {/* Logo container - fixed size to maintain position */}
-          <div className="flex flex-col items-center px-4 relative">
+          {/* Logo container */}
+          <div className="flex flex-col w-full px-4">
             {/* Both logos in same position, conditionally rendered */}
-            <div className="relative w-[180px] h-[48px] flex items-center justify-center">
+            <div className="relative w-[180px] h-[48px] flex items-center justify-center mx-auto">
               <Image
                 src="/logo.webp"
                 alt="Logo"
@@ -65,21 +65,20 @@ export default function DashboardLayout({
             </div>
             
             {/* Collapse toggle button - below logos */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className={cn(
-                'h-6 w-6 rounded-md bg-white/10 hover:bg-white/20 text-white mt-4',
-                isCollapsed ? 'mx-auto' : 'absolute right-4'
-              )}
-            >
-              {isCollapsed ? (
-                <ChevronRight className="h-4 w-4" />
-              ) : (
-                <ChevronLeft className="h-4 w-4" />
-              )}
-            </Button>
+            <div className={cn('w-full', isCollapsed ? 'flex justify-center' : 'flex justify-end')}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className="h-6 w-6 rounded-md bg-white/10 hover:bg-white/20 text-white"
+              >
+                {isCollapsed ? (
+                  <ChevronRight className="h-4 w-4" />
+                ) : (
+                  <ChevronLeft className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </div>
 
           {/* Navigation */}

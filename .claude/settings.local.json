@@ -6,7 +6,9 @@
       "Bash(npx tsc:*)",
       "Bash(npm run build:*)",
       "Bash(ls:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "mcp__figma__generate_figma_design",
+      "Bash(open:*)"
     ]
   }
 }
