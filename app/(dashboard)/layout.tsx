@@ -38,35 +38,39 @@ export default function DashboardLayout({
         )}
       >
         <div className="flex flex-col flex-grow border-r bg-primary dark:bg-card pt-5 relative">
-          {/* Logo */}
-          <div className="flex items-center justify-center px-4">
-            <div
-              className={cn(
-                'transition-all duration-300 overflow-hidden',
-                isCollapsed ? 'w-12 h-12' : 'w-full'
-              )}
-            >
+          {/* Logo container - fixed size to maintain position */}
+          <div className="flex flex-col items-center px-4 pb-2">
+            {/* Both logos in same position, conditionally rendered */}
+            <div className="relative w-[180px] h-[48px] flex items-center justify-center">
               <Image
-                src={isCollapsed ? "/Vector.png" : "/logo.webp"}
+                src="/logo.webp"
                 alt="Logo"
-                width={isCollapsed ? 48 : 180}
-                height={isCollapsed ? 48 : 180}
+                width={180}
+                height={48}
                 className={cn(
-                  'rounded mx-auto object-contain',
-                  isCollapsed ? 'w-12 h-12' : 'w-[180px] h-auto'
+                  'absolute object-contain transition-opacity duration-300',
+                  isCollapsed ? 'opacity-0' : 'opacity-100'
+                )}
+              />
+              <Image
+                src="/Vector.png"
+                alt="Logo"
+                width={48}
+                height={48}
+                className={cn(
+                  'absolute object-contain transition-opacity duration-300',
+                  isCollapsed ? 'opacity-100' : 'opacity-0'
                 )}
               />
             </div>
-          </div>
-
-          {/* Collapse toggle button */}
-          <div className="flex justify-center py-2">
+            
+            {/* Collapse toggle button - moves with menu */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsCollapsed(!isCollapsed)}
               className={cn(
-                'h-6 w-6 rounded-md bg-white/10 hover:bg-white/20 text-white'
+                'h-6 w-6 rounded-md bg-white/10 hover:bg-white/20 text-white mt-2'
               )}
             >
               {isCollapsed ? (
