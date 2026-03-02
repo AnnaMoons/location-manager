@@ -47,12 +47,12 @@ export default function DashboardLayout({
               )}
             >
               <Image
-                src="/logo.webp"
+                src="/Vector.png"
                 alt="Logo"
                 width={isCollapsed ? 48 : 180}
                 height={isCollapsed ? 48 : 180}
                 className={cn(
-                  'rounded mx-auto',
+                  'rounded mx-auto object-contain',
                   isCollapsed ? 'w-12 h-12' : 'w-[180px] h-auto'
                 )}
               />
