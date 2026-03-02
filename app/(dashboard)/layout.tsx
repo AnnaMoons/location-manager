@@ -37,9 +37,9 @@ export default function DashboardLayout({
           isCollapsed ? 'md:w-20' : 'md:w-64'
         )}
       >
-        <div className="flex flex-col flex-grow border-r bg-primary dark:bg-card pt-5 relative">
+        <div className="flex flex-col flex-grow border-r bg-primary dark:bg-card pt-5">
           {/* Logo container - fixed size to maintain position */}
-          <div className="flex flex-col items-center px-4 pb-2">
+          <div className="flex flex-col items-center px-4">
             {/* Both logos in same position, conditionally rendered */}
             <div className="relative w-[180px] h-[48px] flex items-center justify-center">
               <Image
@@ -64,14 +64,16 @@ export default function DashboardLayout({
               />
             </div>
             
-            {/* Collapse toggle button - moves with menu */}
+            {/* Collapse toggle button - positioned at edge when expanded */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsCollapsed(!isCollapsed)}
               className={cn(
-                'h-6 w-6 rounded-md bg-white/10 hover:bg-white/20 text-white mt-2'
+                'h-6 w-6 rounded-md bg-white/10 hover:bg-white/20 text-white absolute',
+                isCollapsed ? 'left-1/2 -translate-x-1/2' : 'right-4'
               )}
+              style={isCollapsed ? {} : { position: 'absolute', right: '16px' }}
             >
               {isCollapsed ? (
                 <ChevronRight className="h-4 w-4" />
