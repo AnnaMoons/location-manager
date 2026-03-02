@@ -85,9 +85,12 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                 <TableCell>
                   {device.lastMeasurement ? (
                     <div className="text-sm">
-                      <span className="font-medium tabular-nums">
+                      <div className="font-medium tabular-nums">
                         {formatMeasurementValue(device.lastMeasurement)}
-                      </span>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {formatMeasurementTime(device.lastMeasurement.timestamp)}
+                      </div>
                     </div>
                   ) : (
                     <span className="text-sm text-muted-foreground">-</span>
@@ -163,4 +166,30 @@ function formatMeasurementValue(measurement: DeviceMeasurement): string {
   
   // Default: show 1 decimal
   return `${value.toFixed(1)} ${unit}`;
+}
+
+function formatMeasurementTime(timestamp: string): string {
+  try {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'ahora';
+    if (diffMins < 60) return `hace ${diffMins} min`;
+    if (diffHours < 24) return `hace ${diffHours} h`;
+    if (diffDays === 1) return 'ayer';
+    if (diffDays < 7) return `hace ${diffDays} días`;
+    
+    return date.toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return timestamp;
+  }
 }
