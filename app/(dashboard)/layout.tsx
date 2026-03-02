@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import LogoWebp from '@/../public/logo.webp';
+import VectorLogo from '@/../public/Vector.png';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Home, MapPin, Cpu, Layers, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -43,7 +45,7 @@ export default function DashboardLayout({
             {/* Both logos in same position, conditionally rendered */}
             <div className="relative w-[180px] h-[48px] flex items-center justify-center mx-auto">
               <Image
-                src="/logo.webp"
+                src={LogoWebp}
                 alt="Logo"
                 width={180}
                 height={48}
@@ -53,7 +55,7 @@ export default function DashboardLayout({
                 )}
               />
               <Image
-                src="/Vector.png"
+                src={VectorLogo}
                 alt="Logo"
                 width={48}
                 height={48}
