@@ -47,7 +47,7 @@ export default function DashboardLayout({
               )}
             >
               <Image
-                src="/Vector.png"
+                src={isCollapsed ? "/Vector.png" : "/logo.webp"}
                 alt="Logo"
                 width={isCollapsed ? 48 : 180}
                 height={isCollapsed ? 48 : 180}
