@@ -8,7 +8,7 @@ import { NextActionCTA } from './NextActionCTA';
 import { DeviceIcon } from './DeviceIcon';
 import { Device, DeviceMeasurement } from '@/lib/types/device';
 import { useLocations } from '@/lib/hooks/useLocations';
-import { MapPin, Clock } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 
 interface DeviceTableProps {
   devices: Device[];
@@ -27,12 +27,11 @@ export function DeviceTable({ devices }: DeviceTableProps) {
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50">
-            <TableHead className="w-[250px]">{t('deviceTable.device')}</TableHead>
-            <TableHead className="w-[130px]">{t('deviceTable.state')}</TableHead>
-            <TableHead className="w-[200px]">{t('deviceTable.location')}</TableHead>
-            <TableHead className="w-[150px]">{t('deviceTable.lastReading')}</TableHead>
-            <TableHead className="w-[150px]">{t('deviceTable.lastUpdate')}</TableHead>
-            <TableHead className="w-[100px] text-right">{t('deviceTable.action')}</TableHead>
+            <TableHead className="w-[280px]">{t('deviceTable.device')}</TableHead>
+            <TableHead className="w-[150px]">{t('deviceTable.state')}</TableHead>
+            <TableHead className="w-[250px]">{t('deviceTable.location')}</TableHead>
+            <TableHead className="w-[180px]">{t('deviceTable.lastReading')}</TableHead>
+            <TableHead className="w-[120px] text-right">{t('deviceTable.action')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -97,18 +96,6 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                   )}
                 </TableCell>
 
-                {/* Última actualización */}
-                <TableCell>
-                  {device.lastSeen ? (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4 flex-shrink-0" />
-                      <span>{formatLastSeen(device.lastSeen)}</span>
-                    </div>
-                  ) : (
-                    <span className="text-sm text-muted-foreground">-</span>
-                  )}
-                </TableCell>
-
                 {/* Acción */}
                 <TableCell className="text-right">
                   <NextActionCTA device={device} variant="button" />
@@ -120,52 +107,6 @@ export function DeviceTable({ devices }: DeviceTableProps) {
       </Table>
     </div>
   );
-}
-
-function formatLastSeen(lastSeen: string): string {
-  try {
-    const date = new Date(lastSeen);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return 'Hace un momento';
-    if (diffMins < 60) return `Hace ${diffMins} min`;
-    if (diffHours < 24) return `Hace ${diffHours} h`;
-    if (diffDays === 1) return 'Ayer';
-    if (diffDays < 7) return `Hace ${diffDays} días`;
-    
-    return date.toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'short',
-    });
-  } catch {
-    return lastSeen;
-  }
-}
-
-function formatMeasurementValue(measurement: DeviceMeasurement): string {
-  const { value, unit } = measurement;
-  
-  // For temperature (Celsius), show 1 decimal
-  if (unit === '°C') {
-    return `${value.toFixed(1)} ${unit}`;
-  }
-  
-  // For weight (kg), show 1 decimal
-  if (unit === 'kg') {
-    return `${value.toFixed(1)} ${unit}`;
-  }
-  
-  // For humidity/CO2/ammonia, show whole numbers
-  if (unit === '%' || unit === 'ppm') {
-    return `${Math.round(value)} ${unit}`;
-  }
-  
-  // Default: show 1 decimal
-  return `${value.toFixed(1)} ${unit}`;
 }
 
 function formatMeasurementTime(timestamp: string): string {
