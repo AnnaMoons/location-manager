@@ -109,6 +109,28 @@ export function DeviceTable({ devices }: DeviceTableProps) {
   );
 }
 
+function formatMeasurementValue(measurement: DeviceMeasurement): string {
+  const { value, unit } = measurement;
+  
+  // For temperature (Celsius), show 1 decimal
+  if (unit === '°C') {
+    return `${value.toFixed(1)} ${unit}`;
+  }
+  
+  // For weight (kg), show 1 decimal
+  if (unit === 'kg') {
+    return `${value.toFixed(1)} ${unit}`;
+  }
+  
+  // For humidity/CO2/ammonia, show whole numbers
+  if (unit === '%' || unit === 'ppm') {
+    return `${Math.round(value)} ${unit}`;
+  }
+  
+  // Default: show 1 decimal
+  return `${value.toFixed(1)} ${unit}`;
+}
+
 function formatMeasurementTime(timestamp: string): string {
   try {
     const date = new Date(timestamp);
