@@ -69,6 +69,9 @@ export default function DashboardLayout({
               />
             </div>
             
+            {/* Spacer */}
+            <div className="h-[50px]" />
+            
             {/* Collapse toggle button - below logos */}
             <div className={cn('w-full', isCollapsed ? 'flex justify-center' : 'flex justify-end')}>
               <Button
