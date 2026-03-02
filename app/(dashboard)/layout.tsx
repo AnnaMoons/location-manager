@@ -71,7 +71,7 @@ export default function DashboardLayout({
               onClick={() => setIsCollapsed(!isCollapsed)}
               className={cn(
                 'h-6 w-6 rounded-md bg-white/10 hover:bg-white/20 text-white mt-4',
-                isCollapsed ? 'mx-auto' : 'absolute right-2'
+                isCollapsed ? 'mx-auto' : 'mr-auto ml-4'
               )}
             >
               {isCollapsed ? (
