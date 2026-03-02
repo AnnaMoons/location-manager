@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { DeviceStateChip } from './DeviceStateChip';
 import { NextActionCTA } from './NextActionCTA';
 import { DeviceIcon } from './DeviceIcon';
-import { Device } from '@/lib/types/device';
+import { Device, DeviceMeasurement } from '@/lib/types/device';
 import { useLocations } from '@/lib/hooks/useLocations';
 import { MapPin, Clock } from 'lucide-react';
 
@@ -27,11 +27,12 @@ export function DeviceTable({ devices }: DeviceTableProps) {
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50">
-            <TableHead className="w-[300px]">{t('deviceTable.device')}</TableHead>
-            <TableHead className="w-[150px]">{t('deviceTable.state')}</TableHead>
-            <TableHead className="w-[250px]">{t('deviceTable.location')}</TableHead>
-            <TableHead className="w-[180px]">{t('deviceTable.lastUpdate')}</TableHead>
-            <TableHead className="w-[120px] text-right">{t('deviceTable.action')}</TableHead>
+            <TableHead className="w-[250px]">{t('deviceTable.device')}</TableHead>
+            <TableHead className="w-[130px]">{t('deviceTable.state')}</TableHead>
+            <TableHead className="w-[200px]">{t('deviceTable.location')}</TableHead>
+            <TableHead className="w-[150px]">{t('deviceTable.lastReading')}</TableHead>
+            <TableHead className="w-[150px]">{t('deviceTable.lastUpdate')}</TableHead>
+            <TableHead className="w-[100px] text-right">{t('deviceTable.action')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -77,6 +78,19 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                       <MapPin className="h-4 w-4 flex-shrink-0" />
                       {t('noLocation')}
                     </span>
+                  )}
+                </TableCell>
+
+                {/* Última lectura */}
+                <TableCell>
+                  {device.lastMeasurement ? (
+                    <div className="text-sm">
+                      <span className="font-medium tabular-nums">
+                        {formatMeasurementValue(device.lastMeasurement)}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">-</span>
                   )}
                 </TableCell>
 
@@ -127,4 +141,26 @@ function formatLastSeen(lastSeen: string): string {
   } catch {
     return lastSeen;
   }
+}
+
+function formatMeasurementValue(measurement: DeviceMeasurement): string {
+  const { value, unit } = measurement;
+  
+  // For temperature (Celsius), show 1 decimal
+  if (unit === '°C') {
+    return `${value.toFixed(1)} ${unit}`;
+  }
+  
+  // For weight (kg), show 1 decimal
+  if (unit === 'kg') {
+    return `${value.toFixed(1)} ${unit}`;
+  }
+  
+  // For humidity/CO2/ammonia, show whole numbers
+  if (unit === '%' || unit === 'ppm') {
+    return `${Math.round(value)} ${unit}`;
+  }
+  
+  // Default: show 1 decimal
+  return `${value.toFixed(1)} ${unit}`;
 }

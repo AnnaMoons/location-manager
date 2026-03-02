@@ -192,6 +192,7 @@
       "device": "Dispositivo",
       "state": "Estado",
       "location": "Ubicación",
+      "lastReading": "Última lectura",
       "lastUpdate": "Última actualización",
       "action": "Acción"
     },
