@@ -64,16 +64,15 @@ export default function DashboardLayout({
               />
             </div>
             
-            {/* Collapse toggle button - positioned at edge when expanded */}
+            {/* Collapse toggle button - below logos, at edge when expanded */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsCollapsed(!isCollapsed)}
               className={cn(
-                'h-6 w-6 rounded-md bg-white/10 hover:bg-white/20 text-white absolute',
-                isCollapsed ? 'left-1/2 -translate-x-1/2' : 'right-4'
+                'h-6 w-6 rounded-md bg-white/10 hover:bg-white/20 text-white mt-4',
+                isCollapsed ? 'mx-auto' : 'absolute right-2'
               )}
-              style={isCollapsed ? {} : { position: 'absolute', right: '16px' }}
             >
               {isCollapsed ? (
                 <ChevronRight className="h-4 w-4" />
