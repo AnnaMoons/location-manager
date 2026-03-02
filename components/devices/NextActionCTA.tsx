@@ -58,7 +58,7 @@ export function NextActionCTA({ device, variant = 'button' }: NextActionCTAProps
     return (
       <Link 
         href={href}
-        className="text-[#005980] hover:underline font-roboto text-base leading-[20px]"
+        className="text-[#005980] hover:underline font-roboto text-xs leading-[20px] whitespace-nowrap"
         style={{ fontFeatureSettings: '"liga" off, "clig" off' }}
       >
         {t(config.labelKey)}
