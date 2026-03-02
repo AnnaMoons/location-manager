@@ -39,7 +39,7 @@ export default function DashboardLayout({
       >
         <div className="flex flex-col flex-grow border-r bg-primary dark:bg-card pt-5 relative">
           {/* Logo */}
-          <div className="flex items-center justify-center mb-6 px-4">
+          <div className="flex items-center justify-center px-4">
             <div
               className={cn(
                 'transition-all duration-300 overflow-hidden',
@@ -60,21 +60,22 @@ export default function DashboardLayout({
           </div>
 
           {/* Collapse toggle button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className={cn(
-              'absolute top-6 z-50 h-6 w-6 rounded-md bg-white/10 hover:bg-white/20 text-white',
-              isCollapsed ? 'left-1/2 -translate-x-1/2' : 'right-2'
-            )}
-          >
-            {isCollapsed ? (
-              <ChevronRight className="h-4 w-4" />
-            ) : (
-              <ChevronLeft className="h-4 w-4" />
-            )}
-          </Button>
+          <div className="flex justify-center py-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className={cn(
+                'h-6 w-6 rounded-md bg-white/10 hover:bg-white/20 text-white'
+              )}
+            >
+              {isCollapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <ChevronLeft className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
 
           {/* Navigation */}
           <nav className="flex-1 px-2 space-y-1">
