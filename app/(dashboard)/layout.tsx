@@ -41,7 +41,10 @@ export default function DashboardLayout({
           {/* Logo container */}
           <div className="flex flex-col w-full px-4">
             {/* Both logos in same position, conditionally rendered */}
-            <div className="relative w-[180px] h-[48px] flex items-center justify-center mx-auto">
+            <div className={cn(
+              'relative h-[48px] flex items-center justify-center mx-auto transition-all duration-300',
+              isCollapsed ? 'w-[48px]' : 'w-[180px]'
+            )}>
               <Image
                 src="/logo.webp"
                 alt="Logo"
