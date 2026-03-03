@@ -175,7 +175,12 @@
       "production": "In production",
       "disabled": "Inactive",
       "returned": "In repair",
-      "dead": "Decommissioned"
+      "dead": "Decommissioned",
+      "installed": "Installed",
+      "configured": "Configured",
+      "in_production": "In production",
+      "maintenance": "In maintenance",
+      "uninstalled": "Uninstalled"
     },
     "stateTooltips": {
       "unassigned": "This device has just been created and is not yet ready for sale",
@@ -184,7 +189,12 @@
       "production": "The device is installed, configured and working correctly",
       "disabled": "The device was deactivated but still belongs to your company. You can reactivate it",
       "returned": "The device has been sent for repair",
-      "dead": "The device has been permanently decommissioned and can no longer be used"
+      "dead": "The device has been permanently decommissioned and can no longer be used",
+      "installed": "The device is installed but needs configuration",
+      "configured": "The device is installed and configured, ready to activate",
+      "in_production": "The device is in production and working",
+      "maintenance": "The device is in maintenance",
+      "uninstalled": "The device was uninstalled"
     },
     "health": {
       "online": "Online",

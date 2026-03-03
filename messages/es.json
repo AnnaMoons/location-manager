@@ -175,7 +175,12 @@
       "production": "En producción",
       "disabled": "Inactivo",
       "returned": "En reparación",
-      "dead": "Dado de baja"
+      "dead": "Dado de baja",
+      "installed": "Instalado",
+      "configured": "Configurado",
+      "in_production": "En producción",
+      "maintenance": "En mantenimiento",
+      "uninstalled": "Desinstalado"
     },
     "stateTooltips": {
       "unassigned": "Este dispositivo acaba de ser creado y aún no está listo para la venta",
@@ -184,7 +189,12 @@
       "production": "El dispositivo está instalado, configurado y funcionando correctamente",
       "disabled": "El dispositivo fue desactivado pero sigue perteneciendo a tu compañía. Puedes volver a activarlo",
       "returned": "El dispositivo fue enviado a reparación",
-      "dead": "El dispositivo fue dado de baja definitivamente y ya no se puede utilizar"
+      "dead": "El dispositivo fue dado de baja definitivamente y ya no se puede utilizar",
+      "installed": "El dispositivo está instalado pero falta configurar",
+      "configured": "El dispositivo está instalado y configurado, listo para activar",
+      "in_production": "El dispositivo está en producción y funcionando",
+      "maintenance": "El dispositivo está en mantenimiento",
+      "uninstalled": "El dispositivo fue desinstalado"
     },
     "health": {
       "online": "En línea",
