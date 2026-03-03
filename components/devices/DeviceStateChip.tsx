@@ -15,8 +15,7 @@ interface DeviceStateChipProps {
 export function DeviceStateChip({ state, size = 'md', showTooltip = true }: DeviceStateChipProps) {
   const t = useTranslations('devices');
   
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const colors = (stateColors as any)[state] || {
+  const colors = (stateColors as Record<string, { bg: string; text: string; border: string }>)[state] || {
     bg: 'bg-gray-100',
     text: 'text-gray-700',
     border: 'border-gray-300',
@@ -26,9 +25,9 @@ export function DeviceStateChip({ state, size = 'md', showTooltip = true }: Devi
   const translatedTooltip = t(`stateTooltips.${state}`);
 
   return (
-    <Badge
-      variant="outline"
+    <span
       className={cn(
+        'inline-flex items-center rounded-full border px-2.5 py-0.5 font-semibold',
         colors.bg,
         colors.text,
         colors.border,
@@ -38,6 +37,6 @@ export function DeviceStateChip({ state, size = 'md', showTooltip = true }: Devi
       title={showTooltip ? (translatedTooltip || state) : undefined}
     >
       {translatedState || state}
-    </Badge>
+    </span>
   );
 }
