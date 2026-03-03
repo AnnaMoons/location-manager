@@ -169,13 +169,22 @@
       "gateway": "Gateway"
     },
     "states": {
+      "undefined": "Por definir",
       "available": "Disponible",
       "registered": "Registrado",
-      "installed": "Instalado",
-      "configured": "Configurado",
-      "in_production": "En producción",
-      "maintenance": "En mantenimiento",
-      "uninstalled": "Desinstalado"
+      "production": "Productivo",
+      "disabled": "Deshabilitado",
+      "returned": "En reparación",
+      "dead": "Dado de baja"
+    },
+    "stateTooltips": {
+      "undefined": "El dispositivo fue creado en el sistema pero aún no ha sido fabricado",
+      "available": "El dispositivo está fabricado y disponible para venta, pero no tiene una compañía asignada",
+      "registered": "El dispositivo fue vendido y tiene una compañía asignada, pero no está instalado ni configurado",
+      "production": "El dispositivo está instalado, configurado y funcionando correctamente",
+      "disabled": "El dispositivo fue deshabilitado/desinstalado pero sigue perteneciendo a la compañía",
+      "returned": "El dispositivo está en reparación",
+      "dead": "El dispositivo fue dado de baja y ya no está en uso"
     },
     "health": {
       "online": "En línea",
@@ -183,10 +192,10 @@
       "unknown": "Desconocido"
     },
     "nextActions": {
-      "install": "Asignar ubicación",
+      "install": "Vender",
       "configure": "Configurar",
-      "ready": "Activar producción",
-      "checkMaintenance": "Revisar estado"
+      "activate": "Activar",
+      "check": "Revisar"
     },
     "deviceTable": {
       "device": "Dispositivo",

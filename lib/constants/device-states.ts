@@ -7,17 +7,32 @@ export interface StateTransition {
 }
 
 export const validTransitions: StateTransition[] = [
-  { from: 'available', to: 'registered', action: 'register' },
-  { from: 'registered', to: 'installed', action: 'install' },
-  { from: 'installed', to: 'configured', action: 'configure' },
-  { from: 'configured', to: 'in_production', action: 'activate' },
-  { from: 'in_production', to: 'maintenance', action: 'maintenance' },
-  { from: 'maintenance', to: 'in_production', action: 'reactivate' },
-  { from: 'installed', to: 'uninstalled', action: 'uninstall' },
-  { from: 'configured', to: 'uninstalled', action: 'uninstall' },
-  { from: 'in_production', to: 'uninstalled', action: 'uninstall' },
-  { from: 'maintenance', to: 'uninstalled', action: 'uninstall' },
-  { from: 'uninstalled', to: 'registered', action: 'reassign' },
+  { from: 'undefined', to: 'available', action: 'fabricate' },
+  { from: 'undefined', to: 'disabled', action: 'disable' },
+  { from: 'undefined', to: 'returned', action: 'return' },
+  { from: 'undefined', to: 'dead', action: 'kill' },
+  
+  { from: 'available', to: 'registered', action: 'sell' },
+  { from: 'available', to: 'disabled', action: 'disable' },
+  { from: 'available', to: 'returned', action: 'return' },
+  { from: 'available', to: 'dead', action: 'kill' },
+  
+  { from: 'registered', to: 'production', action: 'configure' },
+  { from: 'registered', to: 'disabled', action: 'uninstall' },
+  { from: 'registered', to: 'returned', action: 'return' },
+  { from: 'registered', to: 'dead', action: 'kill' },
+  
+  { from: 'production', to: 'registered', action: 'deactivate' },
+  { from: 'production', to: 'disabled', action: 'uninstall' },
+  { from: 'production', to: 'returned', action: 'return' },
+  { from: 'production', to: 'dead', action: 'kill' },
+  
+  { from: 'disabled', to: 'registered', action: 'reassign' },
+  { from: 'disabled', to: 'returned', action: 'return' },
+  { from: 'disabled', to: 'dead', action: 'kill' },
+  
+  { from: 'returned', to: 'available', action: 'repair' },
+  { from: 'returned', to: 'dead', action: 'kill' },
 ];
 
 export function canTransition(from: DeviceState, to: DeviceState): boolean {
@@ -29,6 +44,11 @@ export function getAvailableTransitions(from: DeviceState): StateTransition[] {
 }
 
 export const stateColors: Record<DeviceState, { bg: string; text: string; border: string }> = {
+  undefined: {
+    bg: 'bg-gray-100 hover:bg-gray-100',
+    text: 'text-gray-700 hover:text-gray-700',
+    border: 'border-gray-300',
+  },
   available: {
     bg: 'bg-gray-100 hover:bg-gray-100',
     text: 'text-gray-700 hover:text-gray-700',
@@ -39,27 +59,22 @@ export const stateColors: Record<DeviceState, { bg: string; text: string; border
     text: 'text-blue-700 hover:text-blue-700',
     border: 'border-blue-300',
   },
-  installed: {
-    bg: 'bg-yellow-100 hover:bg-yellow-100',
-    text: 'text-yellow-700 hover:text-yellow-700',
-    border: 'border-yellow-300',
-  },
-  configured: {
-    bg: 'bg-purple-100 hover:bg-purple-100',
-    text: 'text-purple-700 hover:text-purple-700',
-    border: 'border-purple-300',
-  },
-  in_production: {
+  production: {
     bg: 'bg-green-100 hover:bg-green-100',
     text: 'text-green-700 hover:text-green-700',
     border: 'border-green-300',
   },
-  maintenance: {
+  disabled: {
     bg: 'bg-orange-100 hover:bg-orange-100',
     text: 'text-orange-700 hover:text-orange-700',
     border: 'border-orange-300',
   },
-  uninstalled: {
+  returned: {
+    bg: 'bg-purple-100 hover:bg-purple-100',
+    text: 'text-purple-700 hover:text-purple-700',
+    border: 'border-purple-300',
+  },
+  dead: {
     bg: 'bg-red-100 hover:bg-red-100',
     text: 'text-red-700 hover:text-red-700',
     border: 'border-red-300',

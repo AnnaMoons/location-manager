@@ -20,10 +20,10 @@ export function useOnboarding() {
     const hasFarm = farms.length > 0;
     const hasBarn = locations.some((l) => l.type === 'barn');
     const hasInstalledDevice = devices.some(
-      (d) => d.state === 'installed' || d.state === 'configured' || d.state === 'in_production'
+      (d) => d.state === 'registered' || d.state === 'production'
     );
     const hasConfiguredDevice = devices.some(
-      (d) => d.state === 'configured' || d.state === 'in_production'
+      (d) => d.state === 'production'
     );
 
     return [

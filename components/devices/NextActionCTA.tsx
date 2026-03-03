@@ -14,7 +14,7 @@ interface NextActionCTAProps {
 const actionConfig = {
   install: {
     icon: MapPin,
-    href: (id: string) => `/dispositivos/${id}/instalar`,
+    href: (id: string) => `/dispositivos/${id}/registrar`,
     labelKey: 'install',
   },
   configure: {
@@ -22,15 +22,15 @@ const actionConfig = {
     href: (id: string) => `/dispositivos/${id}/configurar`,
     labelKey: 'configure',
   },
-  ready: {
+  activate: {
     icon: CheckCircle,
-    href: (id: string) => `/dispositivos/${id}`,
-    labelKey: 'ready',
+    href: (id: string) => `/dispositivos/${id}/activar`,
+    labelKey: 'activate',
   },
-  maintenance: {
+  check: {
     icon: Wrench,
     href: (id: string) => `/dispositivos/${id}`,
-    labelKey: 'checkMaintenance',
+    labelKey: 'check',
   },
 };
 
@@ -68,7 +68,7 @@ export function NextActionCTA({ device, variant = 'button' }: NextActionCTAProps
 
   return (
     <Link href={href}>
-      <Button size="sm" variant={action === 'ready' ? 'secondary' : 'default'}>
+      <Button size="sm" variant={action === 'activate' ? 'secondary' : 'default'}>
         <Icon className="h-4 w-4 mr-2" />
         {t(config.labelKey)}
       </Button>

@@ -39,29 +39,24 @@ export function installDevice(device: Device, locationId: string): TransitionRes
     };
   }
 
-  return transitionDevice(device, 'installed', { locationId });
+  return transitionDevice(device, 'registered', { locationId });
 }
 
 export function configureDevice(device: Device, configuration: DeviceConfig): TransitionResult {
-  if (device.state !== 'installed') {
+  if (device.state !== 'registered') {
     return {
       success: false,
-      error: 'Device must be in installed state to configure',
+      error: 'Device must be in registered state to configure',
     };
   }
 
-  const updatedDevice = transitionDevice(device, 'configured', { configuration });
-
-  if (updatedDevice.success && updatedDevice.device) {
-    // Auto-transition to in_production after configuration
-    return transitionDevice(updatedDevice.device, 'in_production');
-  }
+  const updatedDevice = transitionDevice(device, 'production', { configuration });
 
   return updatedDevice;
 }
 
 export function uninstallDevice(device: Device): TransitionResult {
-  const allowedStates: DeviceState[] = ['installed', 'configured', 'in_production', 'maintenance'];
+  const allowedStates: DeviceState[] = ['registered', 'production'];
 
   if (!allowedStates.includes(device.state)) {
     return {
@@ -70,32 +65,32 @@ export function uninstallDevice(device: Device): TransitionResult {
     };
   }
 
-  return transitionDevice(device, 'uninstalled', {
+  return transitionDevice(device, 'disabled', {
     locationId: null,
     configuration: null,
   });
 }
 
 export function setDeviceMaintenance(device: Device): TransitionResult {
-  if (device.state !== 'in_production') {
+  if (device.state !== 'production') {
     return {
       success: false,
       error: 'Device must be in production to set to maintenance',
     };
   }
 
-  return transitionDevice(device, 'maintenance');
+  return transitionDevice(device, 'returned');
 }
 
 export function reactivateDevice(device: Device): TransitionResult {
-  if (device.state !== 'maintenance') {
+  if (device.state !== 'returned') {
     return {
       success: false,
-      error: 'Device must be in maintenance to reactivate',
+      error: 'Device must be in returned state to reactivate',
     };
   }
 
-  return transitionDevice(device, 'in_production');
+  return transitionDevice(device, 'available');
 }
 
 export function getNextActions(device: Device): string[] {

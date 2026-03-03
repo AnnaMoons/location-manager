@@ -1,13 +1,13 @@
 export type DeviceType = 'pigvision' | 'scale' | 'sensor' | 'gateway';
 
 export type DeviceState =
+  | 'undefined'
   | 'available'
   | 'registered'
-  | 'installed'
-  | 'configured'
-  | 'in_production'
-  | 'maintenance'
-  | 'uninstalled';
+  | 'production'
+  | 'disabled'
+  | 'returned'
+  | 'dead';
 
 export type DeviceHealth = 'online' | 'offline' | 'unknown';
 
@@ -15,9 +15,14 @@ export type SensorType = 'temperature' | 'humidity' | 'co2' | 'ammonia';
 
 export type DeviceHistoryAction =
   | 'created'
-  | 'installed'
-  | 'uninstalled'
+  | 'sold'
   | 'configured'
+  | 'activated'
+  | 'uninstalled'
+  | 'disabled'
+  | 'returned'
+  | 'repaired'
+  | 'killed'
   | 'state_changed'
   | 'location_changed';
 
@@ -109,26 +114,25 @@ export function isOrphanDevice(device: Device): boolean {
 }
 
 export function needsInstallation(device: Device): boolean {
-  return device.state === 'registered' || device.state === 'available';
+  return device.state === 'registered';
 }
 
 export function needsConfiguration(device: Device): boolean {
-  return device.state === 'installed' && device.configuration === null;
+  return device.state === 'registered' && device.configuration === null;
 }
 
-export function getNextAction(device: Device): 'install' | 'configure' | 'ready' | 'maintenance' | null {
+export function getNextAction(device: Device): 'install' | 'configure' | 'activate' | 'check' | null {
   switch (device.state) {
     case 'available':
-    case 'registered':
       return 'install';
-    case 'installed':
+    case 'registered':
       return 'configure';
-    case 'configured':
-      return 'ready';
-    case 'maintenance':
-      return 'maintenance';
-    case 'in_production':
-    case 'uninstalled':
+    case 'production':
+      return 'check';
+    case 'disabled':
+    case 'returned':
+    case 'undefined':
+    case 'dead':
     default:
       return null;
   }

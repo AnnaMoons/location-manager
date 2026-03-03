@@ -28,13 +28,13 @@ export function useDevices() {
 
   const devicesByState = useMemo(() => {
     const states: DeviceState[] = [
+      'undefined',
       'available',
       'registered',
-      'installed',
-      'configured',
-      'in_production',
-      'maintenance',
-      'uninstalled',
+      'production',
+      'disabled',
+      'returned',
+      'dead',
     ];
     return states.reduce(
       (acc, state) => {
@@ -48,10 +48,10 @@ export function useDevices() {
   const stats = useMemo(
     () => ({
       total: devices.length,
-      inProduction: devicesByState.in_production.length,
-      pending: devicesByState.installed.length + devicesByState.configured.length,
+      inProduction: devicesByState.production.length,
+      pending: devicesByState.registered.length,
       orphans: orphanDevices.length,
-      maintenance: devicesByState.maintenance.length,
+      maintenance: devicesByState.returned.length,
       offline: devices.filter((d) => d.health === 'offline').length,
     }),
     [devices, devicesByState, orphanDevices]
