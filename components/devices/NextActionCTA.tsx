@@ -37,6 +37,11 @@ const actionConfig = {
     href: (id: string) => `/dispositivos/${id}`,
     labelKey: 'check',
   },
+  view: {
+    icon: ChevronRight,
+    href: (id: string) => `/dispositivos/${id}`,
+    labelKey: 'view',
+  },
 };
 
 export function NextActionCTA({ device, variant = 'button' }: NextActionCTAProps) {

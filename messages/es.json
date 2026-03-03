@@ -206,7 +206,8 @@
       "configure": "Configurar",
       "activate": "Activar",
       "reactivate": "Reactivar",
-      "check": "Revisar"
+      "check": "Revisar",
+      "view": "Ver detalles"
     },
     "deviceTable": {
       "device": "Dispositivo",
