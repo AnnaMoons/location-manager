@@ -351,7 +351,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       id: `batch-${Date.now()}`,
       name: input.name,
       species: input.species,
-      farmId: input.farmId,
+      farmIds: input.farmIds,
       barnIds: input.barnIds,
       penIds: input.penIds || [],
       animalCount: input.animalCount,

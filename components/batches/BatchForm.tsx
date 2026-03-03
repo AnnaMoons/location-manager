@@ -26,7 +26,6 @@ interface BatchFormProps {
 export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
   const t = useTranslations('batches.form');
   const tSpecies = useTranslations('locations.species');
-  const tTypes = useTranslations('locations.types');
   const { locations, filterBySpecies, getChildren } = useLocations();
 
   const [formData, setFormData] = useState<Partial<CreateBatchInput>>(
@@ -38,12 +37,21 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
     ? filterBySpecies(formData.species).filter((l) => l.type === 'farm')
     : [];
 
-  // Get barns for selected farm
-  const barns = formData.farmId
-    ? getChildren(formData.farmId).filter((l) => l.type === 'barn')
+  // Get barns for selected farms
+  const getBarnsForFarms = (farmIds: string[]): Location[] => {
+    const barns: Location[] = [];
+    farmIds.forEach((farmId) => {
+      const farmBarns = getChildren(farmId).filter((l) => l.type === 'barn');
+      barns.push(...farmBarns);
+    });
+    return barns;
+  };
+
+  const barns = formData.farmIds
+    ? getBarnsForFarms(formData.farmIds)
     : [];
 
-  // Get pens/sections grouped by barn
+  // Get pens grouped by barn
   const getPensForBarns = (barnIds: string[]): Record<string, Location[]> => {
     const pensMap: Record<string, Location[]> = {};
     barnIds.forEach((barnId) => {
@@ -76,17 +84,17 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
 
   // Reset dependent selections when species changes
   useEffect(() => {
-    if (formData.species && !initialData?.farmId) {
-      updateFormData({ farmId: undefined, barnIds: [], penIds: [] });
+    if (formData.species && !initialData?.farmIds) {
+      updateFormData({ farmIds: [], barnIds: [], penIds: [] });
     }
   }, [formData.species]);
 
-  // Reset barns and pens when farm changes
+  // Reset barns and pens when farms change
   useEffect(() => {
-    if (formData.farmId && !initialData?.barnIds) {
+    if (formData.farmIds && !initialData?.barnIds) {
       updateFormData({ barnIds: [], penIds: [] });
     }
-  }, [formData.farmId]);
+  }, [formData.farmIds]);
 
   // Clean up penIds when barnIds change (remove pens from unselected barns)
   useEffect(() => {
@@ -101,29 +109,17 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
     }
   }, [formData.barnIds]);
 
+  // Convert farms to checkbox options
+  const farmOptions = farms.map((farm) => ({
+    value: farm.id,
+    label: farm.name,
+  }));
+
   // Convert barns to checkbox options
   const barnOptions = barns.map((barn) => ({
     value: barn.id,
     label: barn.name,
   }));
-
-  // Get pen options for all selected barns
-  const getAllPenOptions = () => {
-    const options: { value: string; label: string; barnName: string }[] = [];
-    Object.entries(pensGroupedByBarn).forEach(([barnId, pens]) => {
-      const barn = barns.find((b) => b.id === barnId);
-      pens.forEach((pen) => {
-        options.push({
-          value: pen.id,
-          label: pen.name,
-          barnName: barn?.name || '',
-        });
-      });
-    });
-    return options;
-  };
-
-  const penOptions = getAllPenOptions();
 
   return (
     <div className="space-y-6">
@@ -167,31 +163,24 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
       {/* Location Selection - Hierarchical */}
       {formData.species && (
         <>
-          {/* Farm Selection */}
+          {/* Farm Multi-Selection */}
           <div className="space-y-2">
-            <Label>{t('farm')} (*)</Label>
-            <Select
-              value={formData.farmId || ''}
-              onValueChange={(value) => updateFormData({ farmId: value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t('farmPlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                {farms.map((farm) => (
-                  <SelectItem key={farm.id} value={farm.id}>
-                    {farm.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.farmId && (
-              <p className="text-sm text-destructive">{errors.farmId}</p>
+            <Label>{t('selectFarms')} (*)</Label>
+            <p className="text-xs text-muted-foreground mb-2">
+              {t('selectFarmsHint')}
+            </p>
+            <CheckboxGroup
+              options={farmOptions}
+              value={formData.farmIds || []}
+              onChange={(value) => updateFormData({ farmIds: value })}
+            />
+            {errors.farmIds && (
+              <p className="text-sm text-destructive">{errors.farmIds}</p>
             )}
           </div>
 
           {/* Barn Multi-Selection */}
-          {formData.farmId && barns.length > 0 && (
+          {formData.farmIds && formData.farmIds.length > 0 && barns.length > 0 && (
             <div className="space-y-2">
               <Label>{t('selectBarns')} (*)</Label>
               <p className="text-xs text-muted-foreground mb-2">
@@ -243,9 +232,12 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
                               }
                             );
                             updateFormData({
-                              penIds: [...otherBarnPenIds, ...value.filter(
-                                (v) => pens.some((p) => p.id === v)
-                              )],
+                              penIds: [
+                                ...otherBarnPenIds,
+                                ...value.filter((v) =>
+                                  pens.some((p) => p.id === v)
+                                ),
+                              ],
                             });
                           }}
                         />

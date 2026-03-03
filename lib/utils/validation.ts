@@ -167,22 +167,22 @@ export function validateBatchInput(
   }
 
   // Validate multi-location fields
-  if (!input.farmId) {
-    errors.farmId = 'La granja es obligatoria';
+  if (!input.farmIds || input.farmIds.length === 0) {
+    errors.farmIds = 'Debes seleccionar al menos una granja';
   }
 
   if (!input.barnIds || input.barnIds.length === 0) {
     errors.barnIds = 'Debes seleccionar al menos un galpón';
   }
 
-  // Validate that barns belong to the selected farm
-  if (locations && input.farmId && input.barnIds && input.barnIds.length > 0) {
+  // Validate that barns belong to one of the selected farms
+  if (locations && input.farmIds && input.farmIds.length > 0 && input.barnIds && input.barnIds.length > 0) {
     const invalidBarns = input.barnIds.filter((barnId) => {
       const barn = locations.find((l) => l.id === barnId);
-      return !barn || barn.parentId !== input.farmId;
+      return !barn || !input.farmIds!.includes(barn.parentId || '');
     });
     if (invalidBarns.length > 0) {
-      errors.barnIds = 'Los galpones seleccionados no pertenecen a la granja';
+      errors.barnIds = 'Los galpones seleccionados no pertenecen a las granjas seleccionadas';
     }
   }
 

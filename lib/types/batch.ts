@@ -4,12 +4,14 @@ export interface Batch {
   id: string;
   name: string;
   species: Species;
-  // New multi-location fields
-  farmId: string;
+  // Multi-location support
+  farmIds: string[];
   barnIds: string[];
   penIds: string[];
   // Legacy field - kept for migration
-  /** @deprecated Use farmId, barnIds, penIds instead */
+  /** @deprecated Use farmIds, barnIds, penIds instead */
+  farmId?: string;
+  /** @deprecated Use farmIds, barnIds, penIds instead */
   locationId?: string;
   animalCount: number;
   averageAgeAtStart: number; // days
@@ -29,7 +31,7 @@ export type BatchStatus = 'active' | 'completed' | 'cancelled';
 export interface CreateBatchInput {
   name: string;
   species: Species;
-  farmId: string;
+  farmIds: string[];
   barnIds: string[];
   penIds?: string[];
   animalCount: number;
@@ -40,7 +42,7 @@ export interface CreateBatchInput {
 
 export interface UpdateBatchInput {
   name?: string;
-  farmId?: string;
+  farmIds?: string[];
   barnIds?: string[];
   penIds?: string[];
   animalCount?: number;
@@ -61,10 +63,11 @@ export interface CloseBatchInput {
 export function getBatchesByLocation(batches: Batch[], locationId: string): Batch[] {
   return batches.filter((b) => {
     // Check new multi-location fields
-    if (b.farmId === locationId) return true;
+    if (b.farmIds?.includes(locationId)) return true;
     if (b.barnIds?.includes(locationId)) return true;
     if (b.penIds?.includes(locationId)) return true;
     // Legacy support
+    if (b.farmId === locationId) return true;
     if (b.locationId === locationId) return true;
     return false;
   });
@@ -75,10 +78,13 @@ export function getBatchesByLocation(batches: Batch[], locationId: string): Batc
  */
 export function getBatchLocationIds(batch: Batch): string[] {
   const ids: string[] = [];
-  if (batch.farmId) ids.push(batch.farmId);
+  if (batch.farmIds) ids.push(...batch.farmIds);
   if (batch.barnIds) ids.push(...batch.barnIds);
   if (batch.penIds) ids.push(...batch.penIds);
   // Legacy support
+  if (batch.farmId && !ids.includes(batch.farmId)) {
+    ids.push(batch.farmId);
+  }
   if (batch.locationId && !ids.includes(batch.locationId)) {
     ids.push(batch.locationId);
   }
