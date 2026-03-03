@@ -15,7 +15,11 @@ interface DeviceStateChipProps {
 export function DeviceStateChip({ state, size = 'md', showTooltip = true }: DeviceStateChipProps) {
   const t = useTranslations('devices.states');
   const tTooltip = useTranslations('devices.stateTooltips');
-  const colors = stateColors[state];
+  const colors = stateColors[state] || {
+    bg: 'bg-gray-100',
+    text: 'text-gray-700',
+    border: 'border-gray-300',
+  };
 
   return (
     <Badge
@@ -27,9 +31,9 @@ export function DeviceStateChip({ state, size = 'md', showTooltip = true }: Devi
         size === 'sm' ? 'text-xs px-2 py-0' : 'text-sm',
         showTooltip && 'cursor-help'
       )}
-      title={showTooltip ? tTooltip(state) : undefined}
+      title={showTooltip ? (tTooltip(state) || state) : undefined}
     >
-      {t(state)}
+      {t(state) || state}
     </Badge>
   );
 }
