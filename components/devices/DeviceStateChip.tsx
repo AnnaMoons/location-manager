@@ -13,16 +13,15 @@ interface DeviceStateChipProps {
 }
 
 export function DeviceStateChip({ state, size = 'md', showTooltip = true }: DeviceStateChipProps) {
-  const t = useTranslations('devices.states');
-  const tTooltip = useTranslations('devices.stateTooltips');
+  const t = useTranslations('devices');
   const colors = stateColors[state] || {
     bg: 'bg-gray-100',
     text: 'text-gray-700',
     border: 'border-gray-300',
   };
 
-  const translatedState = t(state);
-  const translatedTooltip = tTooltip(state);
+  const translatedState = t(`states.${state}`);
+  const translatedTooltip = t(`stateTooltips.${state}`);
 
   return (
     <Badge
