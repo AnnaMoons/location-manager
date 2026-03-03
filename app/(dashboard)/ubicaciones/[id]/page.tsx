@@ -168,7 +168,7 @@ export default function LocationDetailPage({
                       <p className="font-medium">{device.serialNumber}</p>
                       <p className="text-sm text-muted-foreground">{device.type}</p>
                     </div>
-                    <Badge variant={device.state === 'in_production' ? 'success' : 'secondary'}>
+                    <Badge variant={device.state === 'production' ? 'success' : 'secondary'}>
                       {device.state}
                     </Badge>
                   </div>

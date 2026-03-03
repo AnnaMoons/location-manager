@@ -78,12 +78,11 @@ export default function DashboardPage() {
 
   const getDeviceStateVariant = (state: string) => {
     switch (state) {
-      case 'in_production':
+      case 'production':
         return 'success';
-      case 'configured':
-      case 'installed':
+      case 'registered':
         return 'warning';
-      case 'maintenance':
+      case 'returned':
         return 'destructive';
       default:
         return 'secondary';

@@ -153,8 +153,8 @@
     "noConfig": "Sin configurar",
     "install": "Instalar",
     "configure": "Configurar",
-    "uninstall": "Desinstalar",
-    "maintenance": "Poner en mantenimiento",
+    "uninstall": "Deshabilitar",
+    "maintenance": "En reparación",
     "filters": {
       "all": "Todos",
       "byState": "Por estado",
@@ -289,9 +289,13 @@
       "noHistory": "Sin historial de cambios",
       "actions": {
         "created": "Dispositivo creado",
-        "installed": "Instalado en ubicación",
-        "uninstalled": "Desinstalado",
+        "sold": "Vendido y asignado a compañía",
         "configured": "Configurado",
+        "activated": "Activado en producción",
+        "disabled": "Deshabilitado",
+        "returned": "Enviado a reparación",
+        "repaired": "Reparado",
+        "killed": "Dado de baja",
         "state_changed": "Estado cambiado",
         "location_changed": "Ubicación cambiada"
       },

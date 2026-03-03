@@ -153,8 +153,8 @@
     "noConfig": "Not configured",
     "install": "Install",
     "configure": "Configure",
-    "uninstall": "Uninstall",
-    "maintenance": "Set to maintenance",
+    "uninstall": "Disable",
+    "maintenance": "In repair",
     "filters": {
       "all": "All",
       "byState": "By state",
@@ -169,13 +169,22 @@
       "gateway": "Gateway"
     },
     "states": {
+      "unassigned": "Unassigned",
       "available": "Available",
       "registered": "Registered",
-      "installed": "Installed",
-      "configured": "Configured",
-      "in_production": "In production",
-      "maintenance": "Maintenance",
-      "uninstalled": "Uninstalled"
+      "production": "In production",
+      "disabled": "Disabled",
+      "returned": "In repair",
+      "dead": "Decommissioned"
+    },
+    "stateTooltips": {
+      "unassigned": "The device was created in the system but has not been manufactured yet",
+      "available": "The device is manufactured and available for sale, with no company assigned",
+      "registered": "The device was sold and has a company assigned, but is not installed or configured",
+      "production": "The device is installed, configured and operating correctly",
+      "disabled": "The device was disabled/uninstalled but still belongs to the company",
+      "returned": "The device is being repaired",
+      "dead": "The device has been decommissioned and is no longer in use"
     },
     "health": {
       "online": "Online",
@@ -183,10 +192,10 @@
       "unknown": "Unknown"
     },
     "nextActions": {
-      "install": "Assign location",
+      "install": "Sell",
       "configure": "Configure",
-      "ready": "Activate production",
-      "checkMaintenance": "Check status"
+      "activate": "Activate",
+      "check": "Review"
     },
     "deviceTable": {
       "device": "Device",
@@ -280,9 +289,13 @@
       "noHistory": "No change history",
       "actions": {
         "created": "Device created",
-        "installed": "Installed at location",
-        "uninstalled": "Uninstalled",
+        "sold": "Sold and assigned to company",
         "configured": "Configured",
+        "activated": "Activated in production",
+        "disabled": "Disabled",
+        "returned": "Sent to repair",
+        "repaired": "Repaired",
+        "killed": "Decommissioned",
         "state_changed": "State changed",
         "location_changed": "Location changed"
       },

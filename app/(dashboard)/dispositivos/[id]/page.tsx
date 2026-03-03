@@ -89,11 +89,11 @@ export default function DeviceDetailPage({
   };
 
   const handleMaintenance = async () => {
-    await setDeviceState(device.id, 'maintenance');
+    await setDeviceState(device.id, 'disabled');
   };
 
   const handleReactivate = async () => {
-    await setDeviceState(device.id, 'in_production');
+    await setDeviceState(device.id, 'production');
   };
 
   return (
@@ -246,7 +246,7 @@ export default function DeviceDetailPage({
           ) : (
             <div className="text-center py-4">
               <p className="text-muted-foreground mb-3">{t('noConfig')}</p>
-              {device.state === 'installed' && (
+              {device.state === 'registered' && !device.configuration && (
                 <Link href={`/dispositivos/${id}/configurar`}>
                   <Button>
                     <Settings className="h-4 w-4 mr-2" />
@@ -315,19 +315,19 @@ export default function DeviceDetailPage({
 
       {/* Actions */}
       <div className="flex flex-wrap gap-3">
-        {device.state === 'in_production' && (
+        {device.state === 'production' && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="outline">
                 <Wrench className="h-4 w-4 mr-2" />
-                {t('maintenance')}
+                Deshabilitar
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Poner en mantenimiento</AlertDialogTitle>
+                <AlertDialogTitle>Deshabilitar dispositivo</AlertDialogTitle>
                 <AlertDialogDescription>
-                  El dispositivo dejará de enviar datos mientras esté en mantenimiento.
+                  El dispositivo será desinstalado y dejará de funcionar. Seguirá perteneciendo a la compañía.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -340,10 +340,10 @@ export default function DeviceDetailPage({
           </AlertDialog>
         )}
 
-        {device.state === 'maintenance' && (
+        {device.state === 'disabled' && (
           <Button onClick={handleReactivate}>
             <Power className="h-4 w-4 mr-2" />
-            Reactivar
+            Registrar nuevamente
           </Button>
         )}
 

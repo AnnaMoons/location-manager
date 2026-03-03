@@ -108,10 +108,9 @@ export default function DevicesPage() {
                 <SelectItem value="all">{t('filters.all')}</SelectItem>
                 <SelectItem value="available">{t('states.available')}</SelectItem>
                 <SelectItem value="registered">{t('states.registered')}</SelectItem>
-                <SelectItem value="installed">{t('states.installed')}</SelectItem>
-                <SelectItem value="configured">{t('states.configured')}</SelectItem>
-                <SelectItem value="in_production">{t('states.in_production')}</SelectItem>
-                <SelectItem value="maintenance">{t('states.maintenance')}</SelectItem>
+                <SelectItem value="production">{t('states.production')}</SelectItem>
+                <SelectItem value="disabled">{t('states.disabled')}</SelectItem>
+                <SelectItem value="returned">{t('states.returned')}</SelectItem>
               </SelectContent>
             </Select>
             <Select

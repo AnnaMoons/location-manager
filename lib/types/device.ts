@@ -18,7 +18,6 @@ export type DeviceHistoryAction =
   | 'sold'
   | 'configured'
   | 'activated'
-  | 'uninstalled'
   | 'disabled'
   | 'returned'
   | 'repaired'
