@@ -21,6 +21,9 @@ export function DeviceStateChip({ state, size = 'md', showTooltip = true }: Devi
     border: 'border-gray-300',
   };
 
+  const translatedState = t(state);
+  const translatedTooltip = tTooltip(state);
+
   return (
     <Badge
       variant="outline"
@@ -31,9 +34,9 @@ export function DeviceStateChip({ state, size = 'md', showTooltip = true }: Devi
         size === 'sm' ? 'text-xs px-2 py-0' : 'text-sm',
         showTooltip && 'cursor-help'
       )}
-      title={showTooltip ? (tTooltip(state) || state) : undefined}
+      title={showTooltip ? (translatedTooltip || state) : undefined}
     >
-      {t(state) || state}
+      {translatedState || state}
     </Badge>
   );
 }
