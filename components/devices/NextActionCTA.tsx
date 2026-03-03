@@ -27,6 +27,11 @@ const actionConfig = {
     href: (id: string) => `/dispositivos/${id}/activar`,
     labelKey: 'activate',
   },
+  reactivate: {
+    icon: MapPin,
+    href: (id: string) => `/dispositivos/${id}/registrar`,
+    labelKey: 'reactivate',
+  },
   check: {
     icon: Wrench,
     href: (id: string) => `/dispositivos/${id}`,

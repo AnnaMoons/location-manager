@@ -120,17 +120,24 @@ export function needsConfiguration(device: Device): boolean {
   return device.state === 'registered' && device.configuration === null;
 }
 
-export function getNextAction(device: Device): 'install' | 'configure' | 'activate' | 'check' | null {
+export function getNextAction(device: Device): 'install' | 'configure' | 'activate' | 'check' | 'reactivate' | null {
   switch (device.state) {
     case 'available':
+    case 'unassigned':
       return 'install';
     case 'registered':
+    case 'installed':
       return 'configure';
+    case 'configured':
+    case 'in_production':
     case 'production':
       return 'check';
     case 'disabled':
+    case 'uninstalled':
+      return 'reactivate';
     case 'returned':
-    case 'undefined':
+    case 'maintenance':
+      return 'check';
     case 'dead':
     default:
       return null;

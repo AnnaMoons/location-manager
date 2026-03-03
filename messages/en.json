@@ -205,6 +205,7 @@
       "install": "Sell",
       "configure": "Configure",
       "activate": "Activate",
+      "reactivate": "Reactivate",
       "check": "Review"
     },
     "deviceTable": {
