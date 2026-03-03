@@ -188,7 +188,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           return {
             ...device,
             locationId: null,
-            state: 'uninstalled' as DeviceState,
+            state: 'disabled' as DeviceState,
           };
         }
         return device;
@@ -212,7 +212,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (device.id === deviceId) {
           const isLocationChange = device.locationId !== null && device.locationId !== locationId;
           const historyEntry = createHistoryEntry(
-            isLocationChange ? 'location_changed' : 'installed',
+            isLocationChange ? 'location_changed' : 'sold',
             isLocationChange
               ? { fromLocationId: device.locationId, toLocationId: locationId }
               : { toLocationId: locationId }
@@ -221,7 +221,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             {
               ...device,
               locationId,
-              state: 'installed',
+              state: 'registered',
             },
             historyEntry
           );
@@ -246,16 +246,16 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setDevices((prev) =>
       prev.map((device) => {
         if (device.id === deviceId) {
-          const historyEntry = createHistoryEntry('configured', {
+          const historyEntry = createHistoryEntry('activated', {
             configType: config.type,
             fromState: device.state,
-            toState: 'in_production',
+            toState: 'production',
           });
           updatedDevice = addDeviceHistory(
             {
               ...device,
               configuration: config,
-              state: 'in_production',
+              state: 'production',
               health: 'online',
               lastSeen: new Date().toISOString(),
             },
@@ -282,17 +282,16 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setDevices((prev) =>
       prev.map((device) => {
         if (device.id === deviceId) {
-          const historyEntry = createHistoryEntry('uninstalled', {
-            fromLocationId: device.locationId,
+          const historyEntry = createHistoryEntry('disabled', {
             fromState: device.state,
-            toState: 'uninstalled',
+            toState: 'disabled',
           });
           updatedDevice = addDeviceHistory(
             {
               ...device,
               locationId: null,
               configuration: null,
-              state: 'uninstalled',
+              state: 'disabled',
             },
             historyEntry
           );
