@@ -95,9 +95,9 @@ export const stateColors: Record<DeviceState, { bg: string; text: string; border
     border: 'border-stone-300',
   },
   returned: {
-    bg: 'bg-purple-100 hover:bg-purple-100',
-    text: 'text-purple-700 hover:text-purple-700',
-    border: 'border-purple-300',
+    bg: 'bg-yellow-100 hover:bg-yellow-100',
+    text: 'text-yellow-700 hover:text-yellow-700',
+    border: 'border-yellow-300',
   },
   dead: {
     bg: 'bg-red-100 hover:bg-red-100',
