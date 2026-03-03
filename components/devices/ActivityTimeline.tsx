@@ -83,7 +83,7 @@ export function ActivityTimeline({ history, className }: ActivityTimelineProps) 
                 <div className="mt-1 text-sm text-muted-foreground">
                   {entry.details.fromState && entry.details.toState && (
                     <span>
-                      {t(`states.${entry.details.fromState}`)} → {t(`states.${entry.details.toState}`)}
+                      {t(`states.${entry.details.fromState}`) || entry.details.fromState} → {t(`states.${entry.details.toState}`) || entry.details.toState}
                     </span>
                   )}
                   {entry.details.configType && (

@@ -415,11 +415,11 @@ export default function DeviceDetailPage({
                           {entry.details.fromState && entry.details.toState && (
                             <div className="flex items-center gap-1 text-muted-foreground">
                               <Badge variant="outline" className="text-xs">
-                                {t(`states.${entry.details.fromState}`)}
+                                {t(`states.${entry.details.fromState}`) || entry.details.fromState}
                               </Badge>
                               <ArrowRight className="h-3 w-3" />
                               <Badge variant="outline" className="text-xs">
-                                {t(`states.${entry.details.toState}`)}
+                                {t(`states.${entry.details.toState}`) || entry.details.toState}
                               </Badge>
                             </div>
                           )}
