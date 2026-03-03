@@ -1,7 +1,7 @@
 export type DeviceType = 'pigvision' | 'scale' | 'sensor' | 'gateway';
 
 export type DeviceState =
-  | 'undefined'
+  | 'unassigned'
   | 'available'
   | 'registered'
   | 'production'

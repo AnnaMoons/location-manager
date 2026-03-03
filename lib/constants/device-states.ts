@@ -7,10 +7,10 @@ export interface StateTransition {
 }
 
 export const validTransitions: StateTransition[] = [
-  { from: 'undefined', to: 'available', action: 'fabricate' },
-  { from: 'undefined', to: 'disabled', action: 'disable' },
-  { from: 'undefined', to: 'returned', action: 'return' },
-  { from: 'undefined', to: 'dead', action: 'kill' },
+  { from: 'unassigned', to: 'available', action: 'fabricate' },
+  { from: 'unassigned', to: 'disabled', action: 'disable' },
+  { from: 'unassigned', to: 'returned', action: 'return' },
+  { from: 'unassigned', to: 'dead', action: 'kill' },
   
   { from: 'available', to: 'registered', action: 'sell' },
   { from: 'available', to: 'disabled', action: 'disable' },
@@ -44,7 +44,7 @@ export function getAvailableTransitions(from: DeviceState): StateTransition[] {
 }
 
 export const stateColors: Record<DeviceState, { bg: string; text: string; border: string }> = {
-  undefined: {
+  unassigned: {
     bg: 'bg-gray-100 hover:bg-gray-100',
     text: 'text-gray-700 hover:text-gray-700',
     border: 'border-gray-300',

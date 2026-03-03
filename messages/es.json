@@ -169,7 +169,7 @@
       "gateway": "Gateway"
     },
     "states": {
-      "undefined": "Por definir",
+      "unassigned": "Sin asignar",
       "available": "Disponible",
       "registered": "Registrado",
       "production": "Productivo",
@@ -178,7 +178,7 @@
       "dead": "Dado de baja"
     },
     "stateTooltips": {
-      "undefined": "El dispositivo fue creado en el sistema pero aún no ha sido fabricado",
+      "unassigned": "El dispositivo fue creado en el sistema pero aún no ha sido fabricado",
       "available": "El dispositivo está fabricado y disponible para venta, pero no tiene una compañía asignada",
       "registered": "El dispositivo fue vendido y tiene una compañía asignada, pero no está instalado ni configurado",
       "production": "El dispositivo está instalado, configurado y funcionando correctamente",

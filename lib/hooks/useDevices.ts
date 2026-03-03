@@ -28,7 +28,7 @@ export function useDevices() {
 
   const devicesByState = useMemo(() => {
     const states: DeviceState[] = [
-      'undefined',
+      'unassigned',
       'available',
       'registered',
       'production',
