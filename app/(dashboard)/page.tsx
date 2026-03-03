@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { AlertBanner } from '@/components/dashboard/AlertBanner';
 import { OnboardingChecklist } from '@/components/dashboard/OnboardingChecklist';
+import { DeviceStateChip } from '@/components/devices/DeviceStateChip';
 import { useDevices } from '@/lib/hooks/useDevices';
 import { useBatches } from '@/lib/hooks/useBatches';
 import { useLocations } from '@/lib/hooks/useLocations';
@@ -73,19 +74,6 @@ export default function DashboardPage() {
         return 'destructive';
       default:
         return 'default';
-    }
-  };
-
-  const getDeviceStateVariant = (state: string) => {
-    switch (state) {
-      case 'production':
-        return 'success';
-      case 'registered':
-        return 'warning';
-      case 'returned':
-        return 'destructive';
-      default:
-        return 'secondary';
     }
   };
 
@@ -259,9 +247,7 @@ export default function DashboardPage() {
                         <td className="py-2">{tDevices(`types.${device.type}`)}</td>
                         <td className="py-2 hidden sm:table-cell">{getLocationName(device.locationId)}</td>
                         <td className="py-2">
-                          <Badge variant={getDeviceStateVariant(device.state)}>
-                            {tDevices(`states.${device.state}`)}
-                          </Badge>
+                          <DeviceStateChip state={device.state} size="sm" />
                         </td>
                         <td className="py-2 text-center">
                           {device.health === 'online' ? (

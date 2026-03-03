@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Home, Warehouse, LayoutGrid, ChevronRight, ChevronDown, Cpu, Wifi, WifiOff, LucideIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Location } from '@/lib/types/location';
 import { Device } from '@/lib/types/device';
 import { LocationType } from '@/lib/types/species';
 import { useDevices } from '@/lib/hooks/useDevices';
+import { DeviceStateChip } from '@/components/devices/DeviceStateChip';
 import { cn } from '@/lib/utils';
 
 interface LocationCardProps {
@@ -48,19 +48,6 @@ export function LocationCard({ location, childCount = 0, devices: providedDevice
 
   const [devicesExpanded, setDevicesExpanded] = useState(false);
   const Icon = locationIcons[location.type] || Home;
-
-  const getDeviceStateVariant = (state: string) => {
-    switch (state) {
-      case 'production':
-        return 'success';
-      case 'registered':
-        return 'warning';
-      case 'returned':
-        return 'destructive';
-      default:
-        return 'secondary';
-    }
-  };
 
   const handleDevicesToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -155,9 +142,7 @@ export function LocationCard({ location, childCount = 0, devices: providedDevice
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge variant={getDeviceStateVariant(device.state)}>
-                          {tDevices(`states.${device.state}`)}
-                        </Badge>
+                        <DeviceStateChip state={device.state} size="sm" showTooltip={false} />
                         {device.health === 'online' ? (
                           <Wifi className="h-3 w-3 text-green-500" />
                         ) : device.health === 'offline' ? (

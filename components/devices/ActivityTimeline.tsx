@@ -1,5 +1,8 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { DeviceHistoryEntry } from '@/lib/types/device';
+import { DeviceHistoryEntry, DeviceState } from '@/lib/types/device';
 import { 
   Plus, 
   MapPin, 
@@ -7,6 +10,11 @@ import {
   Settings, 
   RefreshCw,
   AlertCircle,
+  ShieldOff,
+  RotateCcw,
+  Wrench,
+  Skull,
+  ShoppingCart,
   CheckCircle2
 } from 'lucide-react';
 
@@ -16,20 +24,26 @@ interface ActivityTimelineProps {
 }
 
 const actionConfig = {
-  created: { icon: Plus, label: 'Dispositivo creado', color: 'text-blue-500' },
-  installed: { icon: MapPin, label: 'Instalado', color: 'text-green-500' },
-  uninstalled: { icon: MapPinOff, label: 'Desinstalado', color: 'text-orange-500' },
-  configured: { icon: Settings, label: 'Configurado', color: 'text-purple-500' },
-  state_changed: { icon: RefreshCw, label: 'Estado cambiado', color: 'text-blue-500' },
-  location_changed: { icon: MapPin, label: 'Ubicación cambiada', color: 'text-yellow-500' }
+  created: { icon: Plus, color: 'text-blue-500' },
+  sold: { icon: ShoppingCart, color: 'text-green-500' },
+  configured: { icon: Settings, color: 'text-purple-500' },
+  activated: { icon: CheckCircle2, color: 'text-green-600' },
+  disabled: { icon: ShieldOff, color: 'text-orange-500' },
+  returned: { icon: RotateCcw, color: 'text-purple-500' },
+  repaired: { icon: Wrench, color: 'text-blue-500' },
+  killed: { icon: Skull, color: 'text-red-500' },
+  state_changed: { icon: RefreshCw, color: 'text-blue-500' },
+  location_changed: { icon: MapPin, color: 'text-yellow-500' },
 };
 
 export function ActivityTimeline({ history, className }: ActivityTimelineProps) {
+  const t = useTranslations('devices');
+
   if (!history || history.length === 0) {
     return (
       <div className={cn("text-center py-8", className)}>
         <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-        <p className="text-sm text-muted-foreground">Sin historial de actividad</p>
+        <p className="text-sm text-muted-foreground">{t('history.noHistory')}</p>
       </div>
     );
   }
@@ -37,7 +51,7 @@ export function ActivityTimeline({ history, className }: ActivityTimelineProps) 
   return (
     <div className={cn("space-y-4", className)}>
       {history.map((entry, index) => {
-        const config = actionConfig[entry.action];
+        const config = actionConfig[entry.action] || actionConfig.state_changed;
         const Icon = config.icon;
         
         return (
@@ -57,7 +71,9 @@ export function ActivityTimeline({ history, className }: ActivityTimelineProps) 
             
             <div className="flex-1 pb-4">
               <div className="flex items-center gap-2">
-                <span className="font-medium text-sm">{config.label}</span>
+                <span className="font-medium text-sm">
+                  {t(`history.actions.${entry.action}`)}
+                </span>
                 <span className="text-xs text-muted-foreground">
                   {formatDate(entry.timestamp)}
                 </span>
@@ -67,16 +83,11 @@ export function ActivityTimeline({ history, className }: ActivityTimelineProps) 
                 <div className="mt-1 text-sm text-muted-foreground">
                   {entry.details.fromState && entry.details.toState && (
                     <span>
-                      {entry.details.fromState} → {entry.details.toState}
-                    </span>
-                  )}
-                  {entry.details.fromLocationId && entry.details.toLocationId && (
-                    <span>
-                      {entry.details.fromLocationId || 'Sin ubicación'} → {entry.details.toLocationId}
+                      {t(`states.${entry.details.fromState}`)} → {t(`states.${entry.details.toState}`)}
                     </span>
                   )}
                   {entry.details.configType && (
-                    <span>Tipo: {entry.details.configType}</span>
+                    <span>{t(`types.${entry.details.configType}`)}</span>
                   )}
                 </div>
               )}
