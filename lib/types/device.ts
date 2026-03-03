@@ -4,8 +4,13 @@ export type DeviceState =
   | 'unassigned'
   | 'available'
   | 'registered'
+  | 'installed'
+  | 'configured'
+  | 'in_production'
   | 'production'
+  | 'maintenance'
   | 'disabled'
+  | 'uninstalled'
   | 'returned'
   | 'dead';
 

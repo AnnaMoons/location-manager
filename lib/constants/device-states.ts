@@ -45,13 +45,13 @@ export function getAvailableTransitions(from: DeviceState): StateTransition[] {
 
 export const stateColors: Record<DeviceState, { bg: string; text: string; border: string }> = {
   unassigned: {
-    bg: 'bg-gray-100 hover:bg-gray-100',
-    text: 'text-gray-700 hover:text-gray-700',
-    border: 'border-gray-300',
+    bg: 'bg-slate-100 hover:bg-slate-100',
+    text: 'text-slate-600 hover:text-slate-600',
+    border: 'border-slate-300',
   },
   available: {
     bg: 'bg-gray-100 hover:bg-gray-100',
-    text: 'text-gray-700 hover:text-gray-700',
+    text: 'text-gray-600 hover:text-gray-600',
     border: 'border-gray-300',
   },
   registered: {
@@ -59,15 +59,40 @@ export const stateColors: Record<DeviceState, { bg: string; text: string; border
     text: 'text-blue-700 hover:text-blue-700',
     border: 'border-blue-300',
   },
+  installed: {
+    bg: 'bg-cyan-100 hover:bg-cyan-100',
+    text: 'text-cyan-700 hover:text-cyan-700',
+    border: 'border-cyan-300',
+  },
+  configured: {
+    bg: 'bg-violet-100 hover:bg-violet-100',
+    text: 'text-violet-700 hover:text-violet-700',
+    border: 'border-violet-300',
+  },
+  in_production: {
+    bg: 'bg-emerald-100 hover:bg-emerald-100',
+    text: 'text-emerald-700 hover:text-emerald-700',
+    border: 'border-emerald-300',
+  },
   production: {
     bg: 'bg-green-100 hover:bg-green-100',
     text: 'text-green-700 hover:text-green-700',
     border: 'border-green-300',
   },
+  maintenance: {
+    bg: 'bg-amber-100 hover:bg-amber-100',
+    text: 'text-amber-700 hover:text-amber-700',
+    border: 'border-amber-300',
+  },
   disabled: {
     bg: 'bg-orange-100 hover:bg-orange-100',
     text: 'text-orange-700 hover:text-orange-700',
     border: 'border-orange-300',
+  },
+  uninstalled: {
+    bg: 'bg-stone-100 hover:bg-stone-100',
+    text: 'text-stone-600 hover:text-stone-600',
+    border: 'border-stone-300',
   },
   returned: {
     bg: 'bg-purple-100 hover:bg-purple-100',
