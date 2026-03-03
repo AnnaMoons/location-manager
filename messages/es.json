@@ -169,22 +169,22 @@
       "gateway": "Gateway"
     },
     "states": {
-      "unassigned": "Sin asignar",
+      "unassigned": "Nuevo",
       "available": "Disponible",
-      "registered": "Registrado",
-      "production": "Productivo",
-      "disabled": "Deshabilitado",
+      "registered": "Por instalar",
+      "production": "En producción",
+      "disabled": "Inactivo",
       "returned": "En reparación",
       "dead": "Dado de baja"
     },
     "stateTooltips": {
-      "unassigned": "El dispositivo fue creado en el sistema pero aún no ha sido fabricado",
-      "available": "El dispositivo está fabricado y disponible para venta, pero no tiene una compañía asignada",
-      "registered": "El dispositivo fue vendido y tiene una compañía asignada, pero no está instalado ni configurado",
+      "unassigned": "Este dispositivo acaba de ser creado y aún no está listo para la venta",
+      "available": "El dispositivo está fabricado y listo para ser asignado a una compañía",
+      "registered": "El dispositivo ya pertenece a tu compañía. Falta instalarlo y configurarlo",
       "production": "El dispositivo está instalado, configurado y funcionando correctamente",
-      "disabled": "El dispositivo fue deshabilitado/desinstalado pero sigue perteneciendo a la compañía",
-      "returned": "El dispositivo está en reparación",
-      "dead": "El dispositivo fue dado de baja y ya no está en uso"
+      "disabled": "El dispositivo fue desactivado pero sigue perteneciendo a tu compañía. Puedes volver a activarlo",
+      "returned": "El dispositivo fue enviado a reparación",
+      "dead": "El dispositivo fue dado de baja definitivamente y ya no se puede utilizar"
     },
     "health": {
       "online": "En línea",

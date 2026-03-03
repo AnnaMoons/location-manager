@@ -169,22 +169,22 @@
       "gateway": "Gateway"
     },
     "states": {
-      "unassigned": "Unassigned",
+      "unassigned": "New",
       "available": "Available",
-      "registered": "Registered",
+      "registered": "Pending setup",
       "production": "In production",
-      "disabled": "Disabled",
+      "disabled": "Inactive",
       "returned": "In repair",
       "dead": "Decommissioned"
     },
     "stateTooltips": {
-      "unassigned": "The device was created in the system but has not been manufactured yet",
-      "available": "The device is manufactured and available for sale, with no company assigned",
-      "registered": "The device was sold and has a company assigned, but is not installed or configured",
-      "production": "The device is installed, configured and operating correctly",
-      "disabled": "The device was disabled/uninstalled but still belongs to the company",
-      "returned": "The device is being repaired",
-      "dead": "The device has been decommissioned and is no longer in use"
+      "unassigned": "This device has just been created and is not yet ready for sale",
+      "available": "The device is manufactured and ready to be assigned to a company",
+      "registered": "The device belongs to your company. It still needs to be installed and configured",
+      "production": "The device is installed, configured and working correctly",
+      "disabled": "The device was deactivated but still belongs to your company. You can reactivate it",
+      "returned": "The device has been sent for repair",
+      "dead": "The device has been permanently decommissioned and can no longer be used"
     },
     "health": {
       "online": "Online",
