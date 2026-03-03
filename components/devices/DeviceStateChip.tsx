@@ -7,14 +7,16 @@ import { stateColors } from '@/lib/constants/device-states';
 import { cn } from '@/lib/utils';
 
 interface DeviceStateChipProps {
-  state: DeviceState;
+  state: string;
   size?: 'sm' | 'md';
   showTooltip?: boolean;
 }
 
 export function DeviceStateChip({ state, size = 'md', showTooltip = true }: DeviceStateChipProps) {
   const t = useTranslations('devices');
-  const colors = stateColors[state] || {
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const colors = (stateColors as any)[state] || {
     bg: 'bg-gray-100',
     text: 'text-gray-700',
     border: 'border-gray-300',
