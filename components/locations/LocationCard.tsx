@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Home, Warehouse, LayoutGrid, ChevronRight, ChevronDown, Cpu, Wifi, WifiOff, LucideIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Location } from '@/lib/types/location';
 import { Device } from '@/lib/types/device';
 import { LocationType } from '@/lib/types/species';

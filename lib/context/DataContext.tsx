@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Location, CreateLocationInput, UpdateLocationInput } from '../types/location';
 import { Device, DeviceConfig, DeviceState, DeviceHistoryEntry, DeviceHistoryAction } from '../types/device';
-import { Batch, CreateBatchInput, UpdateBatchInput, CloseBatchInput } from '../types/batch';
+import { Batch, CreateBatchInput, UpdateBatchInput, CloseBatchInput, SubBatch, CreateSubBatchInput } from '../types/batch';
 import { migrateAllBatches, needsBatchMigration } from '../utils/migration';
 import initialLocations from '../mock-data/locations.json';
 import initialDevices from '../mock-data/devices.json';
@@ -12,11 +12,13 @@ import initialBatches from '../mock-data/batches.json';
 const STORAGE_KEY_LOCATIONS = 'smartfarm_locations';
 const STORAGE_KEY_DEVICES = 'smartfarm_devices';
 const STORAGE_KEY_BATCHES = 'smartfarm_batches';
+const STORAGE_KEY_SUB_BATCHES = 'smartfarm_subbatches';
 
 interface DataContextType {
   locations: Location[];
   devices: Device[];
   batches: Batch[];
+  subBatches: SubBatch[];
   isLoading: boolean;
   // Location operations
   createLocation: (input: CreateLocationInput) => Promise<Location>;
@@ -35,6 +37,12 @@ interface DataContextType {
   deleteBatch: (id: string) => Promise<void>;
   getBatch: (id: string) => Batch | undefined;
   closeBatch: (id: string, input: CloseBatchInput) => Promise<Batch>;
+  // SubBatch operations
+  createSubBatch: (input: CreateSubBatchInput) => Promise<SubBatch>;
+  updateSubBatch: (id: string, input: Partial<CreateSubBatchInput>) => Promise<SubBatch>;
+  deleteSubBatch: (id: string) => Promise<void>;
+  getSubBatch: (id: string) => SubBatch | undefined;
+  getSubBatchesByParent: (parentBatchId: string) => SubBatch[];
   // Utility
   simulateDelay: () => Promise<void>;
 }
@@ -45,6 +53,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [locations, setLocations] = useState<Location[]>([]);
   const [devices, setDevices] = useState<Device[]>([]);
   const [batches, setBatches] = useState<Batch[]>([]);
+  const [subBatches, setSubBatches] = useState<SubBatch[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load data from localStorage or use initial mock data
@@ -76,6 +85,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
         }
 
         setBatches(loadedBatches);
+
+        // Load subbatches
+        const storedSubBatches = localStorage.getItem(STORAGE_KEY_SUB_BATCHES);
+        const loadedSubBatches = storedSubBatches ? JSON.parse(storedSubBatches) : [];
+        setSubBatches(loadedSubBatches);
       } catch {
         setLocations(initialLocations as Location[]);
         setDevices(initialDevices as Device[]);
@@ -112,6 +126,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(STORAGE_KEY_BATCHES, JSON.stringify(batches));
     }
   }, [batches, isLoading]);
+
+  // Persist subbatches to localStorage
+  useEffect(() => {
+    if (!isLoading) {
+      localStorage.setItem(STORAGE_KEY_SUB_BATCHES, JSON.stringify(subBatches));
+    }
+  }, [subBatches, isLoading]);
 
   const simulateDelay = () => new Promise<void>((resolve) => setTimeout(resolve, 300 + Math.random() * 200));
 
@@ -350,7 +371,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const newBatch: Batch = {
       id: `batch-${Date.now()}`,
       name: input.name,
-      species: input.species,
+      species: input.sex === 'mixed' ? input.species : input.species,
+      sex: input.sex,
       farmIds: input.farmIds,
       barnIds: input.barnIds,
       penIds: input.penIds || [],
@@ -430,12 +452,105 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return closedBatch;
   };
 
+  const createSubBatch = async (input: CreateSubBatchInput): Promise<SubBatch> => {
+    await simulateDelay();
+
+    const newSubBatch: SubBatch = {
+      id: `subbatch-${Date.now()}`,
+      parentBatchId: input.parentBatchId,
+      name: input.name,
+      sex: input.sex,
+      penAssignments: input.penAssignments || [],
+      animalCount: input.animalCount,
+      status: 'active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setSubBatches((prev) => [...prev, newSubBatch]);
+
+    // Update parent batch to include this subbatch
+    setBatches((prev) =>
+      prev.map((batch) => {
+        if (batch.id === input.parentBatchId) {
+          return {
+            ...batch,
+            subBatchIds: [...(batch.subBatchIds || []), newSubBatch.id],
+            updatedAt: new Date().toISOString(),
+          };
+        }
+        return batch;
+      })
+    );
+
+    return newSubBatch;
+  };
+
+  const updateSubBatch = async (id: string, input: Partial<CreateSubBatchInput>): Promise<SubBatch> => {
+    await simulateDelay();
+
+    let updatedSubBatch: SubBatch | undefined;
+
+    setSubBatches((prev) =>
+      prev.map((subBatch) => {
+        if (subBatch.id === id) {
+          updatedSubBatch = {
+            ...subBatch,
+            ...input,
+            updatedAt: new Date().toISOString(),
+          };
+          return updatedSubBatch;
+        }
+        return subBatch;
+      })
+    );
+
+    if (!updatedSubBatch) {
+      throw new Error('SubBatch not found');
+    }
+
+    return updatedSubBatch;
+  };
+
+  const deleteSubBatch = async (id: string): Promise<void> => {
+    await simulateDelay();
+
+    const subBatchToDelete = subBatches.find((sb) => sb.id === id);
+    
+    setSubBatches((prev) => prev.filter((sb) => sb.id !== id));
+
+    // Remove from parent batch
+    if (subBatchToDelete) {
+      setBatches((prev) =>
+        prev.map((batch) => {
+          if (batch.id === subBatchToDelete.parentBatchId) {
+            return {
+              ...batch,
+              subBatchIds: (batch.subBatchIds || []).filter((sid) => sid !== id),
+              updatedAt: new Date().toISOString(),
+            };
+          }
+          return batch;
+        })
+      );
+    }
+  };
+
+  const getSubBatch = (id: string): SubBatch | undefined => {
+    return subBatches.find((sb) => sb.id === id);
+  };
+
+  const getSubBatchesByParent = (parentBatchId: string): SubBatch[] => {
+    return subBatches.filter((sb) => sb.parentBatchId === parentBatchId);
+  };
+
   return (
     <DataContext.Provider
       value={{
         locations,
         devices,
         batches,
+        subBatches,
         isLoading,
         createLocation,
         updateLocation,
@@ -451,6 +566,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
         deleteBatch,
         getBatch,
         closeBatch,
+        createSubBatch,
+        updateSubBatch,
+        deleteSubBatch,
+        getSubBatch,
+        getSubBatchesByParent,
         simulateDelay,
       }}
     >

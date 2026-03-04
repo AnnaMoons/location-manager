@@ -16,6 +16,7 @@ import {
   Scale,
   Thermometer,
   XCircle,
+  Plus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,8 +36,9 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { LoadingSpinner } from '@/components/shared/LoadingState';
 import { CloseBatchDialog } from '@/components/batches/CloseBatchDialog';
+import { SubBatchDialog } from '@/components/batches/SubBatchDialog';
 import { useBatches } from '@/lib/hooks/useBatches';
-import { CloseBatchInput } from '@/lib/types/batch';
+import { CloseBatchInput, CreateSubBatchInput } from '@/lib/types/batch';
 
 export default function BatchDetailPage({
   params,
@@ -48,12 +50,15 @@ export default function BatchDetailPage({
   const tSpecies = useTranslations('locations.species');
   const tTypes = useTranslations('locations.types');
   const tDevices = useTranslations('devices');
+  const tBatchForm = useTranslations('batches.form');
   const router = useRouter();
   const {
     getBatchWithFullDetails,
     updateBatch,
     deleteBatch,
     closeBatch,
+    createSubBatch,
+    updateSubBatch,
     isLoading,
   } = useBatches();
 
@@ -279,15 +284,33 @@ export default function BatchDetailPage({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Farm */}
-            {locations.farm && (
+            {/* Sex */}
+            {batchDetails.sex && (
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-2">
-                  {tTypes('farm')}
+                  {t('sex')}
                 </p>
                 <Badge variant="outline" className="text-base py-1 px-3">
-                  {locations.farm.name}
+                  {tBatchForm(`sex${batchDetails.sex.charAt(0).toUpperCase() + batchDetails.sex.slice(1)}`)}
                 </Badge>
+              </div>
+            )}
+
+            {/* Farms */}
+            {locations.farms && locations.farms.length > 0 && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">
+                  {tTypes('farm')} {locations.farms.length > 1 ? `(${locations.farms.length})` : ''}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {locations.farms.map((farm) => (
+                    <Link key={farm.id} href={`/ubicaciones/${farm.id}`}>
+                      <Badge variant="outline" className="text-base py-1 px-3 cursor-pointer hover:bg-accent">
+                        {farm.name}
+                      </Badge>
+                    </Link>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -298,16 +321,21 @@ export default function BatchDetailPage({
                   {t('barns')} ({locations.barns.length})
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {locations.barns.map((barn) => (
-                    <Badge key={barn.id} variant="secondary">
-                      {barn.name}
-                    </Badge>
-                  ))}
+                  {locations.barns.map((barn) => {
+                    const farmForBarn = locations.farms.find(f => f.id === barn.parentId) || locations.farms[0];
+                    return (
+                      <Link key={barn.id} href={`/ubicaciones/${barn.id}`}>
+                        <Badge key={barn.id} variant="secondary" className="cursor-pointer hover:bg-accent">
+                          {barn.name}
+                        </Badge>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
-            {/* Pens */}
+            {/* Pens - show sex by pen if applicable */}
             {locations.pens.length > 0 && (
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-2">
@@ -315,15 +343,101 @@ export default function BatchDetailPage({
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {locations.pens.map((pen) => (
-                    <Badge key={pen.id} variant="secondary">
-                      {pen.name}
-                    </Badge>
+                    <Link key={pen.id} href={`/ubicaciones/${pen.id}`}>
+                      <Badge variant="secondary" className="cursor-pointer hover:bg-accent">
+                        {pen.name}
+                      </Badge>
+                    </Link>
                   ))}
                 </div>
               </div>
             )}
           </CardContent>
         </Card>
+
+        {/* Sub-batches Card - only for mixed batches */}
+        {batchDetails.sex === 'mixed' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                {t('subBatches')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {batchDetails.subBatches && batchDetails.subBatches.length > 0 ? (
+                <div className="space-y-4">
+                  {batchDetails.subBatches.map((subBatch) => (
+                    <div key={subBatch.id} className="p-3 rounded-lg border">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <p className="font-medium">{subBatch.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {subBatch.animalCount} {t('animals')} • {subBatch.penAssignments?.length || 0} {subBatch.penAssignments?.length === 1 ? 'corral' : 'corrales'}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <SubBatchDialog
+                            batch={batchDetails}
+                            availablePens={locations.pens}
+                            editSubBatch={subBatch}
+                            onSubmit={async (input: CreateSubBatchInput) => {
+                              await createSubBatch(input);
+                            }}
+                            onUpdate={async (id: string, input: Partial<CreateSubBatchInput>) => {
+                              await updateSubBatch(id, input);
+                            }}
+                            trigger={
+                              <Button variant="ghost" size="sm">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            }
+                          />
+                          <Badge variant={subBatch.sex === 'male' ? 'default' : 'secondary'}>
+                            {subBatch.sex === 'male' ? tBatchForm('sexMale') : tBatchForm('sexFemale')}
+                          </Badge>
+                        </div>
+                      </div>
+                      {/* Pen Distribution */}
+                      {subBatch.penAssignments && subBatch.penAssignments.length > 0 && (
+                        <div className="mt-2 pt-2 border-t">
+                          <p className="text-xs text-muted-foreground mb-1">{t('distributionByPen')}:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {subBatch.penAssignments.map((pa) => {
+                              const pen = locations.pens.find(p => p.id === pa.penId);
+                              return pen ? (
+                                <Badge key={pa.penId} variant="outline" className="text-xs">
+                                  {pen.name}: {pa.animalCount}
+                                </Badge>
+                              ) : null;
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {t('noSubBatches')}
+                </p>
+              )}
+              <SubBatchDialog
+                batch={batchDetails}
+                availablePens={locations.pens}
+                onSubmit={async (input: CreateSubBatchInput) => {
+                  await createSubBatch(input);
+                }}
+                trigger={
+                  <Button variant="outline" className="w-full">
+                    <Plus className="h-4 w-4 mr-2" />
+                    {t('createSubBatch')}
+                  </Button>
+                }
+              />
+            </CardContent>
+          </Card>
+        )}
 
         {/* Devices Card */}
         <Card>

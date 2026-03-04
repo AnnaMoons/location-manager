@@ -186,8 +186,11 @@ export function validateBatchInput(
     }
   }
 
-  // Validate that pens belong to the selected barns
-  if (locations && input.penIds && input.penIds.length > 0 && input.barnIds) {
+  // Only validate pens if species has that level (not layers)
+  const hierarchy = input.species ? speciesHierarchies[input.species] : null;
+  const hasPenLevel = hierarchy && hierarchy.levels.includes('pen');
+
+  if (hasPenLevel && locations && input.penIds && input.penIds.length > 0 && input.barnIds) {
     const invalidPens = input.penIds.filter((penId) => {
       const pen = locations.find((l) => l.id === penId);
       return !pen || !input.barnIds!.includes(pen.parentId || '');

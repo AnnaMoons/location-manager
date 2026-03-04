@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { CheckboxGroup } from '@/components/ui/checkbox';
-import { CreateBatchInput } from '@/lib/types/batch';
+import { CreateBatchInput, BatchSex } from '@/lib/types/batch';
 import { Species, speciesHierarchies } from '@/lib/types/species';
 import { useLocations } from '@/lib/hooks/useLocations';
 import { Location } from '@/lib/types/location';
@@ -32,12 +32,10 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
     initialData || {}
   );
 
-  // Get farms for selected species
   const farms = formData.species
     ? filterBySpecies(formData.species).filter((l) => l.type === 'farm')
     : [];
 
-  // Get barns for selected farms
   const getBarnsForFarms = (farmIds: string[]): Location[] => {
     const barns: Location[] = [];
     farmIds.forEach((farmId) => {
@@ -51,7 +49,6 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
     ? getBarnsForFarms(formData.farmIds)
     : [];
 
-  // Get pens grouped by barn
   const getPensForBarns = (barnIds: string[]): Record<string, Location[]> => {
     const pensMap: Record<string, Location[]> = {};
     barnIds.forEach((barnId) => {
@@ -69,7 +66,6 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
 
   const hasAnyPens = Object.keys(pensGroupedByBarn).length > 0;
 
-  // Determine if we should show pens (species has 3+ levels)
   const speciesHierarchy = formData.species
     ? speciesHierarchies[formData.species]
     : null;
@@ -82,21 +78,18 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
     onChange(newData);
   };
 
-  // Reset dependent selections when species changes
   useEffect(() => {
     if (formData.species && !initialData?.farmIds) {
       updateFormData({ farmIds: [], barnIds: [], penIds: [] });
     }
   }, [formData.species]);
 
-  // Reset barns and pens when farms change
   useEffect(() => {
     if (formData.farmIds && !initialData?.barnIds) {
       updateFormData({ barnIds: [], penIds: [] });
     }
   }, [formData.farmIds]);
 
-  // Clean up penIds when barnIds change (remove pens from unselected barns)
   useEffect(() => {
     if (formData.penIds && formData.penIds.length > 0 && formData.barnIds) {
       const validPenIds = formData.penIds.filter((penId) => {
@@ -109,13 +102,20 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
     }
   }, [formData.barnIds]);
 
-  // Convert farms to checkbox options
+  useEffect(() => {
+    if (formData.startDate && !formData.estimatedEndDate) {
+      const startDate = new Date(formData.startDate);
+      const estimatedEndDate = new Date(startDate);
+      estimatedEndDate.setDate(estimatedEndDate.getDate() + 90);
+      updateFormData({ estimatedEndDate: estimatedEndDate.toISOString() });
+    }
+  }, [formData.startDate]);
+
   const farmOptions = farms.map((farm) => ({
     value: farm.id,
     label: farm.name,
   }));
 
-  // Convert barns to checkbox options
   const barnOptions = barns.map((barn) => ({
     value: barn.id,
     label: barn.name,
@@ -123,7 +123,6 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
 
   return (
     <div className="space-y-6">
-      {/* Batch Name */}
       <div className="space-y-2">
         <Label htmlFor="name">{t('name')} (*)</Label>
         <Input
@@ -137,7 +136,6 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
         )}
       </div>
 
-      {/* Species */}
       <div className="space-y-2">
         <Label>{t('species')} (*)</Label>
         <Select
@@ -160,12 +158,39 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
         )}
       </div>
 
-      {/* Location Selection - Hierarchical */}
+      <div className="space-y-2">
+        <Label>{t('sex')}</Label>
+        <Select
+          value={formData.sex || ''}
+          onValueChange={(value: BatchSex | '') =>
+            updateFormData({ sex: value || undefined })
+          }
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={t('sexPlaceholder')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="mixed">{t('sexMixed')}</SelectItem>
+            <SelectItem value="female">{t('sexFemale')}</SelectItem>
+            <SelectItem value="male">{t('sexMale')}</SelectItem>
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">
+          {t('sexHint')}
+        </p>
+      </div>
+
       {formData.species && (
         <>
-          {/* Farm Multi-Selection */}
           <div className="space-y-2">
-            <Label>{t('selectFarms')} (*)</Label>
+            <div className="flex items-center justify-between">
+              <Label>{t('selectFarms')} (*)</Label>
+              {formData.farmIds && formData.farmIds.length > 0 && (
+                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                  {formData.farmIds.length} {formData.farmIds.length === 1 ? 'granja' : 'granjas'}
+                </span>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground mb-2">
               {t('selectFarmsHint')}
             </p>
@@ -179,10 +204,16 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
             )}
           </div>
 
-          {/* Barn Multi-Selection */}
           {formData.farmIds && formData.farmIds.length > 0 && barns.length > 0 && (
             <div className="space-y-2">
-              <Label>{t('selectBarns')} (*)</Label>
+              <div className="flex items-center justify-between">
+                <Label>{t('selectBarns')} (*)</Label>
+                {formData.barnIds && formData.barnIds.length > 0 && (
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                    {formData.barnIds.length} {formData.barnIds.length === 1 ? 'galpón' : 'galpones'}
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-muted-foreground mb-2">
                 {t('selectBarnsHint')}
               </p>
@@ -197,50 +228,75 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
             </div>
           )}
 
-          {/* Pen Multi-Selection (grouped by barn) */}
           {hasDeepestLevel &&
             formData.barnIds &&
             formData.barnIds.length > 0 &&
             hasAnyPens && (
               <div className="space-y-2">
-                <Label>{t('selectPens')}</Label>
+                <div className="flex items-center justify-between">
+                  <Label>{t('selectPens')}</Label>
+                  {formData.penIds && formData.penIds.length > 0 && (
+                    <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                      {formData.penIds.length} {formData.penIds.length === 1 ? 'corral' : 'corrales'}
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground mb-2">
                   {t('selectPensHint')}
                 </p>
                 <div className="space-y-4">
                   {Object.entries(pensGroupedByBarn).map(([barnId, pens]) => {
                     const barn = barns.find((b) => b.id === barnId);
-                    const penOptionsForBarn = pens.map((pen) => ({
-                      value: pen.id,
-                      label: pen.name,
-                    }));
+                    const selectedPensInBarn = (formData.penIds || []).filter(pid =>
+                      pens.some(p => p.id === pid)
+                    ).length;
 
                     return (
-                      <div key={barnId} className="space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          {barn?.name}
-                        </p>
-                        <CheckboxGroup
-                          options={penOptionsForBarn}
-                          value={formData.penIds || []}
-                          onChange={(value) => {
-                            // Merge with existing penIds from other barns
-                            const otherBarnPenIds = (formData.penIds || []).filter(
-                              (penId) => {
-                                const pen = locations.find((l) => l.id === penId);
-                                return pen && pen.parentId !== barnId;
-                              }
+                      <div key={barnId} className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-medium text-muted-foreground">
+                            {barn?.name}
+                          </p>
+                          {selectedPensInBarn > 0 && (
+                            <span className="text-xs text-muted-foreground">
+                              {selectedPensInBarn}/{pens.length}
+                            </span>
+                          )}
+                        </div>
+                        <div className="grid gap-2">
+                          {pens.map((pen) => {
+                            const isSelected = (formData.penIds || []).includes(pen.id);
+                            return (
+                              <div
+                                key={pen.id}
+                                className={`flex items-center gap-3 p-2 rounded-lg border transition-colors ${
+                                  isSelected ? 'border-primary bg-primary/5' : 'border-muted'
+                                }`}
+                              >
+                                <CheckboxGroup
+                                  options={[{ value: pen.id, label: pen.name }]}
+                                  value={formData.penIds || []}
+                                  onChange={(value) => {
+                                    const otherBarnPenIds = (formData.penIds || []).filter(
+                                      (penId) => {
+                                        const p = locations.find((l) => l.id === penId);
+                                        return p && p.parentId !== barnId;
+                                      }
+                                    );
+                                    updateFormData({
+                                      penIds: [
+                                        ...otherBarnPenIds,
+                                        ...value.filter((v) =>
+                                          pens.some((p) => p.id === v)
+                                        ),
+                                      ],
+                                    });
+                                  }}
+                                />
+                              </div>
                             );
-                            updateFormData({
-                              penIds: [
-                                ...otherBarnPenIds,
-                                ...value.filter((v) =>
-                                  pens.some((p) => p.id === v)
-                                ),
-                              ],
-                            });
-                          }}
-                        />
+                          })}
+                        </div>
                       </div>
                     );
                   })}
@@ -253,7 +309,6 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
         </>
       )}
 
-      {/* Animal Count */}
       <div className="space-y-2">
         <Label htmlFor="animalCount">{t('animalCount')} (*)</Label>
         <Input
@@ -271,7 +326,6 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
         )}
       </div>
 
-      {/* Average Age at Start */}
       <div className="space-y-2">
         <Label htmlFor="averageAgeAtStart">{t('averageAge')} (*)</Label>
         <div className="flex gap-2 items-center">
@@ -295,7 +349,6 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
         )}
       </div>
 
-      {/* Start Date */}
       <div className="space-y-2">
         <Label htmlFor="startDate">{t('startDate')} (*)</Label>
         <Input
@@ -319,7 +372,6 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
         )}
       </div>
 
-      {/* Estimated End Date (Optional) */}
       <div className="space-y-2">
         <Label htmlFor="estimatedEndDate">{t('estimatedEndDate')}</Label>
         <Input

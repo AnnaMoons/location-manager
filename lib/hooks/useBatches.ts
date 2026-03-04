@@ -13,13 +13,15 @@ import {
   getBatchLocationIds,
   BatchStatus,
   CloseBatchInput,
+  SubBatch,
+  CreateSubBatchInput,
 } from '../types/batch';
 import { Species } from '../types/species';
 import { Location } from '../types/location';
 import { Device } from '../types/device';
 
 export interface BatchLocations {
-  farm: Location | undefined;
+  farms: Location[];
   barns: Location[];
   pens: Location[];
 }
@@ -32,6 +34,7 @@ export interface BatchDevices {
 export interface BatchWithFullDetails extends Batch {
   locations: BatchLocations;
   devices: BatchDevices;
+  subBatches: SubBatch[];
   currentAge: number;
   daysRemaining: number | null;
 }
@@ -47,6 +50,10 @@ export function useBatches() {
     deleteBatch,
     getBatch,
     closeBatch: contextCloseBatch,
+    subBatches,
+    getSubBatchesByParent,
+    createSubBatch: contextCreateSubBatch,
+    updateSubBatch: contextUpdateSubBatch,
   } = useData();
 
   const activeBatches = useMemo(() => getActiveBatches(batches), [batches]);
@@ -67,11 +74,11 @@ export function useBatches() {
    * Get farm, barns, and pens for a batch
    */
   const getBatchLocations = (batch: Batch): BatchLocations => {
-    const farm = locations.find((l) => l.id === batch.farmId);
+    const farms = locations.filter((l) => batch.farmIds?.includes(l.id));
     const barns = locations.filter((l) => batch.barnIds?.includes(l.id));
     const pens = locations.filter((l) => batch.penIds?.includes(l.id));
 
-    return { farm, barns, pens };
+    return { farms, barns, pens };
   };
 
   /**
@@ -106,11 +113,13 @@ export function useBatches() {
     const batchDevices = getBatchDevices(batch);
     const currentAge = calculateCurrentAge(batch);
     const daysRemaining = calculateDaysRemaining(batch);
+    const batchSubBatches = getSubBatchesByParent(id);
 
     return {
       ...batch,
       locations: batchLocations,
       devices: batchDevices,
+      subBatches: batchSubBatches,
       currentAge,
       daysRemaining,
     };
@@ -126,8 +135,9 @@ export function useBatches() {
 
     return {
       ...batch,
-      location: batchLocations.farm, // For backwards compatibility
-      farm: batchLocations.farm,
+      location: batchLocations.farms[0], // For backwards compatibility
+      farm: batchLocations.farms[0],
+      farms: batchLocations.farms,
       barns: batchLocations.barns,
       pens: batchLocations.pens,
       currentAge,
@@ -145,8 +155,9 @@ export function useBatches() {
       const batchLocations = getBatchLocations(batch);
       return {
         ...batch,
-        location: batchLocations.farm, // For backwards compatibility
-        farm: batchLocations.farm,
+        location: batchLocations.farms[0], // For backwards compatibility
+        farm: batchLocations.farms[0],
+        farms: batchLocations.farms,
         barns: batchLocations.barns,
         pens: batchLocations.pens,
         currentAge: calculateCurrentAge(batch),
@@ -159,6 +170,14 @@ export function useBatches() {
     return contextCloseBatch(id, input);
   };
 
+  const createSubBatch = async (input: CreateSubBatchInput): Promise<SubBatch> => {
+    return contextCreateSubBatch(input);
+  };
+
+  const updateSubBatch = async (id: string, input: Partial<CreateSubBatchInput>): Promise<SubBatch> => {
+    return contextUpdateSubBatch(id, input);
+  };
+
   return {
     batches,
     activeBatches,
@@ -168,6 +187,8 @@ export function useBatches() {
     deleteBatch,
     getBatch,
     closeBatch,
+    createSubBatch,
+    updateSubBatch,
     getBatchWithDetails,
     getBatchWithFullDetails,
     getBatchLocations,

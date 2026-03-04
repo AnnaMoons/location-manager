@@ -1,9 +1,44 @@
 import { Species } from './species';
 
+export type BatchSex = 'mixed' | 'female' | 'male';
+
+export interface BatchPenSex {
+  penId: string;
+  sex: BatchSex;
+}
+
+export interface SubBatchPenAssignment {
+  penId: string;
+  animalCount: number;
+}
+
+export interface SubBatch {
+  id: string;
+  parentBatchId: string;
+  name: string;
+  sex: 'female' | 'male';
+  penAssignments: SubBatchPenAssignment[];
+  animalCount: number;
+  status: BatchStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateSubBatchInput {
+  parentBatchId: string;
+  name: string;
+  sex: 'female' | 'male';
+  penAssignments: SubBatchPenAssignment[];
+  animalCount: number;
+}
+
 export interface Batch {
   id: string;
   name: string;
   species: Species;
+  sex?: BatchSex;
+  // Sublotes asociados (solo para lotes mixtos)
+  subBatchIds?: string[];
   // Multi-location support
   farmIds: string[];
   barnIds: string[];
@@ -31,6 +66,7 @@ export type BatchStatus = 'active' | 'completed' | 'cancelled';
 export interface CreateBatchInput {
   name: string;
   species: Species;
+  sex?: BatchSex;
   farmIds: string[];
   barnIds: string[];
   penIds?: string[];
@@ -38,10 +74,14 @@ export interface CreateBatchInput {
   averageAgeAtStart: number;
   startDate: string;
   estimatedEndDate?: string;
+  // Sublotes a crear junto con el lote
+  subBatches?: CreateSubBatchInput[];
 }
 
 export interface UpdateBatchInput {
   name?: string;
+  sex?: BatchSex;
+  subBatchIds?: string[];
   farmIds?: string[];
   barnIds?: string[];
   penIds?: string[];

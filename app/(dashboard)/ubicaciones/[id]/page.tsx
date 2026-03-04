@@ -7,6 +7,7 @@ import { Edit, Trash2, MapPin, Cpu, Plus, Home, Warehouse, LayoutGrid, LucideIco
 import { canHaveChildren, getNextLevelType, speciesHierarchies, LocationType } from '@/lib/types/species';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { DeviceStateChip } from '@/components/devices/DeviceStateChip';
 import {
