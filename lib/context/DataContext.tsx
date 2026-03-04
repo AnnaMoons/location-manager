@@ -8,6 +8,7 @@ import { migrateAllBatches, needsBatchMigration } from '../utils/migration';
 import initialLocations from '../mock-data/locations.json';
 import initialDevices from '../mock-data/devices.json';
 import initialBatches from '../mock-data/batches.json';
+import initialSubBatches from '../mock-data/subbatches.json';
 
 const STORAGE_KEY_LOCATIONS = 'smartfarm_locations';
 const STORAGE_KEY_DEVICES = 'smartfarm_devices';
@@ -88,7 +89,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
         // Load subbatches
         const storedSubBatches = localStorage.getItem(STORAGE_KEY_SUB_BATCHES);
-        const loadedSubBatches = storedSubBatches ? JSON.parse(storedSubBatches) : [];
+        const loadedSubBatches = storedSubBatches 
+          ? JSON.parse(storedSubBatches) 
+          : (initialSubBatches as SubBatch[]);
         setSubBatches(loadedSubBatches);
       } catch {
         setLocations(initialLocations as Location[]);
@@ -99,6 +102,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           initialLocations as Location[]
         );
         setBatches(migratedBatches);
+        setSubBatches(initialSubBatches as SubBatch[]);
       }
       setIsLoading(false);
     };

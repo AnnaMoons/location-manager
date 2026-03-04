@@ -1,0 +1,41 @@
+[
+  {
+    "id": "subbatch-001",
+    "parentBatchId": "batch-001",
+    "name": "Lote Ceba Octubre 2025 - Machos",
+    "sex": "male",
+    "penAssignments": [
+      { "penId": "loc-004", "animalCount": 60 }
+    ],
+    "animalCount": 60,
+    "status": "active",
+    "createdAt": "2025-10-15T08:30:00Z",
+    "updatedAt": "2025-10-15T08:30:00Z"
+  },
+  {
+    "id": "subbatch-002",
+    "parentBatchId": "batch-001",
+    "name": "Lote Ceba Octubre 2025 - Hembras",
+    "sex": "female",
+    "penAssignments": [
+      { "penId": "loc-005", "animalCount": 60 }
+    ],
+    "animalCount": 60,
+    "status": "active",
+    "createdAt": "2025-10-15T08:35:00Z",
+    "updatedAt": "2025-10-15T08:35:00Z"
+  },
+  {
+    "id": "subbatch-003",
+    "parentBatchId": "batch-004",
+    "name": "Engorde Ciclo 1-2026 - Machos",
+    "sex": "male",
+    "penAssignments": [
+      { "penId": "loc-013", "animalCount": 8000 }
+    ],
+    "animalCount": 8000,
+    "status": "active",
+    "createdAt": "2025-12-18T09:00:00Z",
+    "updatedAt": "2025-12-18T09:00:00Z"
+  }
+]
