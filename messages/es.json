@@ -400,7 +400,7 @@
     "noDevices": "Sin dispositivos asociados",
     "weightDevices": "Medición de peso",
     "environmentDevices": "Condiciones ambientales",
-    "closeBatch": "Completar lote",
+    "closeBatch": "Finalizar lote",
     "closedDate": "Fecha de cierre",
     "closeReason": "Motivo de cierre",
     "status": {
@@ -424,7 +424,7 @@
     "createError": "Error al crear el lote. Intenta de nuevo.",
     "updateError": "Error al actualizar el lote. Intenta de nuevo.",
     "close": {
-      "title": "Completar lote",
+      "title": "Finalizar lote",
       "description": "Indica cómo terminó este lote y cuándo se completó.",
       "closeType": "Tipo de cierre",
       "completed": "Completado exitosamente",

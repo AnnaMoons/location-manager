@@ -400,7 +400,7 @@
     "noDevices": "No associated devices",
     "weightDevices": "Weight measurement",
     "environmentDevices": "Environmental conditions",
-    "closeBatch": "Complete batch",
+    "closeBatch": "Finish batch",
     "closedDate": "Closed date",
     "closeReason": "Close reason",
     "status": {
@@ -424,7 +424,7 @@
     "createError": "Error creating batch. Please try again.",
     "updateError": "Error updating batch. Please try again.",
     "close": {
-      "title": "Complete batch",
+      "title": "Finish batch",
       "description": "Indicate how this batch ended and when it was completed.",
       "closeType": "Close type",
       "completed": "Completed successfully",
