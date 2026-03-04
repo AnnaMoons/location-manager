@@ -377,6 +377,9 @@ export default function BatchDetailPage({
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
+                          <Badge variant={subBatch.sex === 'male' ? 'default' : 'secondary'}>
+                            {subBatch.sex === 'male' ? tBatchForm('sexMale') : tBatchForm('sexFemale')}
+                          </Badge>
                           <SubBatchDialog
                             batch={batchDetails}
                             availablePens={locations.pens}
@@ -393,9 +396,6 @@ export default function BatchDetailPage({
                               </Button>
                             }
                           />
-                          <Badge variant={subBatch.sex === 'male' ? 'default' : 'secondary'}>
-                            {subBatch.sex === 'male' ? tBatchForm('sexMale') : tBatchForm('sexFemale')}
-                          </Badge>
                         </div>
                       </div>
                       {/* Pen Distribution */}

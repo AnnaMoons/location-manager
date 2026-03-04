@@ -324,7 +324,11 @@ export function SubBatchDialog({
                           <span className="flex-1 text-sm">{pen.name}</span>
                           {isSelected && (
                             <div className="flex items-center gap-1">
+                              <Label htmlFor={`count-${pen.id}`} className="text-xs text-muted-foreground">
+                                #
+                              </Label>
                               <Input
+                                id={`count-${pen.id}`}
                                 type="number"
                                 min="1"
                                 value={getPenCount(pen.id)}
