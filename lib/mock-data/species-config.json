@@ -9,7 +9,7 @@
       "barn": { "es": "Galpón", "en": "Barn" },
       "pen": { "es": "Corral", "en": "Pen" }
     },
-    "deviceTypes": ["pigvision", "scale", "sensor"]
+    "deviceTypes": ["pigvision", "sensor"]
   },
   "broilers": {
     "name": "Pollos de engorde",
@@ -32,6 +32,6 @@
       "farm": { "es": "Granja", "en": "Farm" },
       "barn": { "es": "Galpón", "en": "Barn" }
     },
-    "deviceTypes": ["scale", "sensor"]
+    "deviceTypes": ["sensor"]
   }
 }

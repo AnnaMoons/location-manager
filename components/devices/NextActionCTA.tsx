@@ -50,6 +50,10 @@ export function NextActionCTA({ device, variant = 'button' }: NextActionCTAProps
 
   if (!action) return null;
 
+  // If device has no location, use "assignLocation" label for configure action
+  const needsLocationAssignment = !device.locationId && (action === 'configure' || action === 'install');
+  const labelKey = needsLocationAssignment ? 'assignLocation' : action;
+
   const config = actionConfig[action];
   const Icon = config.icon;
   const href = config.href(device.id);
@@ -58,7 +62,7 @@ export function NextActionCTA({ device, variant = 'button' }: NextActionCTAProps
     return (
       <Link href={href} className="flex items-center text-sm text-primary hover:underline">
         <Icon className="h-4 w-4 mr-1" />
-        {t(config.labelKey)}
+        {t(labelKey)}
         <ChevronRight className="h-4 w-4" />
       </Link>
     );
@@ -71,7 +75,7 @@ export function NextActionCTA({ device, variant = 'button' }: NextActionCTAProps
         className="text-[#005980] hover:underline font-roboto text-xs leading-[20px] whitespace-nowrap"
         style={{ fontFeatureSettings: '"liga" off, "clig" off' }}
       >
-        {t(config.labelKey)}
+        {t(labelKey)}
       </Link>
     );
   }
@@ -80,7 +84,7 @@ export function NextActionCTA({ device, variant = 'button' }: NextActionCTAProps
     <Link href={href}>
       <Button size="sm" variant={action === 'activate' ? 'secondary' : 'default'}>
         <Icon className="h-4 w-4 mr-2" />
-        {t(config.labelKey)}
+        {t(labelKey)}
       </Button>
     </Link>
   );

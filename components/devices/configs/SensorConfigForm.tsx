@@ -62,7 +62,7 @@ export function SensorConfigForm({
           }}
         >
           <SelectTrigger className={errors.sensorType ? 'border-destructive' : ''}>
-            <SelectValue placeholder="Seleccionar tipo de sensor" />
+            <SelectValue placeholder={t('sensorTypePlaceholder')} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="temperature">{t('temperature')}</SelectItem>
@@ -148,7 +148,7 @@ export function SensorConfigForm({
             className={errors.readingInterval ? 'border-destructive' : ''}
           />
           <span className="flex items-center text-sm text-muted-foreground w-20">
-            segundos
+            {t('seconds')}
           </span>
         </div>
         <p className="text-xs text-muted-foreground">{t('readingIntervalDesc')}</p>

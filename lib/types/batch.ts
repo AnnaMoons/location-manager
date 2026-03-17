@@ -9,7 +9,6 @@ export interface BatchPenSex {
 
 export interface SubBatchPenAssignment {
   penId: string;
-  animalCount: number;
 }
 
 export interface SubBatch {
@@ -18,7 +17,6 @@ export interface SubBatch {
   name: string;
   sex: 'female' | 'male';
   penAssignments: SubBatchPenAssignment[];
-  animalCount: number;
   status: BatchStatus;
   createdAt: string;
   updatedAt: string;
@@ -29,7 +27,6 @@ export interface CreateSubBatchInput {
   name: string;
   sex: 'female' | 'male';
   penAssignments: SubBatchPenAssignment[];
-  animalCount: number;
 }
 
 export interface Batch {

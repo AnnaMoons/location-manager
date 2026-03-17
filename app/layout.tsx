@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 import { DataProvider } from '@/lib/context/DataContext';
 import { ThemeProvider } from '@/components/shared/ThemeProvider';
+import { ToastProvider } from '@/components/ui/toast';
 import './globals.css';
 
 const roboto = Roboto({
@@ -44,7 +45,9 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <NextIntlClientProvider messages={messages}>
-            <DataProvider>{children}</DataProvider>
+            <ToastProvider>
+              <DataProvider>{children}</DataProvider>
+            </ToastProvider>
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>

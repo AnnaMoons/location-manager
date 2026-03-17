@@ -32,6 +32,8 @@ export default function ConfigureDevicePage({
 }) {
   const { id } = params;
   const t = useTranslations('devices.configuration');
+  const tDetail = useTranslations('devices.detail');
+  const tInstall = useTranslations('devices.installation');
   const tCommon = useTranslations('common');
   const router = useRouter();
   const { getDevice, configureDevice, isLoading } = useDevices();
@@ -51,9 +53,9 @@ export default function ConfigureDevicePage({
   if (!device) {
     return (
       <EmptyState
-        title="Dispositivo no encontrado"
-        description="El dispositivo que buscas no existe"
-        actionLabel="Ver dispositivos"
+        title={tDetail('notFound')}
+        description={tDetail('notFoundDesc')}
+        actionLabel={tDetail('backToList')}
         actionHref="/dispositivos"
       />
     );
@@ -63,9 +65,9 @@ export default function ConfigureDevicePage({
     return (
       <EmptyState
         icon={Settings}
-        title="Dispositivo no instalado"
-        description="El dispositivo debe estar instalado antes de configurarlo"
-        actionLabel="Instalar dispositivo"
+        title={tInstall('notInstalled')}
+        description={tInstall('notInstalledDesc')}
+        actionLabel={tInstall('installDevice')}
         actionHref={`/dispositivos/${id}/instalar`}
       />
     );
@@ -85,7 +87,7 @@ export default function ConfigureDevicePage({
         validation = validateSensorConfig(config as Partial<SensorConfig>);
         break;
       default:
-        validation = { valid: false, errors: { type: 'Tipo de dispositivo desconocido' } };
+        validation = { valid: false, errors: { type: t('unknownType') } };
     }
 
     if (!validation.valid) {
@@ -100,7 +102,7 @@ export default function ConfigureDevicePage({
       await configureDevice(device.id, config as DeviceConfig);
       router.push(`/dispositivos/${id}`);
     } catch (error) {
-      setErrors({ submit: 'Error al configurar el dispositivo' });
+      setErrors({ submit: t('saveError') });
     } finally {
       setIsSubmitting(false);
     }
@@ -132,7 +134,7 @@ export default function ConfigureDevicePage({
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Settings className="h-5 w-5" />
-            Parámetros de configuración
+            {t('paramsTitle')}
           </CardTitle>
         </CardHeader>
         <CardContent>

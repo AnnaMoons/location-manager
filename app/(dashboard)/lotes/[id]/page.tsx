@@ -59,10 +59,12 @@ export default function BatchDetailPage({
     closeBatch,
     createSubBatch,
     updateSubBatch,
+    deleteSubBatch,
     isLoading,
   } = useBatches();
 
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeletingSubBatch, setIsDeletingSubBatch] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const batchDetails = getBatchWithFullDetails(id);
@@ -126,6 +128,17 @@ export default function BatchDetailPage({
       console.error('Error reactivating batch:', error);
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleDeleteSubBatch = async (subBatchId: string) => {
+    setIsDeletingSubBatch(subBatchId);
+    try {
+      await deleteSubBatch(subBatchId);
+    } catch (error) {
+      console.error('Error deleting sub-batch:', error);
+    } finally {
+      setIsDeletingSubBatch(null);
     }
   };
 
@@ -355,9 +368,9 @@ export default function BatchDetailPage({
           </CardContent>
         </Card>
 
-        {/* Sub-batches Card - only for mixed batches */}
+        {/* Sub-batches Card - only for mixed batches, full width */}
         {batchDetails.sex === 'mixed' && (
-          <Card>
+          <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5" />
@@ -366,14 +379,14 @@ export default function BatchDetailPage({
             </CardHeader>
             <CardContent className="space-y-4">
               {batchDetails.subBatches && batchDetails.subBatches.length > 0 ? (
-                <div className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
                   {batchDetails.subBatches.map((subBatch) => (
                     <div key={subBatch.id} className="p-3 rounded-lg border">
                       <div className="flex items-center justify-between mb-2">
                         <div>
                           <p className="font-medium">{subBatch.name}</p>
                           <p className="text-sm text-muted-foreground">
-                            {subBatch.animalCount} {t('animals')} • {subBatch.penAssignments?.length || 0} {subBatch.penAssignments?.length === 1 ? 'corral' : 'corrales'}
+                            {subBatch.penAssignments?.length || 0} {subBatch.penAssignments?.length === 1 ? 'corral' : 'corrales'}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -396,6 +409,30 @@ export default function BatchDetailPage({
                               </Button>
                             }
                           />
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>{t('deleteSubBatch')}</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  {t('deleteSubBatchConfirm')}
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteSubBatch(subBatch.id)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  {isDeletingSubBatch === subBatch.id ? t('deleting') : t('confirmDelete')}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </div>
                       {/* Pen Distribution */}
@@ -407,7 +444,7 @@ export default function BatchDetailPage({
                               const pen = locations.pens.find(p => p.id === pa.penId);
                               return pen ? (
                                 <Badge key={pa.penId} variant="outline" className="text-xs">
-                                  {pen.name}: {pa.animalCount}
+                                  {pen.name}
                                 </Badge>
                               ) : null;
                             })}

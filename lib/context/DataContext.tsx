@@ -5,6 +5,7 @@ import { Location, CreateLocationInput, UpdateLocationInput } from '../types/loc
 import { Device, DeviceConfig, DeviceState, DeviceHistoryEntry, DeviceHistoryAction } from '../types/device';
 import { Batch, CreateBatchInput, UpdateBatchInput, CloseBatchInput, SubBatch, CreateSubBatchInput } from '../types/batch';
 import { migrateAllBatches, needsBatchMigration } from '../utils/migration';
+import { validateDeviceInstallation } from '../utils/validation';
 import initialLocations from '../mock-data/locations.json';
 import initialDevices from '../mock-data/devices.json';
 import initialBatches from '../mock-data/batches.json';
@@ -229,6 +230,25 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const installDevice = async (deviceId: string, locationId: string): Promise<Device> => {
     await simulateDelay();
+
+    // Validate installation rules
+    const deviceToInstall = devices.find((d) => d.id === deviceId);
+    const targetLocation = locations.find((l) => l.id === locationId);
+
+    if (!deviceToInstall) {
+      throw new Error('Device not found');
+    }
+
+    if (targetLocation) {
+      const devicesAtLocation = devices.filter(
+        (d) => d.locationId === locationId && d.id !== deviceId
+      );
+      const validation = validateDeviceInstallation(deviceToInstall, targetLocation, devicesAtLocation);
+      if (!validation.valid) {
+        const errorMsg = Object.values(validation.errors).join('. ');
+        throw new Error(errorMsg);
+      }
+    }
 
     let updatedDevice: Device | undefined;
 
@@ -465,7 +485,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
       name: input.name,
       sex: input.sex,
       penAssignments: input.penAssignments || [],
-      animalCount: input.animalCount,
       status: 'active',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

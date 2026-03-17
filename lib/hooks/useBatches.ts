@@ -54,6 +54,7 @@ export function useBatches() {
     getSubBatchesByParent,
     createSubBatch: contextCreateSubBatch,
     updateSubBatch: contextUpdateSubBatch,
+    deleteSubBatch: contextDeleteSubBatch,
   } = useData();
 
   const activeBatches = useMemo(() => getActiveBatches(batches), [batches]);
@@ -178,6 +179,10 @@ export function useBatches() {
     return contextUpdateSubBatch(id, input);
   };
 
+  const deleteSubBatch = async (id: string): Promise<void> => {
+    return contextDeleteSubBatch(id);
+  };
+
   return {
     batches,
     activeBatches,
@@ -189,6 +194,7 @@ export function useBatches() {
     closeBatch,
     createSubBatch,
     updateSubBatch,
+    deleteSubBatch,
     getBatchWithDetails,
     getBatchWithFullDetails,
     getBatchLocations,

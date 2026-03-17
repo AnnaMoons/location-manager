@@ -91,7 +91,7 @@ export default function DevicesPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar por número de serie..."
+                placeholder={t('searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9"
@@ -140,8 +140,8 @@ export default function DevicesPage() {
           ) : filteredDevices.length === 0 ? (
             <EmptyState
               icon={Search}
-              title="Sin resultados"
-              description="No se encontraron dispositivos con los filtros aplicados"
+              title={t('noResults')}
+              description={t('noResultsDesc')}
             />
           ) : (
             <DeviceTable devices={filteredDevices} />

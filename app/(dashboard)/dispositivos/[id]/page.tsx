@@ -41,6 +41,8 @@ import { DeviceStateChip } from '@/components/devices/DeviceStateChip';
 import { NextActionCTA } from '@/components/devices/NextActionCTA';
 import { useDevices } from '@/lib/hooks/useDevices';
 import { useLocations } from '@/lib/hooks/useLocations';
+import { useToast } from '@/components/ui/toast';
+import { useBatches } from '@/lib/hooks/useBatches';
 import { cn } from '@/lib/utils';
 import { GatewayConfig } from '@/lib/types/device';
 
@@ -58,13 +60,30 @@ export default function DeviceDetailPage({
 }) {
   const { id } = params;
   const t = useTranslations('devices');
+  const tCommon = useTranslations('common');
+  const tToast = useTranslations('toast');
   const router = useRouter();
   const { getDevice, uninstallDevice, setDeviceState, isLoading } = useDevices();
   const { getLocation, getPath } = useLocations();
+  const { toast } = useToast();
+  const { activeBatches, getBatchLocations } = useBatches();
 
   const device = getDevice(id);
   const location = device?.locationId ? getLocation(device.locationId) : null;
   const locationPath = location ? getPath(location.id) : [];
+
+  // Check if device is in an active batch
+  const activeBatchForDevice = location
+    ? activeBatches.find((batch) => {
+        const batchLocs = getBatchLocations(batch);
+        const allLocationIds = [
+          ...batchLocs.farms.map((f) => f.id),
+          ...batchLocs.barns.map((b) => b.id),
+          ...batchLocs.pens.map((p) => p.id),
+        ];
+        return allLocationIds.includes(location.id);
+      })
+    : null;
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -73,9 +92,9 @@ export default function DeviceDetailPage({
   if (!device) {
     return (
       <EmptyState
-        title="Dispositivo no encontrado"
-        description="El dispositivo que buscas no existe"
-        actionLabel="Ver dispositivos"
+        title={t('detail.notFound')}
+        description={t('detail.notFoundDesc')}
+        actionLabel={t('detail.backToList')}
         actionHref="/dispositivos"
       />
     );
@@ -84,16 +103,55 @@ export default function DeviceDetailPage({
   const Icon = deviceIcons[device.type];
 
   const handleUninstall = async () => {
-    await uninstallDevice(device.id);
-    router.push('/dispositivos');
+    try {
+      await uninstallDevice(device.id);
+      toast({
+        title: tToast('deviceUninstalled'),
+        description: tToast('deviceUninstalledDesc'),
+        variant: 'success',
+      });
+      router.push('/dispositivos');
+    } catch (error) {
+      toast({
+        title: tToast('error'),
+        description: tToast('errorGeneral'),
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleMaintenance = async () => {
-    await setDeviceState(device.id, 'disabled');
+    try {
+      await setDeviceState(device.id, 'disabled');
+      toast({
+        title: tToast('deviceDisabled'),
+        description: tToast('deviceDisabledDesc'),
+        variant: 'success',
+      });
+    } catch (error) {
+      toast({
+        title: tToast('error'),
+        description: tToast('errorGeneral'),
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleReactivate = async () => {
-    await setDeviceState(device.id, 'production');
+    try {
+      await setDeviceState(device.id, 'production');
+      toast({
+        title: tToast('deviceReactivated'),
+        description: tToast('deviceReactivatedDesc'),
+        variant: 'success',
+      });
+    } catch (error) {
+      toast({
+        title: tToast('error'),
+        description: tToast('errorGeneral'),
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
@@ -177,7 +235,7 @@ export default function DeviceDetailPage({
               <Link href={`/dispositivos/${id}/instalar?cambiar=true`}>
                 <Button variant="outline" size="sm" className="w-full">
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Cambiar ubicación
+                  {t('detail.changeLocation')}
                 </Button>
               </Link>
             </div>
@@ -187,7 +245,7 @@ export default function DeviceDetailPage({
               <Link href={`/dispositivos/${id}/instalar`}>
                 <Button>
                   <MapPin className="h-4 w-4 mr-2" />
-                  {t('install')}
+                  {t('nextActions.assignLocation')}
                 </Button>
               </Link>
             </div>
@@ -237,7 +295,7 @@ export default function DeviceDetailPage({
                   <Link href={`/dispositivos/${id}/configurar`}>
                     <Button variant="outline" size="sm" className="w-full">
                       <Settings className="h-4 w-4 mr-2" />
-                      Modificar configuración
+                      {t('detail.modifyConfig')}
                     </Button>
                   </Link>
                 </>
@@ -320,30 +378,47 @@ export default function DeviceDetailPage({
             <AlertDialogTrigger asChild>
               <Button variant="outline">
                 <Wrench className="h-4 w-4 mr-2" />
-                Deshabilitar
+                {t('detail.disable')}
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Deshabilitar dispositivo</AlertDialogTitle>
-                <AlertDialogDescription>
-                  El dispositivo será desinstalado y dejará de funcionar. Seguirá perteneciendo a la compañía.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={handleMaintenance}>
-                  Confirmar
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
+            {activeBatchForDevice ? (
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{tToast('deviceInActiveBatch')}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {tToast('deviceInActiveBatchDesc', { batchName: activeBatchForDevice.name })}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleMaintenance}>
+                    {tCommon('continue')}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            ) : (
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t('detail.disableTitle')}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t('detail.disableDesc')}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t('detail.cancel')}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleMaintenance}>
+                    {t('detail.confirm')}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            )}
           </AlertDialog>
         )}
 
         {device.state === 'disabled' && (
           <Button onClick={handleReactivate}>
             <Power className="h-4 w-4 mr-2" />
-            Registrar nuevamente
+            {t('detail.reactivate')}
           </Button>
         )}
 
@@ -355,21 +430,39 @@ export default function DeviceDetailPage({
                 {t('uninstall')}
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t('uninstallConfirm')}</AlertDialogTitle>
-                <AlertDialogDescription>{t('uninstallWarning')}</AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={handleUninstall}
-                  className="bg-destructive"
-                >
-                  Desinstalar
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
+            {activeBatchForDevice ? (
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{tToast('deviceInActiveBatch')}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {tToast('deviceInActiveBatchDesc', { batchName: activeBatchForDevice.name })}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleUninstall}>
+                    {tCommon('continue')}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            ) : (
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t('detail.uninstallConfirm')}</AlertDialogTitle>
+                  <AlertDialogDescription>{t('detail.uninstallDesc')}</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      handleUninstall();
+                    }}
+                  >
+                    {t('detail.uninstallAction')}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            )}
           </AlertDialog>
         )}
       </div>

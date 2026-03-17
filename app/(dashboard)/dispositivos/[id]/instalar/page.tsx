@@ -18,6 +18,7 @@ export default function InstallDevicePage({
   const searchParams = useSearchParams();
   const isChangingLocation = searchParams.get('cambiar') === 'true';
   const t = useTranslations('devices.installation');
+  const tDetail = useTranslations('devices.detail');
   const { getDevice, isLoading } = useDevices();
 
   const device = getDevice(id);
@@ -30,9 +31,9 @@ export default function InstallDevicePage({
     return (
       <EmptyState
         icon={Cpu}
-        title="Dispositivo no encontrado"
-        description="El dispositivo que buscas no existe"
-        actionLabel="Ver dispositivos"
+        title={tDetail('notFound')}
+        description={tDetail('notFoundDesc')}
+        actionLabel={tDetail('backToList')}
         actionHref="/dispositivos"
       />
     );
@@ -43,15 +44,15 @@ export default function InstallDevicePage({
     return (
       <EmptyState
         icon={Cpu}
-        title="Dispositivo ya instalado"
-        description="Este dispositivo ya tiene una ubicación asignada"
-        actionLabel="Ver dispositivo"
+        title={t('alreadyInstalled')}
+        description={t('alreadyInstalledDesc')}
+        actionLabel={t('viewDevice')}
         actionHref={`/dispositivos/${id}`}
       />
     );
   }
 
-  const title = isChangingLocation ? 'Cambiar ubicación' : t('title');
+  const title = isChangingLocation ? t('changeTitle') : t('title');
 
   return (
     <div className="max-w-2xl mx-auto">

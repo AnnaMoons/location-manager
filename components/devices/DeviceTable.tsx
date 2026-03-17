@@ -88,7 +88,7 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                         {formatMeasurementValue(device.lastMeasurement)}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {formatMeasurementTime(device.lastMeasurement.timestamp)}
+                        {formatMeasurementTime(device.lastMeasurement.timestamp, t)}
                       </div>
                     </div>
                   ) : (
@@ -131,7 +131,7 @@ function formatMeasurementValue(measurement: DeviceMeasurement): string {
   return `${value.toFixed(1)} ${unit}`;
 }
 
-function formatMeasurementTime(timestamp: string): string {
+function formatMeasurementTime(timestamp: string, t: ReturnType<typeof useTranslations>): string {
   try {
     const date = new Date(timestamp);
     const now = new Date();
@@ -140,11 +140,11 @@ function formatMeasurementTime(timestamp: string): string {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return 'ahora';
-    if (diffMins < 60) return `hace ${diffMins} min`;
-    if (diffHours < 24) return `hace ${diffHours} h`;
-    if (diffDays === 1) return 'ayer';
-    if (diffDays < 7) return `hace ${diffDays} días`;
+    if (diffMins < 1) return t('relativeTime.now');
+    if (diffMins < 60) return t('relativeTime.minutesAgo', { value: diffMins });
+    if (diffHours < 24) return t('relativeTime.hoursAgo', { value: diffHours });
+    if (diffDays === 1) return t('relativeTime.yesterday');
+    if (diffDays < 7) return t('relativeTime.daysAgo', { value: diffDays });
     
     return date.toLocaleDateString('es-ES', {
       day: 'numeric',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -31,6 +31,8 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
   const [formData, setFormData] = useState<Partial<CreateBatchInput>>(
     initialData || {}
   );
+  // Ref to suppress cascading resets when syncing from initialData
+  const isSyncingRef = useRef(false);
 
   const farms = formData.species
     ? filterBySpecies(formData.species).filter((l) => l.type === 'farm')
@@ -78,14 +80,26 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
     onChange(newData);
   };
 
+  // Sync internal state when initialData arrives asynchronously (edit mode)
   useEffect(() => {
-    if (formData.species && !initialData?.farmIds) {
+    if (initialData && initialData.name) {
+      isSyncingRef.current = true;
+      setFormData(initialData);
+      // Use setTimeout to keep the flag on through React's render+effects cycle
+      setTimeout(() => {
+        isSyncingRef.current = false;
+      }, 0);
+    }
+  }, [initialData]);
+
+  useEffect(() => {
+    if (formData.species && !isSyncingRef.current) {
       updateFormData({ farmIds: [], barnIds: [], penIds: [] });
     }
   }, [formData.species]);
 
   useEffect(() => {
-    if (formData.farmIds && !initialData?.barnIds) {
+    if (formData.farmIds && !isSyncingRef.current) {
       updateFormData({ barnIds: [], penIds: [] });
     }
   }, [formData.farmIds]);

@@ -5,9 +5,8 @@
     "name": "Lote Ceba Octubre 2025 - Machos",
     "sex": "male",
     "penAssignments": [
-      { "penId": "loc-004", "animalCount": 60 }
+      { "penId": "loc-004" }
     ],
-    "animalCount": 60,
     "status": "active",
     "createdAt": "2025-10-15T08:30:00Z",
     "updatedAt": "2025-10-15T08:30:00Z"
@@ -18,9 +17,8 @@
     "name": "Lote Ceba Octubre 2025 - Hembras",
     "sex": "female",
     "penAssignments": [
-      { "penId": "loc-005", "animalCount": 60 }
+      { "penId": "loc-005" }
     ],
-    "animalCount": 60,
     "status": "active",
     "createdAt": "2025-10-15T08:35:00Z",
     "updatedAt": "2025-10-15T08:35:00Z"
@@ -31,9 +29,8 @@
     "name": "Engorde Ciclo 1-2026 - Machos",
     "sex": "male",
     "penAssignments": [
-      { "penId": "loc-013", "animalCount": 8000 }
+      { "penId": "loc-013" }
     ],
-    "animalCount": 8000,
     "status": "active",
     "createdAt": "2025-12-18T09:00:00Z",
     "updatedAt": "2025-12-18T09:00:00Z"

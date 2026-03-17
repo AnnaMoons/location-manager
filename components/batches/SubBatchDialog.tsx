@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Batch, CreateSubBatchInput, SubBatch, SubBatchPenAssignment } from '@/lib/types/batch';
+import { Batch, CreateSubBatchInput, SubBatch } from '@/lib/types/batch';
 import { Location } from '@/lib/types/location';
 import { useLocations } from '@/lib/hooks/useLocations';
 import { useData } from '@/lib/context/DataContext';
@@ -55,7 +55,7 @@ export function SubBatchDialog({
   const [formData, setFormData] = useState<{
     name: string;
     sex: 'male' | 'female';
-    penAssignments: SubBatchPenAssignment[];
+    penAssignments: { penId: string }[];
   }>({
     name: '',
     sex: 'male',
@@ -135,10 +135,10 @@ export function SubBatchDialog({
 
   const handlePenToggle = (penId: string, isSelected: boolean) => {
     if (isSelected) {
-      // Add pen with default count of 1
+      // Add pen
       setFormData(prev => ({
         ...prev,
-        penAssignments: [...prev.penAssignments, { penId, animalCount: 1 }],
+        penAssignments: [...prev.penAssignments, { penId }],
       }));
     } else {
       // Remove pen
@@ -149,18 +149,6 @@ export function SubBatchDialog({
     }
   };
 
-  const handleCountChange = (penId: string, count: number) => {
-    setFormData(prev => ({
-      ...prev,
-      penAssignments: prev.penAssignments.map(pa =>
-        pa.penId === penId ? { ...pa, animalCount: Math.max(0, count) } : pa
-      ),
-    }));
-  };
-
-  const totalAssigned = formData.penAssignments.reduce((sum, pa) => sum + pa.animalCount, 0);
-  const remainingAnimals = batch.animalCount - totalAssigned;
-
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -170,14 +158,6 @@ export function SubBatchDialog({
 
     if (formData.penAssignments.length === 0) {
       newErrors.penIds = t('selectAtLeastOnePen');
-    }
-
-    if (formData.penAssignments.some(pa => !pa.animalCount || pa.animalCount <= 0)) {
-      newErrors.animalCount = t('animalCountRequired');
-    }
-
-    if (totalAssigned > batch.animalCount) {
-      newErrors.animalCount = t('exceedsBatchCount');
     }
 
     setErrors(newErrors);
@@ -194,7 +174,6 @@ export function SubBatchDialog({
           name: formData.name,
           sex: formData.sex,
           penAssignments: formData.penAssignments,
-          animalCount: totalAssigned,
         });
       } else {
         await onSubmit({
@@ -202,7 +181,6 @@ export function SubBatchDialog({
           name: formData.name,
           sex: formData.sex,
           penAssignments: formData.penAssignments,
-          animalCount: totalAssigned,
         });
       }
       setOpen(false);
@@ -212,7 +190,6 @@ export function SubBatchDialog({
   };
 
   const isPenSelected = (penId: string) => formData.penAssignments.some(pa => pa.penId === penId);
-  const getPenCount = (penId: string) => formData.penAssignments.find(pa => pa.penId === penId)?.animalCount || 0;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -231,9 +208,6 @@ export function SubBatchDialog({
           {/* Batch Info */}
           <div className="p-3 bg-muted rounded-lg">
             <p className="text-sm font-medium">{batch.name}</p>
-            <p className="text-xs text-muted-foreground">
-              {batch.animalCount} {t('animals')} disponibles
-            </p>
           </div>
 
           {/* Name */}
@@ -267,16 +241,11 @@ export function SubBatchDialog({
             </Select>
           </div>
 
-          {/* Pens Selection with Count */}
+          {/* Pens Selection */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label>{t('selectPens')}</Label>
-              <Badge variant={remainingAnimals >= 0 ? 'outline' : 'destructive'}>
-                {remainingAnimals} / {batch.animalCount}
-              </Badge>
-            </div>
+            <Label>{t('selectPens')}</Label>
             <p className="text-xs text-muted-foreground">
-              {t('selectPensWithCount')}
+              {t('selectPensForSubBatch')}
             </p>
             
             {/* Used Pens */}
@@ -322,21 +291,6 @@ export function SubBatchDialog({
                             className="h-4 w-4 rounded border-gray-300"
                           />
                           <span className="flex-1 text-sm">{pen.name}</span>
-                          {isSelected && (
-                            <div className="flex items-center gap-1">
-                              <Label htmlFor={`count-${pen.id}`} className="text-xs text-muted-foreground">
-                                #
-                              </Label>
-                              <Input
-                                id={`count-${pen.id}`}
-                                type="number"
-                                min="1"
-                                value={getPenCount(pen.id)}
-                                onChange={(e) => handleCountChange(pen.id, parseInt(e.target.value) || 0)}
-                                className="w-16 h-8 text-center"
-                              />
-                            </div>
-                          )}
                         </div>
                       );
                     })}
@@ -349,24 +303,6 @@ export function SubBatchDialog({
             
             {errors.penIds && (
               <p className="text-sm text-destructive">{errors.penIds}</p>
-            )}
-            {errors.animalCount && (
-              <p className="text-sm text-destructive">{errors.animalCount}</p>
-            )}
-          </div>
-
-          {/* Summary */}
-          <div className="p-3 bg-muted rounded-lg">
-            <div className="flex justify-between text-sm">
-              <span>{t('totalAssigned')}:</span>
-              <span className={totalAssigned > batch.animalCount ? 'text-destructive font-medium' : 'font-medium'}>
-                {totalAssigned} / {batch.animalCount}
-              </span>
-            </div>
-            {remainingAnimals > 0 && (
-              <p className="text-xs text-muted-foreground mt-1">
-                {remainingAnimals} {t('remaining')}
-              </p>
             )}
           </div>
         </div>

@@ -1,8 +1,8 @@
-import { PigVisionConfig, ScaleConfig, SensorConfig, DeviceConfig } from '../types/device';
+import { PigVisionConfig, ScaleConfig, SensorConfig, DeviceConfig, Device, DeviceType } from '../types/device';
 import { CreateLocationInput } from '../types/location';
 import { CreateBatchInput, CloseBatchInput, Batch, requiresCloseReason } from '../types/batch';
 import { Location } from '../types/location';
-import { speciesHierarchies } from '../types/species';
+import { Species, speciesHierarchies } from '../types/species';
 
 export interface ValidationResult {
   valid: boolean;
@@ -13,7 +13,7 @@ export function validatePigVisionConfig(config: Partial<PigVisionConfig>): Valid
   const errors: Record<string, string> = {};
 
   if (config.installationHeight === undefined || config.installationHeight === null) {
-    errors.installationHeight = 'Altura de instalación es requerida';
+    errors.installationHeight = 'Ingresa la altura de instalación';
   } else {
     // Convert to meters for validation
     const heightInMeters = config.installationHeightUnit === 'cm'
@@ -26,7 +26,7 @@ export function validatePigVisionConfig(config: Partial<PigVisionConfig>): Valid
   }
 
   if (config.installationHeightConfirmation === undefined || config.installationHeightConfirmation === null) {
-    errors.installationHeightConfirmation = 'Confirmación de altura es requerida';
+    errors.installationHeightConfirmation = 'Confirma la altura de instalación';
   } else if (config.installationHeight !== undefined) {
     // Convert both to same unit for comparison
     const height1 = config.installationHeightUnit === 'cm'
@@ -37,7 +37,7 @@ export function validatePigVisionConfig(config: Partial<PigVisionConfig>): Valid
       : config.installationHeightConfirmation;
 
     if (Math.abs(height1 - height2) > 0.01) {
-      errors.installationHeightConfirmation = 'Las alturas no coinciden';
+      errors.installationHeightConfirmation = 'Las alturas no coinciden. Verifica las mediciones.';
     }
   }
 
@@ -51,19 +51,19 @@ export function validateScaleConfig(config: Partial<ScaleConfig>): ValidationRes
   const errors: Record<string, string> = {};
 
   if (config.maxWeight === undefined || config.maxWeight === null) {
-    errors.maxWeight = 'Max weight is required';
+    errors.maxWeight = 'Ingresa el peso máximo';
   } else if (config.maxWeight <= 0) {
-    errors.maxWeight = 'Max weight must be greater than 0';
+    errors.maxWeight = 'El peso máximo debe ser mayor a 0';
   }
 
   if (config.tareWeight === undefined || config.tareWeight === null) {
-    errors.tareWeight = 'Tare weight is required';
+    errors.tareWeight = 'Ingresa el peso de tara';
   } else if (config.tareWeight < 0) {
-    errors.tareWeight = 'Tare weight cannot be negative';
+    errors.tareWeight = 'El peso de tara no puede ser negativo';
   }
 
   if (!config.unit) {
-    errors.unit = 'Unit is required';
+    errors.unit = 'Selecciona la unidad de peso';
   }
 
   return {
@@ -76,13 +76,13 @@ export function validateSensorConfig(config: Partial<SensorConfig>): ValidationR
   const errors: Record<string, string> = {};
 
   if (!config.sensorType) {
-    errors.sensorType = 'Sensor type is required';
+    errors.sensorType = 'Selecciona el tipo de sensor';
   }
 
   if (config.readingInterval === undefined || config.readingInterval === null) {
-    errors.readingInterval = 'Reading interval is required';
+    errors.readingInterval = 'Ingresa el intervalo de lectura';
   } else if (config.readingInterval < 1) {
-    errors.readingInterval = 'Reading interval must be at least 1 second';
+    errors.readingInterval = 'El intervalo debe ser de al menos 1 segundo';
   }
 
   if (
@@ -90,7 +90,7 @@ export function validateSensorConfig(config: Partial<SensorConfig>): ValidationR
     config.alertThresholdMax !== undefined &&
     config.alertThresholdMin >= config.alertThresholdMax
   ) {
-    errors.alertThresholdMin = 'Min threshold must be less than max threshold';
+    errors.alertThresholdMin = 'El umbral mínimo debe ser menor que el máximo';
   }
 
   return {
@@ -108,7 +108,7 @@ export function validateDeviceConfig(config: DeviceConfig): ValidationResult {
     case 'sensor':
       return validateSensorConfig(config);
     default:
-      return { valid: false, errors: { type: 'Invalid device type' } };
+      return { valid: false, errors: { type: 'Tipo de dispositivo no reconocido' } };
   }
 }
 
@@ -261,6 +261,84 @@ export function validateCloseBatchInput(
   if (input.closedDate && requiresCloseReason(batch, input.closedDate)) {
     if (!input.closeReason || input.closeReason.trim() === '') {
       errors.closeReason = 'El motivo es obligatorio cuando se cierra antes de la fecha estimada';
+    }
+  }
+
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors,
+  };
+}
+
+/**
+ * Map of device types allowed per species.
+ * - pigvision: only for pigs
+ * - scale: only for broilers
+ * - sensor: all species
+ * - gateway: all species (installed at farm level)
+ */
+const DEVICE_TYPES_BY_SPECIES: Record<Species, DeviceType[]> = {
+  pigs: ['pigvision', 'sensor', 'gateway'],
+  broilers: ['scale', 'sensor', 'gateway'],
+  layers: ['sensor', 'gateway'],
+};
+
+/**
+ * Device types that conflict with each other in the same pen/location.
+ * A PigVision and a Scale must never coexist in the same pen.
+ */
+const CONFLICTING_DEVICE_TYPES: [DeviceType, DeviceType][] = [
+  ['pigvision', 'scale'],
+];
+
+/**
+ * Check if a device type is compatible with a given species.
+ */
+export function isDeviceTypeAllowedForSpecies(deviceType: DeviceType, species: Species): boolean {
+  return DEVICE_TYPES_BY_SPECIES[species].includes(deviceType);
+}
+
+/**
+ * Get the list of species compatible with a device type.
+ */
+export function getCompatibleSpecies(deviceType: DeviceType): Species[] {
+  return (Object.keys(DEVICE_TYPES_BY_SPECIES) as Species[]).filter(
+    (species) => DEVICE_TYPES_BY_SPECIES[species].includes(deviceType)
+  );
+}
+
+/**
+ * Validate that installing a device at a location does not violate any rules.
+ * Rules:
+ * 1. Device type must be compatible with the location's species.
+ * 2. A PigVision and a Scale cannot coexist in the same pen.
+ */
+export function validateDeviceInstallation(
+  device: Device,
+  location: Location,
+  existingDevicesAtLocation: Device[]
+): ValidationResult {
+  const errors: Record<string, string> = {};
+
+  // Rule 1: Species compatibility
+  if (!isDeviceTypeAllowedForSpecies(device.type, location.species)) {
+    const speciesName = speciesHierarchies[location.species]?.name || location.species;
+    errors.species = `Este tipo de dispositivo (${device.type}) no es compatible con la especie ${speciesName}`;
+  }
+
+  // Rule 2: Conflicting device types in the same location
+  for (const [typeA, typeB] of CONFLICTING_DEVICE_TYPES) {
+    const deviceIsTypeA = device.type === typeA;
+    const deviceIsTypeB = device.type === typeB;
+
+    if (deviceIsTypeA || deviceIsTypeB) {
+      const conflictType = deviceIsTypeA ? typeB : typeA;
+      const hasConflict = existingDevicesAtLocation.some(
+        (d) => d.type === conflictType && d.id !== device.id
+      );
+      if (hasConflict) {
+        errors.conflict = `No se puede instalar un dispositivo ${device.type} en una ubicación que ya tiene un dispositivo ${conflictType}`;
+      }
     }
   }
 

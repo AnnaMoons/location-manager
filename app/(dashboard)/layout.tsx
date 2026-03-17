@@ -70,7 +70,7 @@ export default function DashboardLayout({
             </div>
             
             {/* Spacer */}
-            <div className="h-[50px]" />
+            <div className="h-[22px]" />
             
             {/* Collapse toggle button - below logos */}
             <div className={cn('w-full', isCollapsed ? 'flex justify-center' : 'flex justify-end')}>
@@ -88,6 +88,8 @@ export default function DashboardLayout({
               </Button>
             </div>
           </div>
+
+          <div className="h-[22px]" />
 
           {/* Navigation */}
           <nav className="flex-1 px-2 space-y-1">
