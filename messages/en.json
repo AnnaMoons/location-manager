@@ -293,7 +293,8 @@
       "viewDevice": "View device",
       "notInstalled": "Device not installed",
       "notInstalledDesc": "You need to install the device at a location first",
-      "installDevice": "Install device"
+      "installDevice": "Install device",
+      "deviceConflictError": "You can't install this device here. Scales are only for broilers and PigVision only for pigs."
     },
     "configuration": {
       "title": "Configure device",

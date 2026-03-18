@@ -138,11 +138,13 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
         }
       }
 
-      // Check for PigVision warning (non-blocking)
-      if (device.type === 'pigvision') {
-        const hasPigvision = devicesAtLocation.some((d) => d.type === 'pigvision');
-        if (hasPigvision) {
-          setInstallWarning(t('pigvisionInPenWarning'));
+      // Check for PigVision + Scale conflict (blocking error)
+      if (device.type === 'pigvision' || device.type === 'scale') {
+        const conflictingType = device.type === 'pigvision' ? 'scale' : 'pigvision';
+        const hasConflict = devicesAtLocation.some((d) => d.type === conflictingType);
+        if (hasConflict) {
+          setInstallError(t('deviceConflictError'));
+          return;
         }
       }
     }

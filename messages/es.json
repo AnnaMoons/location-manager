@@ -293,7 +293,8 @@
       "viewDevice": "Ver dispositivo",
       "notInstalled": "Dispositivo sin instalar",
       "notInstalledDesc": "Primero debes instalar el dispositivo en una ubicación",
-      "installDevice": "Instalar dispositivo"
+      "installDevice": "Instalar dispositivo",
+      "deviceConflictError": "No puedes instalar este dispositivo aquí. Las básculas son solo para pollos y las PigVision solo para cerdos."
     },
     "configuration": {
       "title": "Configurar dispositivo",
