@@ -16,7 +16,7 @@ interface DeviceTableProps {
 
 export function DeviceTable({ devices }: DeviceTableProps) {
   const t = useTranslations('devices');
-  const { getLocation } = useLocations();
+  const { getLocation, getPath } = useLocations();
 
   if (devices.length === 0) {
     return null;
@@ -37,6 +37,7 @@ export function DeviceTable({ devices }: DeviceTableProps) {
         <TableBody>
           {devices.map((device) => {
             const location = device.locationId ? getLocation(device.locationId) : null;
+            const locationPath = device.locationId ? getPath(device.locationId) : [];
             
             return (
               <TableRow key={device.id} className="hover:bg-muted/30">
@@ -70,7 +71,21 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                       className="flex items-center gap-2 text-sm hover:underline"
                     >
                       <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                      <span className="truncate">{location.name}</span>
+                      <span className="truncate" title={locationPath.join(' › ')}>
+                        {locationPath.length > 1 ? (
+                          <span className="text-muted-foreground">
+                            {locationPath.slice(0, -1).map((loc, i) => (
+                              <span key={loc.id}>
+                                <span className="font-normal">{loc.name}</span>
+                                <span className="mx-0.5 text-muted-foreground/50">›</span>
+                              </span>
+                            ))}
+                          </span>
+                        ) : null}
+                        <span className={locationPath.length > 1 ? 'font-medium' : ''}>
+                          {location.name}
+                        </span>
+                      </span>
                     </Link>
                   ) : (
                     <span className="flex items-center gap-2 text-sm text-muted-foreground">
