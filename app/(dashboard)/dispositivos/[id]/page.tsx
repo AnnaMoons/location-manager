@@ -161,7 +161,6 @@ export default function DeviceDetailPage({
         subtitle={t(`types.${device.type}`)}
         showBack
         backHref="/dispositivos"
-        actions={<NextActionCTA device={device} />}
       />
 
       {/* Device Status Card */}
