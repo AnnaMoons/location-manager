@@ -18,29 +18,12 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { LoadingState } from '@/components/shared/LoadingState';
 import { DeviceTable } from '@/components/devices/DeviceTable';
-import { DeviceCard } from '@/components/devices/DeviceCard';
-import { AlertBanner } from '@/components/dashboard/AlertBanner';
 import { useDevices } from '@/lib/hooks/useDevices';
 import { DeviceState, DeviceType } from '@/lib/types/device';
 
-const STATE_ORDER: Record<DeviceState, number> = {
-  registered: 1,
-  installed: 2,
-  available: 3,
-  uninstalled: 4,
-  unassigned: 5,
-  configured: 6,
-  in_production: 7,
-  production: 8,
-  disabled: 9,
-  returned: 10,
-  maintenance: 11,
-  dead: 12,
-};
-
 export default function DevicesPage() {
   const t = useTranslations('devices');
-  const { devices, orphanDevices, stats, isLoading, filterDevices } = useDevices();
+  const { devices, orphanDevices, stats, isLoading } = useDevices();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [stateFilter, setStateFilter] = useState<DeviceState | 'all'>('all');
@@ -48,11 +31,7 @@ export default function DevicesPage() {
   const [activeTab, setActiveTab] = useState('all');
 
   const filteredDevices = useMemo(() => {
-    let filtered = activeTab === 'orphans' ? [...orphanDevices].sort((a, b) => {
-      const orderA = STATE_ORDER[a.state] ?? 99;
-      const orderB = STATE_ORDER[b.state] ?? 99;
-      return orderA - orderB;
-    }) : devices;
+    let filtered = devices;
 
     if (stateFilter !== 'all') {
       filtered = filtered.filter((d) => d.state === stateFilter);
@@ -70,7 +49,7 @@ export default function DevicesPage() {
     }
 
     return filtered;
-  }, [devices, orphanDevices, stateFilter, typeFilter, searchQuery, activeTab]);
+  }, [devices, stateFilter, typeFilter, searchQuery]);
 
   if (isLoading) {
     return (
@@ -97,13 +76,14 @@ export default function DevicesPage() {
         }
       />
 
-      {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="all">{t('filters.all')} ({devices.length})</TabsTrigger>
-          <TabsTrigger value="orphans">
-            {t('orphans')} ({orphanDevices.length})
-          </TabsTrigger>
+          <Link href="/dispositivos/huerfanos" className="flex-1 sm:flex-none">
+            <TabsTrigger value="orphans" className="w-full sm:w-auto">
+              {t('orphans')} ({orphanDevices.length})
+            </TabsTrigger>
+          </Link>
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
@@ -166,29 +146,6 @@ export default function DevicesPage() {
             />
           ) : (
             <DeviceTable devices={filteredDevices} />
-          )}
-        </TabsContent>
-
-        <TabsContent value="orphans" className="space-y-4">
-          {orphanDevices.length > 0 && (
-            <AlertBanner
-              variant="warning"
-              message={t('orphansBanner', { count: orphanDevices.length })}
-              dismissible={false}
-            />
-          )}
-          {orphanDevices.length === 0 ? (
-            <EmptyState
-              icon={AlertTriangle}
-              title={t('noOrphans')}
-              description={t('noOrphansDesc')}
-            />
-          ) : (
-            <div className="space-y-3">
-              {filteredDevices.map((device) => (
-                <DeviceCard key={device.id} device={device} />
-              ))}
-            </div>
           )}
         </TabsContent>
       </Tabs>
