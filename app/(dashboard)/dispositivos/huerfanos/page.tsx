@@ -5,7 +5,7 @@ import { AlertTriangle } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { LoadingState } from '@/components/shared/LoadingState';
-import { DeviceCard } from '@/components/devices/DeviceCard';
+import { DeviceTable } from '@/components/devices/DeviceTable';
 import { AlertBanner } from '@/components/dashboard/AlertBanner';
 import { useDevices } from '@/lib/hooks/useDevices';
 import { DeviceState } from '@/lib/types/device';
@@ -70,11 +70,7 @@ export default function OrphanDevicesPage() {
           actionHref="/dispositivos"
         />
       ) : (
-        <div className="space-y-3">
-          {sortedOrphanDevices.map((device) => (
-            <DeviceCard key={device.id} device={device} />
-          ))}
-        </div>
+        <DeviceTable devices={sortedOrphanDevices} />
       )}
     </div>
   );
