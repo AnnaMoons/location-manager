@@ -42,7 +42,7 @@ export function DeviceTable({ devices }: DeviceTableProps) {
             return (
               <TableRow key={device.id} className="hover:bg-muted/30">
                 {/* Dispositivo */}
-                <TableCell>
+                <TableCell className="w-1/5">
                   <Link href={`/dispositivos/${device.id}`} className="block">
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-lg bg-primary/10">
@@ -59,12 +59,12 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                 </TableCell>
 
                 {/* Estado */}
-                <TableCell>
+                <TableCell className="w-24">
                   <DeviceStateChip state={device.state} size="sm" />
                 </TableCell>
 
                 {/* Ubicación */}
-                <TableCell>
+                <TableCell className="w-1/4">
                   {location ? (
                     <Link 
                       href={`/ubicaciones/${location.id}`}
@@ -96,7 +96,7 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                 </TableCell>
 
                 {/* Última lectura */}
-                <TableCell>
+                <TableCell className="w-1/4">
                   {device.lastMeasurement ? (
                     <div className="text-sm">
                       <div className="font-medium tabular-nums">
