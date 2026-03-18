@@ -15,6 +15,10 @@ const STORAGE_KEY_LOCATIONS = 'smartfarm_locations';
 const STORAGE_KEY_DEVICES = 'smartfarm_devices';
 const STORAGE_KEY_BATCHES = 'smartfarm_batches';
 const STORAGE_KEY_SUB_BATCHES = 'smartfarm_subbatches';
+const STORAGE_KEY_DATA_VERSION = 'smartfarm_data_version';
+
+// Increment this value to force a fresh reload from mock data
+const DATA_VERSION = 2;
 
 interface DataContextType {
   locations: Location[];
@@ -62,6 +66,16 @@ export function DataProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const loadData = () => {
       try {
+        // Check data version — if outdated, clear localStorage and reload from mock
+        const storedVersion = localStorage.getItem(STORAGE_KEY_DATA_VERSION);
+        if (!storedVersion || parseInt(storedVersion, 10) < DATA_VERSION) {
+          localStorage.removeItem(STORAGE_KEY_LOCATIONS);
+          localStorage.removeItem(STORAGE_KEY_DEVICES);
+          localStorage.removeItem(STORAGE_KEY_BATCHES);
+          localStorage.removeItem(STORAGE_KEY_SUB_BATCHES);
+          localStorage.setItem(STORAGE_KEY_DATA_VERSION, String(DATA_VERSION));
+        }
+
         const storedLocations = localStorage.getItem(STORAGE_KEY_LOCATIONS);
         const storedDevices = localStorage.getItem(STORAGE_KEY_DEVICES);
         const storedBatches = localStorage.getItem(STORAGE_KEY_BATCHES);
