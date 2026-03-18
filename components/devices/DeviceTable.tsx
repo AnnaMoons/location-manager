@@ -27,10 +27,10 @@ export function DeviceTable({ devices }: DeviceTableProps) {
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50">
-            <TableHead className="w-[200px]">{t('deviceTable.device')}</TableHead>
-            <TableHead className="w-[120px]">{t('deviceTable.state')}</TableHead>
-            <TableHead className="w-[280px]">{t('deviceTable.location')}</TableHead>
-            <TableHead className="w-[180px]">{t('deviceTable.lastReading')}</TableHead>
+            <TableHead className="w-1/5">{t('deviceTable.device')}</TableHead>
+            <TableHead className="w-24">{t('deviceTable.state')}</TableHead>
+            <TableHead className="w-1/4">{t('deviceTable.location')}</TableHead>
+            <TableHead className="w-1/4">{t('deviceTable.lastReading')}</TableHead>
             <TableHead className="text-right">{t('deviceTable.action')}</TableHead>
           </TableRow>
         </TableHeader>
