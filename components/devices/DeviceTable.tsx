@@ -28,7 +28,7 @@ export function DeviceTable({ devices }: DeviceTableProps) {
         <TableHeader>
           <TableRow className="bg-muted/50">
             <TableHead className="w-[200px]">{t('deviceTable.device')}</TableHead>
-            <TableHead className="w-[100px]">{t('deviceTable.state')}</TableHead>
+            <TableHead className="w-[120px]">{t('deviceTable.state')}</TableHead>
             <TableHead className="w-[280px]">{t('deviceTable.location')}</TableHead>
             <TableHead className="w-[180px]">{t('deviceTable.lastReading')}</TableHead>
             <TableHead className="text-right">{t('deviceTable.action')}</TableHead>
