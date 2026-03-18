@@ -133,8 +133,8 @@
     "id": "dev-004",
     "serialNumber": "SC-2024-001",
     "type": "scale",
-    "state": "production",
-    "locationId": "loc-004",
+    "state": "available",
+    "locationId": null,
     "companyId": "company-001",
     "configuration": {
       "type": "scale",
@@ -143,14 +143,10 @@
       "unit": "kg",
       "calibrationDate": "2024-11-01"
     },
-    "lastSeen": "2024-12-19T14:28:00Z",
-    "health": "online",
+    "lastSeen": null,
+    "health": "unknown",
     "createdAt": "2024-02-01T08:00:00Z",
-    "lastMeasurement": {
-      "value": 89.2,
-      "unit": "kg",
-      "timestamp": "2024-12-19T14:28:00Z"
-    },
+    "lastMeasurement": null,
     "history": [
       {
         "id": "hist-004-1",
@@ -174,6 +170,15 @@
           "fromState": "registered",
           "toState": "production"
         }
+      },
+      {
+        "id": "hist-004-4",
+        "action": "location_changed",
+        "timestamp": "2024-12-20T09:00:00Z",
+        "details": {
+          "fromLocationId": "loc-004",
+          "toLocationId": null
+        }
       }
     ]
   },
@@ -181,8 +186,8 @@
     "id": "dev-005",
     "serialNumber": "SC-2024-002",
     "type": "scale",
-    "state": "production",
-    "locationId": "loc-005",
+    "state": "available",
+    "locationId": null,
     "companyId": "company-001",
     "configuration": {
       "type": "scale",
@@ -205,6 +210,15 @@
         "timestamp": "2024-02-10T09:00:00Z",
         "details": {
           "toLocationId": "loc-005"
+        }
+      },
+      {
+        "id": "hist-005-3",
+        "action": "location_changed",
+        "timestamp": "2024-12-20T09:00:00Z",
+        "details": {
+          "fromLocationId": "loc-005",
+          "toLocationId": null
         }
       }
     ]
