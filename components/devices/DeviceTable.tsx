@@ -27,10 +27,10 @@ export function DeviceTable({ devices }: DeviceTableProps) {
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50">
-            <TableHead className="w-1/5">{t('deviceTable.device')}</TableHead>
-            <TableHead className="w-24">{t('deviceTable.state')}</TableHead>
-            <TableHead className="w-1/4">{t('deviceTable.location')}</TableHead>
-            <TableHead className="w-1/4">{t('deviceTable.lastReading')}</TableHead>
+            <TableHead className="w-44">{t('deviceTable.device')}</TableHead>
+            <TableHead className="w-28">{t('deviceTable.state')}</TableHead>
+            <TableHead className="">{t('deviceTable.location')}</TableHead>
+            <TableHead className="">{t('deviceTable.lastReading')}</TableHead>
             <TableHead className="text-right">{t('deviceTable.action')}</TableHead>
           </TableRow>
         </TableHeader>
@@ -42,7 +42,7 @@ export function DeviceTable({ devices }: DeviceTableProps) {
             return (
               <TableRow key={device.id} className="hover:bg-muted/30">
                 {/* Dispositivo */}
-                <TableCell className="w-1/5">
+                <TableCell className="w-44">
                   <Link href={`/dispositivos/${device.id}`} className="block">
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-lg bg-primary/10">
@@ -59,12 +59,12 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                 </TableCell>
 
                 {/* Estado */}
-                <TableCell className="w-24">
+                <TableCell className="w-28">
                   <DeviceStateChip state={device.state} size="sm" />
                 </TableCell>
 
                 {/* Ubicación */}
-                <TableCell className="w-1/4">
+                <TableCell className="">
                   {location ? (
                     <Link 
                       href={`/ubicaciones/${location.id}`}
@@ -96,7 +96,7 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                 </TableCell>
 
                 {/* Última lectura */}
-                <TableCell className="w-1/4">
+                <TableCell className="">
                   {device.lastMeasurement ? (
                     <div className="text-sm">
                       <div className="font-medium tabular-nums">
