@@ -66,27 +66,24 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                 {/* Ubicación */}
                 <TableCell className="">
                   {location ? (
-                    <Link 
-                      href={`/ubicaciones/${location.id}`}
-                      className="flex items-center gap-2 text-sm hover:underline"
-                    >
+                    <div className="flex items-center gap-2 text-sm">
                       <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                      <span className="truncate" title={locationPath.join(' › ')}>
-                        {locationPath.length > 1 ? (
-                          <span className="text-muted-foreground">
-                            {locationPath.slice(0, -1).map((loc, i) => (
-                              <span key={loc.id}>
-                                <span className="font-normal">{loc.name}</span>
-                                <span className="mx-0.5 text-muted-foreground/50">›</span>
-                              </span>
-                            ))}
+                      <span className="truncate" title={locationPath.map(l => l.name).join(' › ')}>
+                        {locationPath.map((loc, index) => (
+                          <span key={loc.id} className="inline-flex items-center">
+                            <Link 
+                              href={`/ubicaciones/${loc.id}`}
+                              className="hover:underline hover:text-primary"
+                            >
+                              {loc.name}
+                            </Link>
+                            {index < locationPath.length - 1 && (
+                              <span className="mx-0.5 text-muted-foreground/50">›</span>
+                            )}
                           </span>
-                        ) : null}
-                        <span className={locationPath.length > 1 ? 'font-medium' : ''}>
-                          {location.name}
-                        </span>
+                        ))}
                       </span>
-                    </Link>
+                    </div>
                   ) : (
                     <span className="flex items-center gap-2 text-sm text-muted-foreground">
                       <MapPin className="h-4 w-4 flex-shrink-0" />
