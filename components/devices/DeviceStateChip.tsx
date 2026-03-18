@@ -27,7 +27,7 @@ export function DeviceStateChip({ state, size = 'md', showTooltip = true }: Devi
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full border px-2.5 py-0.5 font-semibold',
+        'inline-flex items-center rounded-full border px-2.5 py-0.5 font-semibold whitespace-nowrap',
         colors.bg,
         colors.text,
         colors.border,
