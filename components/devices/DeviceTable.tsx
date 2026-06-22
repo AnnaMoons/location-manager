@@ -6,7 +6,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { DeviceStateChip } from './DeviceStateChip';
 import { NextActionCTA } from './NextActionCTA';
 import { DeviceIcon } from './DeviceIcon';
-import { Device, DeviceMeasurement } from '@/lib/types/device';
+import { SerialNumber } from './SerialNumber';
+import { LastMeasurement } from './LastMeasurement';
+import { Device, SensorConfig, SENSOR_PROFILE_LABELS } from '@/lib/types/device';
 import { useLocations } from '@/lib/hooks/useLocations';
 import { MapPin } from 'lucide-react';
 
@@ -27,7 +29,7 @@ export function DeviceTable({ devices }: DeviceTableProps) {
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50">
-            <TableHead className="w-44">{t('deviceTable.device')}</TableHead>
+            <TableHead className="w-80">{t('deviceTable.device')}</TableHead>
             <TableHead className="w-28">{t('deviceTable.state')}</TableHead>
             <TableHead className="">{t('deviceTable.location')}</TableHead>
             <TableHead className="">{t('deviceTable.lastReading')}</TableHead>
@@ -42,17 +44,25 @@ export function DeviceTable({ devices }: DeviceTableProps) {
             return (
               <TableRow key={device.id} className="hover:bg-muted/30">
                 {/* Dispositivo */}
-                <TableCell className="w-44">
+                <TableCell className="w-80">
                   <Link href={`/dispositivos/${device.id}`} className="block">
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-lg bg-primary/10">
                         <DeviceIcon type={device.type} className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-medium text-foreground">{device.serialNumber}</p>
-                        <p className="text-sm text-muted-foreground capitalize">
-                          {t(`types.${device.type}`)}
-                        </p>
+                        <p className="font-medium text-foreground"><SerialNumber serial={device.serialNumber} className="text-sm" /></p>
+                        <div className="mt-0.5">
+                          {device.type === 'sensor' && device.configuration?.type === 'sensor' && (device.configuration as SensorConfig).sensorProfile ? (
+                            <span className="text-sm text-muted-foreground">
+                              {SENSOR_PROFILE_LABELS[(device.configuration as SensorConfig).sensorProfile!]}
+                            </span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground capitalize">
+                              {t(`types.${device.type}`)}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </Link>
@@ -95,14 +105,7 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                 {/* Última lectura */}
                 <TableCell className="">
                   {device.lastMeasurement ? (
-                    <div className="text-sm">
-                      <div className="font-medium tabular-nums">
-                        {formatMeasurementValue(device.lastMeasurement)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {formatMeasurementTime(device.lastMeasurement.timestamp, t)}
-                      </div>
-                    </div>
+                    <LastMeasurement measurement={device.lastMeasurement} size="md" showIcon />
                   ) : (
                     <span className="text-sm text-muted-foreground">-</span>
                   )}
@@ -119,52 +122,4 @@ export function DeviceTable({ devices }: DeviceTableProps) {
       </Table>
     </div>
   );
-}
-
-function formatMeasurementValue(measurement: DeviceMeasurement): string {
-  const { value, unit } = measurement;
-  
-  // For temperature (Celsius), show 1 decimal
-  if (unit === '°C') {
-    return `${value.toFixed(1)} ${unit}`;
-  }
-  
-  // For weight (kg), show 1 decimal
-  if (unit === 'kg') {
-    return `${value.toFixed(1)} ${unit}`;
-  }
-  
-  // For humidity/CO2/ammonia, show whole numbers
-  if (unit === '%' || unit === 'ppm') {
-    return `${Math.round(value)} ${unit}`;
-  }
-  
-  // Default: show 1 decimal
-  return `${value.toFixed(1)} ${unit}`;
-}
-
-function formatMeasurementTime(timestamp: string, t: ReturnType<typeof useTranslations>): string {
-  try {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return t('relativeTime.now');
-    if (diffMins < 60) return t('relativeTime.minutesAgo', { value: diffMins });
-    if (diffHours < 24) return t('relativeTime.hoursAgo', { value: diffHours });
-    if (diffDays === 1) return t('relativeTime.yesterday');
-    if (diffDays < 7) return t('relativeTime.daysAgo', { value: diffDays });
-    
-    return date.toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  } catch {
-    return timestamp;
-  }
 }
