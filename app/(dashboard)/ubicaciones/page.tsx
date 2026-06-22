@@ -324,19 +324,21 @@ function FarmCard({
   return (
     <Card className="overflow-hidden border-l-4 border-l-primary">
       {/* Farm header */}
-      <div className="flex items-start px-4 py-4 gap-3">
+      <div className="flex items-start px-4 py-4 gap-3 group/header">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="p-1 shrink-0 mt-0.5"
+          className="p-1.5 shrink-0 mt-0.5 rounded-md bg-muted/50 hover:bg-accent hover:border-primary/30 border border-border/50 transition-all group cursor-pointer shadow-sm hover:shadow"
+          aria-label={isExpanded ? "Contraer granja" : "Expandir granja"}
+          title={`Clic para ${isExpanded ? 'contraer' : 'expandir'}`}
         >
           {isExpanded ? (
-            <ChevronDown className="h-5 w-5 text-muted-foreground" />
+            <ChevronDown className="h-6 w-6 text-foreground group-hover:text-primary group-hover:scale-110 transition-all" />
           ) : (
-            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+            <ChevronRight className="h-6 w-6 text-foreground group-hover:text-primary group-hover:scale-110 transition-all" />
           )}
         </button>
 
-        <MapPin className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+        <MapPin className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5 group-hover/header:text-primary transition-colors" />
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -475,23 +477,25 @@ function BarnRow({
   return (
     <div className="rounded-lg border border-l-[3px] border-l-secondary">
       {/* Barn header */}
-      <div className="flex items-start px-3 py-3 gap-2">
+      <div className="flex items-start px-3 py-3 gap-2 group/header">
         {canAddChildren && penCount > 0 ? (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-0.5 shrink-0 mt-0.5"
+            className="p-1 shrink-0 mt-0.5 rounded-md bg-muted/50 hover:bg-accent hover:border-primary/30 border border-border/50 transition-all group cursor-pointer shadow-sm hover:shadow"
+            aria-label={isExpanded ? "Contraer galpón" : "Expandir galpón"}
+            title={`Clic para ${isExpanded ? 'contraer' : 'expandir'}`}
           >
             {isExpanded ? (
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              <ChevronDown className="h-5 w-5 text-foreground group-hover:text-primary group-hover:scale-110 transition-all" />
             ) : (
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              <ChevronRight className="h-5 w-5 text-foreground group-hover:text-primary group-hover:scale-110 transition-all" />
             )}
           </button>
         ) : (
-          <div className="w-5 shrink-0" />
+          <div className="w-7 shrink-0" />
         )}
 
-        <Warehouse className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+        <Warehouse className="h-4 w-4 text-primary shrink-0 mt-0.5 group-hover/header:text-primary/80 transition-colors" />
 
         <div className="flex-1 min-w-0">
           <Link
