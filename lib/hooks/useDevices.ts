@@ -46,15 +46,32 @@ export function useDevices() {
   }, [devices]);
 
   const stats = useMemo(
-    () => ({
-      total: devices.length,
-      inProduction: devicesByState.production.length,
-      pending: devicesByState.registered.length,
-      orphans: orphanDevices.length,
-      maintenance: devicesByState.returned.length,
-      offline: devices.filter((d) => d.health === 'offline').length,
-    }),
-    [devices, devicesByState, orphanDevices]
+    () => {
+      // Dispositivos en producción: tienen ubicación Y configuración Y están activos
+      const inProduction = devices.filter(
+        (d) => d.locationId !== null &&
+               d.configuration !== null &&
+               (d.state === 'production' || d.state === 'in_production' || d.state === 'configured')
+      ).length;
+
+      // Dispositivos por configurar: tienen ubicación pero NO tienen configuración
+      const pending = devices.filter(
+        (d) => d.locationId !== null && d.configuration === null
+      ).length;
+
+      // Dispositivos sin instalar (huérfanos): NO tienen ubicación (independiente de configuración)
+      const orphans = devices.filter((d) => d.locationId === null).length;
+
+      return {
+        total: devices.length,
+        inProduction,
+        pending,
+        orphans,
+        maintenance: devicesByState.returned.length,
+        offline: devices.filter((d) => d.health === 'offline').length,
+      };
+    },
+    [devices, devicesByState]
   );
 
   const filterByState = (state: DeviceState): Device[] => {
