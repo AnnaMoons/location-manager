@@ -70,7 +70,11 @@ export function DeviceTable({ devices }: DeviceTableProps) {
 
                 {/* Estado */}
                 <TableCell className="w-28">
-                  <DeviceStateChip state={device.state} size="sm" />
+                  <DeviceStateChip
+                    state={device.state}
+                    repairSubState={device.repairSubState}
+                    size="sm"
+                  />
                 </TableCell>
 
                 {/* Ubicación */}

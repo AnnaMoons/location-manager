@@ -161,7 +161,12 @@ export function LocationCard({ location, childCount = 0, devices: providedDevice
                         ) : (
                           <span className="text-xs text-muted-foreground">-</span>
                         )}
-                        <DeviceStateChip state={device.state} size="sm" showTooltip={false} />
+                        <DeviceStateChip
+                          state={device.state}
+                          repairSubState={device.repairSubState}
+                          size="sm"
+                          showTooltip={false}
+                        />
                         {device.health === 'online' ? (
                           <Wifi className="h-3 w-3 text-green-500" />
                         ) : device.health === 'offline' ? (
