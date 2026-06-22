@@ -57,8 +57,10 @@
     "orphanDevicesDesc": "Missing location or config",
     "orphanDevicesHelp": "Need to be installed and configured",
     "activeBatches": "Active batches",
-    "quickActions": "Next step",
+    "quickActions": "Suggested actions",
     "installDevice": "Install device",
+    "installOrphanDevices": "Install {count} {count, plural, one {device} other {devices}}",
+    "configurePendingDevices": "Configure {count} {count, plural, one {device} other {devices}}",
     "createLocation": "Create farm",
     "alerts": {
       "orphanDevices": "You have {count} devices not installed. Install them in a location and configure them to start receiving data.",

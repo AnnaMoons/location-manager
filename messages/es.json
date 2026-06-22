@@ -57,8 +57,10 @@
     "orphanDevicesDesc": "Sin ubicación o configuración",
     "orphanDevicesHelp": "Necesitan ser instalados y configurados",
     "activeBatches": "Lotes activos",
-    "quickActions": "Siguiente paso",
+    "quickActions": "Acciones sugeridas",
     "installDevice": "Instalar dispositivo",
+    "installOrphanDevices": "Instalar {count} {count, plural, one {dispositivo} other {dispositivos}}",
+    "configurePendingDevices": "Configurar {count} {count, plural, one {dispositivo} other {dispositivos}}",
     "createLocation": "Crear granja",
     "alerts": {
       "orphanDevices": "Tienes {count} dispositivos sin instalar. Instálalos en una ubicación y configúralos para comenzar a recibir datos.",

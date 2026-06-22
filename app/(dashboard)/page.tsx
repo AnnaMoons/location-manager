@@ -194,26 +194,103 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Quick Actions */}
-      <div className="flex flex-wrap items-center gap-3">
-        <Button asChild>
-          <Link href="/ubicaciones/nueva">
-            <MapPin className="h-4 w-4 mr-2" />
-            {t('createLocation')}
-          </Link>
-        </Button>
-        <Button asChild>
-          <Link href="/dispositivos/huerfanos">
-            <Link2 className="h-4 w-4 mr-2" />
-            {t('assignDevice')}
-          </Link>
-        </Button>
-        <Button asChild>
-          <Link href="/lotes/nuevo">
-            <Layers className="h-4 w-4 mr-2" />
-            {t('createBatch')}
-          </Link>
-        </Button>
+      {/* Quick Actions - Contextual based on device state */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            {t('quickActions')}
+          </h2>
+          {(stats.orphans > 0 || stats.pending > 0) && (
+            <p className="text-xs text-muted-foreground">
+              Para dispositivos en tu cuenta
+            </p>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {/* Show orphan device action if there are orphans */}
+          {stats.orphans > 0 && (
+            <Link href="/dispositivos/huerfanos" className="block">
+              <div className="p-4 rounded-lg border border-destructive/50 bg-destructive/5 hover:bg-destructive/10 transition-colors h-full">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-md bg-destructive/20 shrink-0">
+                    <Link2 className="h-4 w-4 text-destructive" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm text-foreground">
+                      {t('installOrphanDevices', { count: stats.orphans })}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                      Asignar ubicación a dispositivos que ya tienes
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          )}
+
+          {/* Show pending config action if there are pending */}
+          {stats.pending > 0 && (
+            <Link href="/dispositivos?filter=pending" className="block">
+              <div className="p-4 rounded-lg border border-warning/50 bg-warning/5 hover:bg-warning/10 transition-colors h-full">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-md bg-warning/20 shrink-0">
+                    <Package className="h-4 w-4 text-warning" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm text-foreground">
+                      {t('configurePendingDevices', { count: stats.pending })}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                      Completar configuración de los ya instalados
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          )}
+
+          {/* Always show create location if no urgent actions or show as third option */}
+          {(stats.orphans === 0 && stats.pending === 0) && (
+            <Link href="/ubicaciones/nueva" className="block">
+              <div className="p-4 rounded-lg border hover:bg-muted/50 transition-colors h-full">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-md bg-primary/10 shrink-0">
+                    <MapPin className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm text-foreground">
+                      {t('createLocation')}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                      Agregar nueva granja o galpón
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          )}
+        </div>
+
+        {/* Secondary actions */}
+        {(stats.orphans > 0 || stats.pending > 0) && (
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/ubicaciones/nueva">
+                <MapPin className="h-3.5 w-3.5 mr-1.5" />
+                {t('createLocation')}
+              </Link>
+            </Button>
+            {stats.inProduction > 0 && (
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/lotes/nuevo">
+                  <Layers className="h-3.5 w-3.5 mr-1.5" />
+                  {t('createBatch')}
+                </Link>
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Recent Lists */}
