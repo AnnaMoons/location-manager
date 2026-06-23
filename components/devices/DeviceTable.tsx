@@ -51,7 +51,14 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                         <DeviceIcon type={device.type} className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-medium text-foreground"><SerialNumber serial={device.serialNumber} className="text-sm" /></p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-foreground">
+                            <SerialNumber serial={device.serialNumber} className="text-sm" />
+                          </p>
+                          <span className="text-[10px] text-muted-foreground/70 font-mono">
+                            ID: <SerialNumber serial={device.serialNumber} showShortId className="text-xs" />
+                          </span>
+                        </div>
                         <div className="mt-0.5">
                           {device.type === 'sensor' && device.configuration?.type === 'sensor' && (device.configuration as SensorConfig).sensorProfile ? (
                             <span className="text-sm text-muted-foreground">

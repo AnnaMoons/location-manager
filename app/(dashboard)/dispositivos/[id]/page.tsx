@@ -37,6 +37,7 @@ import { DeviceStateChip } from '@/components/devices/DeviceStateChip';
 import { NextActionCTA } from '@/components/devices/NextActionCTA';
 import { SerialNumber } from '@/components/devices/SerialNumber';
 import { RepairTimeline } from '@/components/devices/RepairTimeline';
+import { DeviceQRCode } from '@/components/devices/DeviceQRCode';
 import { useDevices } from '@/lib/hooks/useDevices';
 import { useLocations } from '@/lib/hooks/useLocations';
 import { AlertsEntryPoint } from '@/components/alerts/AlertsEntryPoint';
@@ -258,9 +259,15 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
               </div>
 
               <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
-                <div>
-                  <span className="text-muted-foreground">{t('serialNumber')}: </span>
-                  <SerialNumber serial={device.serialNumber} className="font-medium" />
+                <div className="flex items-center gap-3">
+                  <div>
+                    <span className="text-muted-foreground">{t('serialNumber')}: </span>
+                    <SerialNumber serial={device.serialNumber} className="font-medium" />
+                  </div>
+                  <DeviceQRCode
+                    serialNumber={device.serialNumber}
+                    deviceId={device.id}
+                  />
                 </div>
                 {device.installedAt && (
                   <div>
@@ -323,6 +330,80 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
           </CardContent>
         </Card>
       )}
+
+      {/* Identification Card - H-019: Alternative identification for devices */}
+      <Card className="border-l-4 border-l-primary">
+        <CardContent className="p-6">
+          <div className="flex items-start gap-6">
+            <div className="flex-1 space-y-4">
+              <div>
+                <h2 className="text-lg font-semibold flex items-center gap-2">
+                  Identificación del dispositivo
+                </h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Métodos alternativos para identificar el dispositivo cuando el sticker físico no es legible
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {/* Full Serial */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Serial completo</p>
+                    <SerialNumber serial={device.serialNumber} className="text-base" />
+                  </div>
+                </div>
+
+                {/* Short ID */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      ID Corto (últimos 4 dígitos)
+                    </p>
+                    <div className="flex items-baseline gap-2">
+                      <SerialNumber
+                        serial={device.serialNumber}
+                        showShortId
+                        className="text-3xl"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Use estos dígitos si el sticker no es legible
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Info box */}
+                <div className="bg-info/5 border border-info/20 rounded-lg p-3">
+                  <div className="flex gap-2">
+                    <Info className="h-4 w-4 text-info shrink-0 mt-0.5" />
+                    <div className="space-y-1 text-xs text-muted-foreground">
+                      <p className="font-medium text-foreground">
+                        💡 Si el sticker físico se cayó:
+                      </p>
+                      <ul className="space-y-0.5 ml-4 list-disc">
+                        <li>Use el <strong>ID Corto</strong> para identificación rápida</li>
+                        <li>Descargue el código QR y péguelo como etiqueta de respaldo</li>
+                        <li>El QR permite acceder al dispositivo sin tipear el serial</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* QR Code Display */}
+            <div className="shrink-0">
+              <DeviceQRCode
+                serialNumber={device.serialNumber}
+                deviceId={device.id}
+                showButton={false}
+                size="md"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Location */}
       <div className="space-y-2">
