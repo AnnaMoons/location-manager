@@ -1,6 +1,14 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Restyled with the Asimetrix DS Card tokens (vendor/asimetrix-ds/components/molecules/Card).
+ * Kept as a compound Card/CardHeader/CardTitle/.../CardFooter set (not the DS Card component
+ * directly) because the DS Card is a single non-compound div sized for tile/dashboard use
+ * (`size`, `state`, `tag` props) with free-form children — it doesn't have header/footer slots,
+ * and the ~14 call sites here rely on that composition.
+ */
+
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -8,7 +16,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm",
+      "rounded-md border border-card-border bg-card-bg text-fg shadow-xs",
       className
     )}
     {...props}
@@ -35,7 +43,7 @@ const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      "text-2xl font-semibold leading-none tracking-tight",
+      "text-2xl font-semibold leading-none tracking-tight text-fg",
       className
     )}
     {...props}
@@ -49,7 +57,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("text-sm text-fg-tertiary", className)}
     {...props}
   />
 ));

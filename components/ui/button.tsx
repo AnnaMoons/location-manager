@@ -1,55 +1,86 @@
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
-import { cva, type VariantProps } from "class-variance-authority";
+import DsButtonRaw from "@ds/components/atoms/Button";
 import { cn } from "@/lib/utils";
 
-const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 touch-target",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-11 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-12 rounded-md px-8",
-        icon: "h-11 w-11",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-);
+// The DS component is plain JSX (no TypeScript); cast it so TS doesn't
+// mis-infer strict/required prop shapes from the untyped source.
+const DsButton = DsButtonRaw as React.ComponentType<any>;
+
+/**
+ * Adapter over the Asimetrix DS Button (vendor/asimetrix-ds/components/atoms/Button).
+ * Keeps the old shadcn variant/size names so the ~70 existing call sites don't
+ * need to change; every render actually goes through the real DS component.
+ */
+
+export type ButtonVariant =
+  | "default"
+  | "destructive"
+  | "outline"
+  | "secondary"
+  | "ghost"
+  | "link";
+export type ButtonSize = "default" | "sm" | "lg" | "icon";
+
+const VARIANT_MAP: Record<ButtonVariant, "accent" | "neutral" | "ghost" | "destructive"> = {
+  default: "accent",
+  destructive: "destructive",
+  outline: "neutral",
+  secondary: "neutral",
+  ghost: "ghost",
+  link: "ghost",
+};
+
+const SIZE_MAP: Record<ButtonSize, "sm" | "md" | "lg"> = {
+  default: "md",
+  sm: "sm",
+  lg: "lg",
+  icon: "md",
+};
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean;
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">,
+    React.RefAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  as?: React.ElementType;
+  href?: string;
+  icon?: React.ReactNode;
+  loading?: boolean;
+  children?: React.ReactNode;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    );
-  }
-);
-Button.displayName = "Button";
+function Button({
+  variant = "default",
+  size = "default",
+  className,
+  as,
+  ...props
+}: ButtonProps) {
+  return (
+    <DsButton
+      as={as}
+      variant={VARIANT_MAP[variant] ?? "accent"}
+      size={SIZE_MAP[size] ?? "md"}
+      iconOnly={size === "icon"}
+      className={cn(variant === "link" && "underline underline-offset-4", className)}
+      {...props}
+    />
+  );
+}
 
-export { Button, buttonVariants };
+/**
+ * Compat shim for components/ui/alert-dialog.tsx, replaced wholesale in Fase 3
+ * when AlertDialog is migrated to the DS Dialog organism.
+ */
+export function buttonVariants({ variant = "default" as ButtonVariant } = {}) {
+  return cn(
+    "inline-flex items-center justify-center gap-1.5 font-semibold rounded-md border-[1.5px] px-4.5 h-9 text-sm cursor-pointer",
+    variant === "destructive"
+      ? "bg-button-destructive-bg text-button-destructive-fg border-button-destructive-bg"
+      : variant === "outline" || variant === "secondary" || variant === "ghost"
+        ? "bg-transparent text-button-neutral-fg border-button-neutral-border"
+        : "bg-button-accent-bg text-button-accent-fg border-button-accent-border",
+  );
+}
+
+export { Button };
