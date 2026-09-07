@@ -1,107 +1,53 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import '../vendor/asimetrix-ds/app/globals.css';
+@import 'tw-animate-css';
 
-@layer base {
-  :root {
-    /* Asimetrix Design System Colors */
-
-    /* Default Background: Portal light mode, forms, text on primary button */
-    --background: 0 0% 98.4%; /* #FBFBFB */
-
-    /* Default Background 1: Website bg, primary text/icons */
-    --foreground: 232 87% 12%; /* #040939 */
-
-    /* Primary: Button backgrounds on light bg */
-    --primary: 197 100% 25%; /* #005980 */
-    --primary-foreground: 0 0% 98.4%; /* #FBFBFB */
-
-    /* Secondary: Cyan accent for primary actions on dark bg */
-    --secondary: 186 100% 80%; /* #97F4FF */
-    --secondary-foreground: 232 87% 12%; /* #040939 */
-
-    /* Muted: Frames, dialogs, menus, input fields */
-    --muted: 0 0% 95%; /* #F2F2F2 */
-    --muted-foreground: 0 0% 38%; /* #616161 - tertiary text */
-
-    /* Accent: Selectors and highlights */
-    --accent: 207 75% 87%; /* #C7E2F7 */
-    --accent-foreground: 232 87% 12%; /* #040939 */
-
-    /* Cards and KPIs */
-    --card: 0 0% 100%;
-    --card-foreground: 232 87% 12%; /* #040939 */
-
-    /* Popovers */
-    --popover: 0 0% 100%;
-    --popover-foreground: 232 87% 12%; /* #040939 */
-
-    /* Destructive */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    /* Success - using Asimetrix info green */
-    --success: 163 64% 45%; /* Based on #D0F4EA but darker for contrast */
-    --success-foreground: 0 0% 98.4%;
-
-    /* Warning */
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 15%;
-
-    /* Info - tooltips, updates */
-    --info: 163 64% 89%; /* #D0F4EA */
-    --info-foreground: 232 87% 12%;
-
-    /* Border and input */
-    --border: 0 0% 82%; /* #D1D1D1 */
-    --input: 0 0% 82%; /* #D1D1D1 */
-    --ring: 197 100% 25%; /* Primary color */
-
-    /* Disabled state */
-    --disabled: 0 0% 78%; /* #C7C7C7 */
-
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    /* Dark mode - Asimetrix */
-    --background: 220 4% 13%; /* #202124 */
-    --foreground: 0 0% 98.4%; /* #FBFBFB */
-
-    --primary: 186 100% 80%; /* #97F4FF - cyan on dark */
-    --primary-foreground: 232 87% 12%; /* #040939 */
-
-    --secondary: 0 0% 95%; /* #F2F2F2 */
-    --secondary-foreground: 232 87% 12%;
-
-    --muted: 220 6% 20%;
-    --muted-foreground: 0 0% 78%; /* #C7C7C7 */
-
-    --accent: 207 50% 30%;
-    --accent-foreground: 0 0% 98.4%;
-
-    --card: 220 6% 17%;
-    --card-foreground: 0 0% 98.4%;
-
-    --popover: 220 6% 17%;
-    --popover-foreground: 0 0% 98.4%;
-
-    --border: 220 6% 25%;
-    --input: 220 6% 25%;
-    --ring: 186 100% 80%;
-  }
+/**
+ * The DS's @theme resets `--breakpoint-*: initial` and never redefines it (its docs portal
+ * doesn't use responsive `sm:`/`md:`/etc. variants) — without this, every breakpoint-prefixed
+ * class in this app (sidebar vs. mobile nav switch, responsive grids, dialog widths, etc.)
+ * silently stops working. Restoring Tailwind's own default scale here.
+ */
+@theme {
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
 }
 
+/**
+ * The DS's @theme also resets `--color-*: initial` and only redefines its own semantic/primitive
+ * tokens (by design — AGENTS.md forbids generic Tailwind colors in new DS components). But this
+ * app still has many not-yet-migrated files using stock Tailwind colors (text-white, bg-red-500,
+ * border-l-pink-400, etc.) — without this palette back, those silently render with no color at
+ * all. TEMPORARY BRIDGE: remove call sites' raw color classes in favor of DS tokens (tracked as
+ * migration debt), then delete this import once none remain.
+ */
+@import 'tailwindcss/theme.css';
+
 @layer base {
-  * {
-    @apply border-border;
-  }
+  /*
+   * The DS's globals.css ships CSS for its OWN docs-portal shell (not just tokens), including
+   * an unscoped `body { padding-left: 240px }` sized for its fixed 240px .sidebar — that rule
+   * has nothing to do with this app's own <aside>/<main> layout, but still applies globally and
+   * stacks with our <main>'s padding-left, doubling the offset. Neutralizing it here.
+   */
+  /*
+   * Default body copy size lives on <body> itself (inherited from there), not on a blanket
+   * `p, span, label, input, textarea, select { font-size: 14px }` element-selector rule — that
+   * rule directly targets those tags, so it always won over any *inherited* smaller size from an
+   * ancestor (e.g. a table's `text-sm-tight`/13px or its header's `text-micro`/11px), forcing
+   * every bare <p>/<span> back to 14px regardless of context. Setting it on body lets normal
+   * inheritance work: a component that sets its own text-* class on a container still wins for
+   * its descendants, the same way every other DS component (Card, Badge, Table…) expects.
+   */
   body {
-    @apply bg-background text-foreground;
+    padding-left: 0;
     font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
   }
 
-  /* Asimetrix Typography */
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold;
     font-family: 'Roboto', sans-serif;
@@ -119,33 +65,12 @@
     font-size: 18px;
     line-height: 1.4;
   }
-
-  p, span, label, input, textarea, select {
-    font-size: 14px;
-    line-height: 1.5;
-  }
 }
 
 /* Mobile-first touch targets */
 @layer components {
   .touch-target {
     @apply min-h-[44px] min-w-[44px];
-  }
-
-  /* Asimetrix specific component styles */
-  .asimetrix-card {
-    @apply bg-card rounded-lg border shadow-sm;
-    background-color: hsl(205 35% 77% / 0.3); /* Subtle #B0C8DA tint */
-  }
-
-  .asimetrix-info {
-    background-color: #D0F4EA;
-    @apply rounded-lg p-4;
-  }
-
-  .asimetrix-pigvision {
-    background-color: #D1C2CE;
-    @apply rounded-lg;
   }
 }
 
@@ -169,9 +94,9 @@
 .skeleton {
   background: linear-gradient(
     90deg,
-    hsl(var(--muted)) 25%,
-    hsl(var(--muted-foreground) / 0.1) 50%,
-    hsl(var(--muted)) 75%
+    var(--color-surface-2) 25%,
+    var(--color-surface) 50%,
+    var(--color-surface-2) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
