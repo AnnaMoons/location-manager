@@ -13,12 +13,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import Popover, { POPOVER_ITEM, POPOVER_ITEM_DANGER, POPOVER_SECTION } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,10 +40,12 @@ import { AlertsEntryPoint } from '@/components/alerts/AlertsEntryPoint';
 import { useToast } from '@/components/ui/toast';
 import { useBatches } from '@/lib/hooks/useBatches';
 import {
-  GatewayConfig, SensorConfig, PigVisionConfig, ScaleConfig,
+  Device, GatewayConfig, SensorConfig, PigVisionConfig, ScaleConfig,
   SENSOR_PROFILE_LABELS, SENSOR_PROFILE_SHORT_LABELS,
   SENSOR_PROFILE_VARIABLES, INTERNAL_SENSOR_THRESHOLDS, SensorVariable,
 } from '@/lib/types/device';
+
+type TFunc = ReturnType<typeof useTranslations>;
 
 /* ─── Design system mappings ─────────────────────────────────── */
 
@@ -59,24 +57,24 @@ const TYPE_ICON = {
 };
 
 const TYPE_BORDER: Record<string, string> = {
-  sensor:    'border-l-primary',
-  pigvision: 'border-l-[#D1C2CE]',
-  scale:     'border-l-secondary',
-  gateway:   'border-l-border',
+  sensor:    'border-l-brand-primary',
+  pigvision: 'border-l-product-pigvision',
+  scale:     'border-l-brand-accent',
+  gateway:   'border-l-line',
 };
 
 const TYPE_ICON_BG: Record<string, string> = {
-  sensor:    'bg-primary/10',
-  pigvision: 'bg-[#D1C2CE]/40',
-  scale:     'bg-secondary/10',
-  gateway:   'bg-muted',
+  sensor:    'bg-brand-primary/10',
+  pigvision: 'bg-product-pigvision/40',
+  scale:     'bg-brand-accent/15',
+  gateway:   'bg-surface-2',
 };
 
 const TYPE_ICON_COLOR: Record<string, string> = {
-  sensor:    'text-primary',
-  pigvision: 'text-foreground',
-  scale:     'text-secondary',
-  gateway:   'text-muted-foreground',
+  sensor:    'text-brand-primary',
+  pigvision: 'text-fg',
+  scale:     'text-brand-accent',
+  gateway:   'text-fg-tertiary',
 };
 
 const sensorVariableIcons: Record<SensorVariable, React.ElementType> = {
@@ -146,9 +144,9 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
   }
 
   const Icon = TYPE_ICON[device.type] ?? Thermometer;
-  const borderColor = TYPE_BORDER[device.type] ?? 'border-l-border';
-  const iconBg = TYPE_ICON_BG[device.type] ?? 'bg-muted';
-  const iconColor = TYPE_ICON_COLOR[device.type] ?? 'text-muted-foreground';
+  const borderColor = TYPE_BORDER[device.type] ?? 'border-l-line';
+  const iconBg = TYPE_ICON_BG[device.type] ?? 'bg-surface-2';
+  const iconColor = TYPE_ICON_COLOR[device.type] ?? 'text-fg-tertiary';
 
   const handleUninstall = async () => {
     try {
@@ -188,43 +186,39 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
         backHref="/dispositivos"
         actions={
           (device.state === 'production' || device.locationId) && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon">
+            <Popover
+              trigger={
+                <button className="inline-flex items-center justify-center h-9 w-9 rounded-md border border-button-neutral-border bg-transparent hover:bg-surface-2 transition-colors">
                   <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+                </button>
+              }
+              position="bottom"
+            >
+              <div className={POPOVER_SECTION}>
                 {device.state === 'production' && (
-                  <DropdownMenuItem
-                    className="text-muted-foreground"
-                    onSelect={() => setOpenDialog('disable')}
-                  >
-                    <Wrench className="h-4 w-4 mr-2" />
+                  <button className={POPOVER_ITEM} onClick={() => setOpenDialog('disable')}>
+                    <Wrench className="h-4 w-4" />
                     {t('detail.disable')}
-                  </DropdownMenuItem>
+                  </button>
                 )}
                 {device.locationId && (
-                  <DropdownMenuItem
-                    className="text-destructive focus:text-destructive"
-                    onSelect={() => setOpenDialog('uninstall')}
-                  >
-                    <Power className="h-4 w-4 mr-2" />
+                  <button className={cn(POPOVER_ITEM, POPOVER_ITEM_DANGER)} onClick={() => setOpenDialog('uninstall')}>
+                    <Power className="h-4 w-4" />
                     {t('uninstall')}
-                  </DropdownMenuItem>
+                  </button>
                 )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </div>
+            </Popover>
           )
         }
       />
 
       {/* Next step banner */}
       {['registered', 'available', 'unassigned', 'configured', 'installed'].includes(device.state) && (
-        <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 flex items-center justify-between gap-3">
+        <div className="p-4 rounded-lg bg-brand-primary/5 border border-brand-primary/20 flex items-center justify-between gap-3">
           <div>
-            <p className="font-medium text-primary text-sm">{t('detail.nextStepTitle')}</p>
-            <p className="text-sm text-muted-foreground">{t('detail.nextStepDesc')}</p>
+            <p className="font-medium text-brand-primary text-sm">{t('detail.nextStepTitle')}</p>
+            <p className="text-sm text-fg-tertiary">{t('detail.nextStepDesc')}</p>
           </div>
           <NextActionCTA device={device} variant="button" />
         </div>
@@ -261,7 +255,7 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
               <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
                 <div className="flex items-center gap-3">
                   <div>
-                    <span className="text-muted-foreground">{t('serialNumber')}: </span>
+                    <span className="text-fg-tertiary">{t('serialNumber')}: </span>
                     <SerialNumber serial={device.serialNumber} className="font-medium" />
                   </div>
                   <DeviceQRCode
@@ -271,13 +265,13 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
                 </div>
                 {device.installedAt && (
                   <div>
-                    <span className="text-muted-foreground">{t('detail.installedAt')}: </span>
+                    <span className="text-fg-tertiary">{t('detail.installedAt')}: </span>
                     <span className="font-medium">{new Date(device.installedAt).toLocaleDateString('es-ES')}</span>
                   </div>
                 )}
                 {device.lastSeen && (
                   <div className="col-span-2">
-                    <span className="text-muted-foreground">{t('lastSeen')}: </span>
+                    <span className="text-fg-tertiary">{t('lastSeen')}: </span>
                     <span className="font-medium">
                       {new Date(device.lastSeen).toLocaleString('es-ES', {
                         day: '2-digit', month: '2-digit', year: 'numeric',
@@ -292,16 +286,16 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
             {/* Last measurement highlight — always visible */}
             <div className="shrink-0 text-right">
               {device.lastMeasurement ? (
-                <p className="text-2xl font-bold tabular-nums text-foreground">
+                <p className="text-2xl font-bold tabular-nums text-fg">
                   {device.lastMeasurement.value}
-                  <span className="text-base font-normal text-muted-foreground ml-0.5">
+                  <span className="text-base font-normal text-fg-tertiary ml-0.5">
                     {device.lastMeasurement.unit}
                   </span>
                 </p>
               ) : (
-                <p className="text-2xl font-bold text-muted-foreground/40">—</p>
+                <p className="text-2xl font-bold text-fg-tertiary/40">—</p>
               )}
-              <p className="text-xs text-muted-foreground mt-0.5">{t('detail.lastReading')}</p>
+              <p className="text-xs text-fg-tertiary mt-0.5">{t('detail.lastReading')}</p>
             </div>
           </div>
         </CardContent>
@@ -320,7 +314,7 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
                   <h2 className="text-lg font-semibold">
                     Proceso de reparación
                   </h2>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-sm text-fg-tertiary mt-1">
                     Seguimiento del estado actual del dispositivo en el proceso de soporte
                   </p>
                 </div>
@@ -332,7 +326,7 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
       )}
 
       {/* Identification Card - H-019: Alternative identification for devices */}
-      <Card className="border-l-4 border-l-primary">
+      <Card className="border-l-4 border-l-brand-primary">
         <CardContent className="p-6">
           <div className="flex items-start gap-6">
             <div className="flex-1 space-y-4">
@@ -340,24 +334,24 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
                 <h2 className="text-lg font-semibold flex items-center gap-2">
                   Identificación del dispositivo
                 </h2>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-sm text-fg-tertiary mt-1">
                   Métodos alternativos para identificar el dispositivo cuando el sticker físico no es legible
                 </p>
               </div>
 
               <div className="space-y-3">
                 {/* Full Serial */}
-                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-surface-2/50">
                   <div>
-                    <p className="text-xs text-muted-foreground mb-1">Serial completo</p>
+                    <p className="text-xs text-fg-tertiary mb-1">Serial completo</p>
                     <SerialNumber serial={device.serialNumber} className="text-base" />
                   </div>
                 </div>
 
                 {/* Short ID */}
-                <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-brand-primary/5 border border-brand-primary/20">
                   <div>
-                    <p className="text-xs text-muted-foreground mb-1">
+                    <p className="text-xs text-fg-tertiary mb-1">
                       ID Corto (últimos 4 dígitos)
                     </p>
                     <div className="flex items-baseline gap-2">
@@ -366,7 +360,7 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
                         showShortId
                         className="text-3xl"
                       />
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-fg-tertiary">
                         Use estos dígitos si el sticker no es legible
                       </p>
                     </div>
@@ -374,11 +368,11 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
                 </div>
 
                 {/* Info box */}
-                <div className="bg-info/5 border border-info/20 rounded-lg p-3">
+                <div className="bg-surface-blue/5 border border-surface-blue/20 rounded-lg p-3">
                   <div className="flex gap-2">
-                    <Info className="h-4 w-4 text-info shrink-0 mt-0.5" />
-                    <div className="space-y-1 text-xs text-muted-foreground">
-                      <p className="font-medium text-foreground">
+                    <Info className="h-4 w-4 text-brand-primary shrink-0 mt-0.5" />
+                    <div className="space-y-1 text-xs text-fg-tertiary">
+                      <p className="font-medium text-fg">
                         💡 Si el sticker físico se cayó:
                       </p>
                       <ul className="space-y-0.5 ml-4 list-disc">
@@ -408,7 +402,7 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
       {/* Location */}
       <div className="space-y-2">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+          <h2 className="text-sm font-semibold text-fg-tertiary uppercase tracking-wide">
             {t('location')}
           </h2>
           {location && (
@@ -422,22 +416,22 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
         </div>
         {location ? (
           <Link href={`/ubicaciones/${location.id}`} className="block">
-            <div className="flex items-center gap-3 px-4 py-3 rounded-lg border hover:bg-muted/50 transition-colors">
-              <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div className="flex items-center gap-3 px-4 py-3 rounded-lg border hover:bg-surface-2/50 transition-colors">
+              <MapPin className="h-4 w-4 text-fg-tertiary shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-sm">{location.name}</p>
                 {locationPath.length > 1 && (
-                  <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                  <p className="text-xs text-fg-tertiary mt-0.5 truncate">
                     {locationPath.slice(0, -1).map((p) => p.name).join(' › ')}
                   </p>
                 )}
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              <ChevronRight className="h-4 w-4 text-fg-tertiary shrink-0" />
             </div>
           </Link>
         ) : (
           <div className="flex items-center justify-between px-4 py-3 rounded-lg border border-dashed">
-            <span className="text-sm text-muted-foreground">{t('noLocation')}</span>
+            <span className="text-sm text-fg-tertiary">{t('noLocation')}</span>
             <Link href={`/dispositivos/${id}/instalar`}>
               <Button size="sm">
                 <MapPin className="h-3.5 w-3.5 mr-1.5" />
@@ -456,7 +450,7 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
       {/* Configuration */}
       <div className="space-y-2">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+          <h2 className="text-sm font-semibold text-fg-tertiary uppercase tracking-wide">
             {t('configurationLabel')}
           </h2>
           {device.type !== 'sensor' && device.type !== 'gateway' && device.configuration && (
@@ -469,116 +463,26 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
           )}
         </div>
 
-        {device.type === 'sensor' ? (
-          <div className="space-y-3">
-            <div className="flex items-start gap-3 px-4 py-3 rounded-lg border bg-muted/40">
-              <Info className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
-              <p className="text-sm text-muted-foreground">{t('configuration.sensor.managedInternally')}</p>
+        {(() => {
+          // Sensor renders unconditionally (config is managed internally); the other types
+          // need a saved configuration, or fall back to the "no config yet" prompt.
+          if (device.type === 'sensor') return <SensorConfigPanel device={device} t={t} />;
+          const Panel = CONFIG_PANELS[device.type];
+          if (Panel && device.configuration) return <Panel device={device} t={t} />;
+          return (
+            <div className="flex items-center justify-between px-4 py-3 rounded-lg border border-dashed">
+              <span className="text-sm text-fg-tertiary">{t('noConfig')}</span>
+              {device.state === 'registered' && (
+                <Link href={`/dispositivos/${id}/configurar`}>
+                  <Button size="sm">
+                    <Settings className="h-3.5 w-3.5 mr-1.5" />
+                    {t('configure')}
+                  </Button>
+                </Link>
+              )}
             </div>
-            {device.configuration?.type === 'sensor' && (device.configuration as SensorConfig).sensorProfile && (() => {
-              const profile = (device.configuration as SensorConfig).sensorProfile!;
-              const variables = SENSOR_PROFILE_VARIABLES[profile] ?? [];
-              return (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 px-4 py-3 rounded-lg border">
-                    <Thermometer className="h-4 w-4 text-muted-foreground shrink-0" />
-                    <span className="text-sm text-muted-foreground flex-1">{t('configuration.sensor.sensorProfile')}</span>
-                    <Badge variant="outline" className="font-medium">{SENSOR_PROFILE_LABELS[profile]}</Badge>
-                  </div>
-                  {variables.length > 0 && (
-                    <div className="space-y-1">
-                      {variables.map((variable) => {
-                        const VarIcon = sensorVariableIcons[variable];
-                        const thresholds = INTERNAL_SENSOR_THRESHOLDS[variable];
-                        return (
-                          <div key={variable} className="flex items-center gap-3 px-4 py-3 rounded-lg border">
-                            <VarIcon className="h-4 w-4 text-muted-foreground shrink-0" />
-                            <span className="text-sm font-medium flex-1">{sensorVariableLabels[variable]}</span>
-                            <span className="text-xs text-muted-foreground tabular-nums">
-                              {thresholds.min} – {thresholds.max} {thresholds.unit}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
-          </div>
-        ) : device.configuration && device.type === 'pigvision' ? (
-          <div className="space-y-1">
-            {(() => {
-              const cfg = device.configuration as PigVisionConfig;
-              const height = cfg.installationHeight;
-              const unit = cfg.installationHeightUnit ?? 'm';
-              return (
-                <div className="flex items-center gap-3 px-4 py-3 rounded-lg border">
-                  <Ruler className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="text-sm text-muted-foreground flex-1">
-                    {t('configuration.pigvision.installationHeight')}
-                  </span>
-                  <span className="text-sm font-medium tabular-nums">{height} {unit}</span>
-                </div>
-              );
-            })()}
-          </div>
-        ) : device.configuration && device.type === 'scale' ? (
-          <div className="space-y-1">
-            {(() => {
-              const cfg = device.configuration as ScaleConfig;
-              const rows: { label: string; value: string }[] = [
-                { label: t('configuration.scale.maxWeight'), value: `${cfg.maxWeight} ${cfg.unit}` },
-                { label: t('configuration.scale.tareWeight'), value: `${cfg.tareWeight} ${cfg.unit}` },
-              ];
-              if (cfg.calibrationDate) {
-                rows.push({
-                  label: t('configuration.scale.calibrationDate'),
-                  value: new Date(cfg.calibrationDate).toLocaleDateString('es-ES'),
-                });
-              }
-              return rows.map((row) => (
-                <div key={row.label} className="flex items-center gap-3 px-4 py-3 rounded-lg border">
-                  <span className="text-sm text-muted-foreground flex-1">{row.label}</span>
-                  <span className="text-sm font-medium tabular-nums">{row.value}</span>
-                </div>
-              ));
-            })()}
-          </div>
-        ) : device.configuration && device.type === 'gateway' ? (
-          <div className="space-y-1">
-            {(() => {
-              const cfg = device.configuration as GatewayConfig;
-              return (
-                <div className="flex items-center gap-3 px-4 py-3 rounded-lg border">
-                  <span className="text-sm text-muted-foreground flex-1">
-                    {t('configuration.gateway.lastSyncAt')}
-                  </span>
-                  <span className="text-sm font-medium">
-                    {cfg.lastSyncAt
-                      ? new Date(cfg.lastSyncAt).toLocaleString('es-ES', {
-                          day: '2-digit', month: '2-digit', year: 'numeric',
-                          hour: '2-digit', minute: '2-digit',
-                        })
-                      : '—'}
-                  </span>
-                </div>
-              );
-            })()}
-          </div>
-        ) : (
-          <div className="flex items-center justify-between px-4 py-3 rounded-lg border border-dashed">
-            <span className="text-sm text-muted-foreground">{t('noConfig')}</span>
-            {device.state === 'registered' && (
-              <Link href={`/dispositivos/${id}/configurar`}>
-                <Button size="sm">
-                  <Settings className="h-3.5 w-3.5 mr-1.5" />
-                  {t('configure')}
-                </Button>
-              </Link>
-            )}
-          </div>
-        )}
+          );
+        })()}
       </div>
 
       {/* Connected sensors (gateway only) */}
@@ -587,15 +491,15 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
         const connectedDevices = config.connectedSensors.map((sid) => getDevice(sid)).filter(Boolean);
         return (
           <div className="space-y-2">
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide px-1">
+            <h2 className="text-sm font-semibold text-fg-tertiary uppercase tracking-wide px-1">
               {t('connectedSensors')} · {connectedDevices.length}
             </h2>
             {connectedDevices.length > 0 ? (
               <div className="space-y-1">
                 {connectedDevices.map((sensor) => sensor && (
                   <Link key={sensor.id} href={`/dispositivos/${sensor.id}`} className="block">
-                    <div className="flex items-center gap-3 px-4 py-3 rounded-lg border hover:bg-muted/50 transition-colors">
-                      <Radio className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div className="flex items-center gap-3 px-4 py-3 rounded-lg border hover:bg-surface-2/50 transition-colors">
+                      <Radio className="h-4 w-4 text-fg-tertiary shrink-0" />
                       <span className="text-sm font-medium flex-1">{sensor.serialNumber}</span>
                       <Badge
                         variant={sensor.health === 'online' ? 'success' : 'secondary'}
@@ -603,13 +507,13 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
                       >
                         {sensor.health === 'online' ? t('health.online') : t('health.offline')}
                       </Badge>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <ChevronRight className="h-4 w-4 text-fg-tertiary shrink-0" />
                     </div>
                   </Link>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground px-4 py-3">{t('noConnectedSensors')}</p>
+              <p className="text-sm text-fg-tertiary px-4 py-3">{t('noConnectedSensors')}</p>
             )}
           </div>
         );
@@ -665,7 +569,7 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
       {/* History */}
       {device.history && device.history.length > 0 && (
         <div className="space-y-2">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide px-1">
+          <h2 className="text-sm font-semibold text-fg-tertiary uppercase tracking-wide px-1">
             {t('history.title')}
           </h2>
           <div className="rounded-lg border divide-y">
@@ -675,11 +579,11 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
               return (
                 <div key={entry.id} className="flex gap-3 px-4 py-3">
                   <div className="flex flex-col items-center pt-1.5">
-                    <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                    <div className="w-2 h-2 rounded-full bg-brand-primary shrink-0" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium">{t(`history.actions.${entry.action}`)}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-fg-tertiary">
                       {new Date(entry.timestamp).toLocaleString('es-ES', {
                         day: '2-digit', month: '2-digit', year: 'numeric',
                         hour: '2-digit', minute: '2-digit',
@@ -690,12 +594,12 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
                         {entry.details.fromState && entry.details.toState && (
                           <>
                             <Badge variant="outline" className="text-xs">{t(`states.${entry.details.fromState}`)}</Badge>
-                            <ArrowRight className="h-3 w-3 text-muted-foreground" />
+                            <ArrowRight className="h-3 w-3 text-fg-tertiary" />
                             <Badge variant="outline" className="text-xs">{t(`states.${entry.details.toState}`)}</Badge>
                           </>
                         )}
                         {(fromLocation || toLocation) && (
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                          <span className="text-xs text-fg-tertiary flex items-center gap-1">
                             {fromLocation && <span>{fromLocation.name}</span>}
                             {fromLocation && toLocation && <ArrowRight className="h-3 w-3" />}
                             {toLocation && <span>{toLocation.name}</span>}
@@ -713,3 +617,113 @@ export default function DeviceDetailPage({ params }: { params: { id: string } })
     </div>
   );
 }
+
+/* ─── Config panels, one per device type — registered below so adding a new
+   device type means adding a component + a registry entry, not editing a chain. ─── */
+
+function SensorConfigPanel({ device, t }: { device: Device; t: TFunc }) {
+  const profile = device.configuration?.type === 'sensor' ? device.configuration.sensorProfile : undefined;
+  const variables = profile ? SENSOR_PROFILE_VARIABLES[profile] ?? [] : [];
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-start gap-3 px-4 py-3 rounded-lg border bg-surface-2/40">
+        <Info className="h-4 w-4 mt-0.5 text-fg-tertiary shrink-0" />
+        <p className="text-sm text-fg-tertiary">{t('configuration.sensor.managedInternally')}</p>
+      </div>
+      {profile && (
+        <div className="space-y-3">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-lg border">
+            <Thermometer className="h-4 w-4 text-fg-tertiary shrink-0" />
+            <span className="text-sm text-fg-tertiary flex-1">{t('configuration.sensor.sensorProfile')}</span>
+            <Badge variant="outline" className="font-medium">{SENSOR_PROFILE_LABELS[profile]}</Badge>
+          </div>
+          {variables.length > 0 && (
+            <div className="space-y-1">
+              {variables.map((variable) => {
+                const VarIcon = sensorVariableIcons[variable];
+                const thresholds = INTERNAL_SENSOR_THRESHOLDS[variable];
+                return (
+                  <div key={variable} className="flex items-center gap-3 px-4 py-3 rounded-lg border">
+                    <VarIcon className="h-4 w-4 text-fg-tertiary shrink-0" />
+                    <span className="text-sm font-medium flex-1">{sensorVariableLabels[variable]}</span>
+                    <span className="text-xs text-fg-tertiary tabular-nums">
+                      {thresholds.min} – {thresholds.max} {thresholds.unit}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PigVisionConfigPanel({ device, t }: { device: Device; t: TFunc }) {
+  const cfg = device.configuration as PigVisionConfig;
+  const unit = cfg.installationHeightUnit ?? 'm';
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center gap-3 px-4 py-3 rounded-lg border">
+        <Ruler className="h-4 w-4 text-fg-tertiary shrink-0" />
+        <span className="text-sm text-fg-tertiary flex-1">
+          {t('configuration.pigvision.installationHeight')}
+        </span>
+        <span className="text-sm font-medium tabular-nums">{cfg.installationHeight} {unit}</span>
+      </div>
+    </div>
+  );
+}
+
+function ScaleConfigPanel({ device, t }: { device: Device; t: TFunc }) {
+  const cfg = device.configuration as ScaleConfig;
+  const rows: { label: string; value: string }[] = [
+    { label: t('configuration.scale.maxWeight'), value: `${cfg.maxWeight} ${cfg.unit}` },
+    { label: t('configuration.scale.tareWeight'), value: `${cfg.tareWeight} ${cfg.unit}` },
+  ];
+  if (cfg.calibrationDate) {
+    rows.push({
+      label: t('configuration.scale.calibrationDate'),
+      value: new Date(cfg.calibrationDate).toLocaleDateString('es-ES'),
+    });
+  }
+  return (
+    <div className="space-y-1">
+      {rows.map((row) => (
+        <div key={row.label} className="flex items-center gap-3 px-4 py-3 rounded-lg border">
+          <span className="text-sm text-fg-tertiary flex-1">{row.label}</span>
+          <span className="text-sm font-medium tabular-nums">{row.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function GatewayConfigPanel({ device, t }: { device: Device; t: TFunc }) {
+  const cfg = device.configuration as GatewayConfig;
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center gap-3 px-4 py-3 rounded-lg border">
+        <span className="text-sm text-fg-tertiary flex-1">
+          {t('configuration.gateway.lastSyncAt')}
+        </span>
+        <span className="text-sm font-medium">
+          {cfg.lastSyncAt
+            ? new Date(cfg.lastSyncAt).toLocaleString('es-ES', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit',
+              })
+            : '—'}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+const CONFIG_PANELS: Partial<Record<Device['type'], React.ComponentType<{ device: Device; t: TFunc }>>> = {
+  pigvision: PigVisionConfigPanel,
+  scale: ScaleConfigPanel,
+  gateway: GatewayConfigPanel,
+};

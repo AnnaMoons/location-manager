@@ -10,24 +10,24 @@ interface DeviceHealthBadgeProps {
 const healthConfig = {
   online: {
     label: 'En línea',
-    color: 'bg-green-500',
-    textColor: 'text-green-700',
-    bgColor: 'bg-green-50',
-    borderColor: 'border-green-200'
+    color: 'bg-success',
+    textColor: 'text-success',
+    bgColor: 'bg-success-light',
+    borderColor: 'border-success/40'
   },
   offline: {
     label: 'Sin conexión',
-    color: 'bg-red-500',
-    textColor: 'text-red-700',
-    bgColor: 'bg-red-50',
-    borderColor: 'border-red-200'
+    color: 'bg-error',
+    textColor: 'text-error',
+    bgColor: 'bg-error-light',
+    borderColor: 'border-error/40'
   },
   unknown: {
     label: 'Desconocido',
-    color: 'bg-gray-400',
-    textColor: 'text-gray-700',
-    bgColor: 'bg-gray-50',
-    borderColor: 'border-gray-200'
+    color: 'bg-fg-placeholder',
+    textColor: 'text-fg-tertiary',
+    bgColor: 'bg-surface-2',
+    borderColor: 'border-line'
   }
 };
 

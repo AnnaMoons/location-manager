@@ -7,6 +7,18 @@ export interface BatchPenSex {
   sex: BatchSex;
 }
 
+/**
+ * H-022: Distribution of animals per pen with granularity.
+ * Allows specifying animal count, sex, and initial weight per pen.
+ */
+export interface PenDistribution {
+  penId: string;
+  animalCount: number;
+  sex: BatchSex;
+  /** H-023: Initial average weight per pen (kg) */
+  initialWeight?: number;
+}
+
 export interface SubBatchPenAssignment {
   penId: string;
 }
@@ -46,13 +58,24 @@ export interface Batch {
   /** @deprecated Use farmIds, barnIds, penIds instead */
   locationId?: string;
   animalCount: number;
+  /** H-022: Number of males in the batch */
+  maleCount?: number;
+  /** H-022: Number of females in the batch */
+  femaleCount?: number;
+  /** H-023: Initial average weight of the batch (kg) — critical for calibration */
+  initialWeight?: number;
+  /** H-022: Per-pen distribution with animal count, sex, and weight */
+  penDistribution?: PenDistribution[];
+  /** H-039: Pens excluded from batch analysis (e.g., sick pens, outliers) */
+  excludedPenIds?: string[];
   averageAgeAtStart: number; // days
+  /** H-042: Arrival date (may differ from day 1 for poultry) */
+  arrivalDate?: string;
   startDate: string;
   estimatedEndDate?: string;
   // Closure fields
   closedDate?: string;
   closeReason?: string;
-  // sex: 'male' | 'female' | 'mixed'; // Not in MVP
   status: BatchStatus;
   createdAt: string;
   updatedAt: string;
@@ -68,7 +91,17 @@ export interface CreateBatchInput {
   barnIds: string[];
   penIds?: string[];
   animalCount: number;
+  /** H-022: Number of males */
+  maleCount?: number;
+  /** H-022: Number of females */
+  femaleCount?: number;
+  /** H-023: Initial average weight (kg) */
+  initialWeight?: number;
+  /** H-022: Per-pen distribution */
+  penDistribution?: PenDistribution[];
   averageAgeAtStart: number;
+  /** H-042: Arrival date (poultry) */
+  arrivalDate?: string;
   startDate: string;
   estimatedEndDate?: string;
   // Sublotes a crear junto con el lote
@@ -83,7 +116,13 @@ export interface UpdateBatchInput {
   barnIds?: string[];
   penIds?: string[];
   animalCount?: number;
+  maleCount?: number;
+  femaleCount?: number;
+  initialWeight?: number;
+  penDistribution?: PenDistribution[];
+  excludedPenIds?: string[];
   averageAgeAtStart?: number;
+  arrivalDate?: string;
   startDate?: string;
   estimatedEndDate?: string;
   status?: BatchStatus;
@@ -151,6 +190,17 @@ export function getActiveBatches(batches: Batch[]): Batch[] {
 }
 
 export function calculateCurrentAge(batch: Batch): number {
+  // H-042: For poultry, calculate age from day 1 date (startDate)
+  if (batch.species === 'broilers' || batch.species === 'layers') {
+    const dayOneDate = new Date(batch.startDate);
+    const today = new Date();
+    const daysSinceDayOne = Math.floor(
+      (today.getTime() - dayOneDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    return daysSinceDayOne;
+  }
+
+  // For other species (pigs), use average age at start + days since start
   const startDate = new Date(batch.startDate);
   const today = new Date();
   const daysSinceStart = Math.floor(

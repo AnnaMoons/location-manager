@@ -30,8 +30,8 @@ export function SerialNumber({
   if (showShortId) {
     return (
       <span className={cn('font-mono', className)} title={serial}>
-        <span className="text-muted-foreground text-[10px]">···</span>
-        <span className="font-bold text-foreground">{suffix}</span>
+        <span className="text-fg-tertiary text-2xs">···</span>
+        <span className="font-bold text-fg">{suffix}</span>
       </span>
     );
   }
@@ -40,8 +40,8 @@ export function SerialNumber({
   if (emphasizeLastDigits) {
     return (
       <span className={cn('font-mono', className)} title={serial}>
-        <span className="text-muted-foreground/70">{prefix}</span>
-        <span className="font-bold text-foreground">{suffix}</span>
+        <span className="text-fg-tertiary/70">{prefix}</span>
+        <span className="font-bold text-fg">{suffix}</span>
       </span>
     );
   }

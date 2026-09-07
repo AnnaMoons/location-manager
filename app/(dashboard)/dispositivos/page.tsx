@@ -68,7 +68,7 @@ export default function DevicesPage() {
           stats.orphans > 0 && (
             <Link href="/dispositivos/huerfanos">
               <Button variant="outline">
-                <AlertTriangle className="h-4 w-4 mr-2 text-yellow-500" />
+                <AlertTriangle className="h-4 w-4 mr-2 text-warning-dark" />
                 {stats.orphans} {t('orphans')}
               </Button>
             </Link>
@@ -90,7 +90,7 @@ export default function DevicesPage() {
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-tertiary" />
               <Input
                 placeholder={t('searchPlaceholder')}
                 value={searchQuery}

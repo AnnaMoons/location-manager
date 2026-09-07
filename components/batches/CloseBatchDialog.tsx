@@ -104,20 +104,20 @@ export function CloseBatchDialog({ batch, onClose, trigger }: CloseBatchDialogPr
                 className={cn(
                   'flex items-center gap-2 p-3 rounded-lg border transition-colors',
                   closeType === 'completed'
-                    ? 'border-green-500 bg-green-50 dark:bg-green-950'
-                    : 'border-border hover:bg-accent/50'
+                    ? 'border-success bg-success-light'
+                    : 'border-line hover:bg-surface-blue/50'
                 )}
               >
                 <CheckCircle
                   className={cn(
                     'h-5 w-5',
-                    closeType === 'completed' ? 'text-green-600' : 'text-muted-foreground'
+                    closeType === 'completed' ? 'text-success' : 'text-fg-tertiary'
                   )}
                 />
                 <span
                   className={cn(
                     'text-sm font-medium',
-                    closeType === 'completed' && 'text-green-700 dark:text-green-300'
+                    closeType === 'completed' && 'text-success'
                   )}
                 >
                   {t('completed')}
@@ -129,20 +129,20 @@ export function CloseBatchDialog({ batch, onClose, trigger }: CloseBatchDialogPr
                 className={cn(
                   'flex items-center gap-2 p-3 rounded-lg border transition-colors',
                   closeType === 'cancelled'
-                    ? 'border-red-500 bg-red-50 dark:bg-red-950'
-                    : 'border-border hover:bg-accent/50'
+                    ? 'border-error bg-error-light'
+                    : 'border-line hover:bg-surface-blue/50'
                 )}
               >
                 <XCircle
                   className={cn(
                     'h-5 w-5',
-                    closeType === 'cancelled' ? 'text-red-600' : 'text-muted-foreground'
+                    closeType === 'cancelled' ? 'text-error' : 'text-fg-tertiary'
                   )}
                 />
                 <span
                   className={cn(
                     'text-sm font-medium',
-                    closeType === 'cancelled' && 'text-red-700 dark:text-red-300'
+                    closeType === 'cancelled' && 'text-error'
                   )}
                 >
                   {t('cancelled')}
@@ -150,7 +150,7 @@ export function CloseBatchDialog({ batch, onClose, trigger }: CloseBatchDialogPr
               </button>
             </div>
             {errors.closeType && (
-              <p className="text-sm text-destructive">{errors.closeType}</p>
+              <p className="text-sm text-error">{errors.closeType}</p>
             )}
           </div>
 
@@ -165,7 +165,7 @@ export function CloseBatchDialog({ batch, onClose, trigger }: CloseBatchDialogPr
               max={new Date().toISOString().split('T')[0]}
             />
             {errors.closedDate && (
-              <p className="text-sm text-destructive">{errors.closedDate}</p>
+              <p className="text-sm text-error">{errors.closedDate}</p>
             )}
           </div>
 
@@ -175,7 +175,7 @@ export function CloseBatchDialog({ batch, onClose, trigger }: CloseBatchDialogPr
               {t('closeReason')} {reasonRequired && '(*)'}
             </Label>
             {reasonRequired && (
-              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+              <div className="flex items-center gap-2 text-warning-dark">
                 <AlertCircle className="h-4 w-4" />
                 <p className="text-xs">{t('reasonRequiredHint')}</p>
               </div>
@@ -187,20 +187,20 @@ export function CloseBatchDialog({ batch, onClose, trigger }: CloseBatchDialogPr
               placeholder={reasonRequired ? t('reasonRequired') : ''}
               rows={3}
               className={cn(
-                'flex min-h-[80px] w-full rounded-md border border-input bg-background',
-                'px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                'flex min-h-20 w-full rounded-md border border-input-border bg-surface',
+                'px-3 py-2 text-sm ring-offset-surface placeholder:text-fg-tertiary',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary',
                 'focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
               )}
             />
             {errors.closeReason && (
-              <p className="text-sm text-destructive">{errors.closeReason}</p>
+              <p className="text-sm text-error">{errors.closeReason}</p>
             )}
           </div>
         </div>
 
         {errors.submit && (
-          <p className="text-sm text-destructive text-center">{errors.submit}</p>
+          <p className="text-sm text-error text-center">{errors.submit}</p>
         )}
 
         <DialogFooter>

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Home, MapPin, Cpu, Layers, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, MapPin, Cpu, Layers, Bell, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MobileNav } from '@/components/shared/MobileNav';
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
@@ -17,6 +17,7 @@ const navItems = [
   { href: '/ubicaciones', icon: MapPin, labelKey: 'locations' },
   { href: '/lotes', icon: Layers, labelKey: 'batches' },
   { href: '/dispositivos', icon: Cpu, labelKey: 'devices' },
+  { href: '/alertas', icon: Bell, labelKey: 'alerts' },
 ];
 
 export default function DashboardLayout({
@@ -29,21 +30,21 @@ export default function DashboardLayout({
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-surface">
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          'hidden md:fixed md:inset-y-0 md:flex md:flex-col transition-all duration-300 ease-in-out',
+          'hidden md:fixed md:inset-y-0 md:left-0 md:flex md:flex-col transition-all duration-300 ease-in-out',
           isCollapsed ? 'md:w-20' : 'md:w-64'
         )}
       >
-        <div className="flex flex-col flex-grow border-r bg-primary dark:bg-card pt-5">
+        <div className="flex flex-col flex-grow border-r border-line bg-surface-dark pt-5">
           {/* Logo container */}
           <div className="flex flex-col w-full px-4">
             {/* Both logos in same position, conditionally rendered */}
             <div className={cn(
               'relative h-[48px] flex items-center justify-center mx-auto transition-all duration-300',
-              isCollapsed ? 'w-[48px]' : 'w-[180px]'
+              isCollapsed ? 'w-[48px]' : 'w-45'
             )}>
               <Image
                 src="/logo.webp"
@@ -78,7 +79,7 @@ export default function DashboardLayout({
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsCollapsed(!isCollapsed)}
-                className="h-6 w-6 rounded-md bg-white/10 hover:bg-white/20 text-white"
+                className="h-6 w-6 rounded-md bg-transparent hover:bg-dark-canvas-neutral-hover-bg text-fg-on-dark"
               >
                 {isCollapsed ? (
                   <ChevronRight className="h-4 w-4" />
@@ -107,8 +108,8 @@ export default function DashboardLayout({
                     'flex items-center py-3 text-sm font-medium rounded-md transition-all duration-300',
                     isCollapsed ? 'justify-center px-2' : 'px-4',
                     isActive
-                      ? 'bg-white/20 text-white dark:bg-primary/20 dark:text-primary'
-                      : 'text-white/80 hover:bg-white/10 hover:text-white dark:text-foreground/80 dark:hover:bg-muted dark:hover:text-foreground'
+                      ? 'bg-dark-canvas-neutral-hover-bg text-dark-canvas-accent-bg'
+                      : 'text-fg-on-dark/80 hover:bg-dark-canvas-neutral-hover-bg hover:text-fg-on-dark'
                   )}
                   title={isCollapsed ? t(item.labelKey) : undefined}
                 >
@@ -141,20 +142,20 @@ export default function DashboardLayout({
             )}
           >
             <LanguageSwitcher
-              className="text-white hover:text-white hover:bg-white/10 dark:text-foreground dark:hover:text-foreground dark:hover:bg-muted"
+              className="text-fg-on-dark hover:text-fg-on-dark hover:bg-dark-canvas-neutral-hover-bg"
               iconOnly={isCollapsed}
             />
             <ThemeToggle
-              className="text-white hover:text-white hover:bg-white/10 dark:text-foreground dark:hover:text-foreground dark:hover:bg-muted"
+              className="text-fg-on-dark hover:text-fg-on-dark hover:bg-dark-canvas-neutral-hover-bg"
             />
           </div>
         </div>
       </aside>
 
       {/* Mobile header */}
-      <header className="md:hidden fixed top-0 left-0 right-0 z-40 bg-background border-b">
+      <header className="md:hidden fixed top-0 left-0 right-0 z-40 bg-surface border-b border-line">
         <div className="flex items-center justify-between px-4 h-14">
-          <h1 className="text-lg font-bold text-primary">Asimetrix</h1>
+          <h1 className="text-lg font-bold text-brand-primary">Asimetrix</h1>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <LanguageSwitcher />
@@ -169,7 +170,7 @@ export default function DashboardLayout({
           isCollapsed ? 'md:pl-20' : 'md:pl-64'
         )}
       >
-        <div className="pt-16 pb-20 md:pt-6 md:pb-6 px-4 md:px-8 max-w-7xl mx-auto">
+        <div className="pt-16 pb-20 md:pt-6 md:pb-6 px-4 md:px-8">
           {children}
         </div>
       </main>

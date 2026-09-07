@@ -94,7 +94,7 @@ export function LastMeasurement({
   const sizeClasses = {
     sm: {
       value: 'text-xs',
-      time: 'text-[10px]',
+      time: 'text-2xs',
       icon: 'h-3 w-3',
     },
     md: {
@@ -115,14 +115,14 @@ export function LastMeasurement({
     <div className={cn('flex flex-col', className)}>
       <div className={cn(
         'font-medium tabular-nums',
-        stale ? 'text-muted-foreground' : 'text-foreground',
+        stale ? 'text-fg-tertiary' : 'text-fg',
         sizeClasses[size].value
       )}>
         {formatValue()}
       </div>
       <div className={cn(
         'flex items-center gap-1',
-        stale ? 'text-warning' : 'text-muted-foreground',
+        stale ? 'text-warning' : 'text-fg-tertiary',
         sizeClasses[size].time
       )}>
         {showIcon && <Clock className={sizeClasses[size].icon} />}
@@ -131,8 +131,8 @@ export function LastMeasurement({
         </span>
       </div>
       <div className={cn(
-        'text-muted-foreground/70',
-        'text-[10px]',
+        'text-fg-tertiary/70',
+        'text-2xs',
         'leading-tight'
       )}>
         {getAbsoluteTime()}

@@ -21,7 +21,7 @@ export function OnboardingChecklist() {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">{t('title')}</CardTitle>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-fg-tertiary">
             {t('progress', { completed: completedSteps, total: totalSteps })}
           </span>
         </div>
@@ -49,33 +49,33 @@ function StepItem({ step }: { step: OnboardingStep }) {
     <div
       className={cn(
         'flex items-center gap-3 p-2 rounded-md transition-colors',
-        step.completed ? 'opacity-60' : 'bg-muted/50'
+        step.completed ? 'opacity-60' : 'bg-surface-2/50'
       )}
     >
       <div
         className={cn(
           'flex items-center justify-center h-6 w-6 rounded-full',
           step.completed
-            ? 'bg-primary text-primary-foreground'
-            : 'border-2 border-muted-foreground/30'
+            ? 'bg-brand-primary text-brand-fg'
+            : 'border-2 border-fg-tertiary/30'
         )}
       >
         {step.completed ? (
           <Check className="h-4 w-4" />
         ) : (
-          <Circle className="h-3 w-3 text-muted-foreground/30" />
+          <Circle className="h-3 w-3 text-fg-tertiary/30" />
         )}
       </div>
       <div className="flex-1">
         <p
           className={cn(
             'text-sm font-medium',
-            step.completed && 'line-through text-muted-foreground'
+            step.completed && 'line-through text-fg-tertiary'
           )}
         >
           {step.title}
         </p>
-        <p className="text-xs text-muted-foreground">{step.description}</p>
+        <p className="text-xs text-fg-tertiary">{step.description}</p>
       </div>
     </div>
   );

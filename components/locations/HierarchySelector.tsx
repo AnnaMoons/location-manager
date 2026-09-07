@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { MapPin, Warehouse } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -10,6 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { Species, LocationType, speciesHierarchies } from '@/lib/types/species';
 import { useLocations } from '@/lib/hooks/useLocations';
 
@@ -22,6 +24,12 @@ interface HierarchySelectorProps {
   onParentChange: (parentId: string | null) => void;
 }
 
+const SPECIES_BADGE: Record<Species, string> = {
+  pigs:     'bg-product-pigvision text-fg',
+  broilers: 'bg-primitive-mint-500 text-fg',
+  layers:   'bg-surface-blue-2 text-fg',
+};
+
 export function HierarchySelector({
   species,
   locationType,
@@ -33,36 +41,40 @@ export function HierarchySelector({
   const t = useTranslations('locations');
   const { farms, getChildren } = useLocations();
 
-  // Track selected farm for cascading selection
   const [selectedFarmId, setSelectedFarmId] = useState<string | null>(null);
 
-  const speciesOptions: Species[] = ['pigs', 'broilers', 'layers'];
-  const typeOptions = species ? speciesHierarchies[species].levels : [];
+  // Barns for the selected farm
+  const availableBarns = selectedFarmId ? getChildren(selectedFarmId) : [];
 
-  // Get the level index of the current location type (0 = farm, 1 = barn, 2 = pen/section)
+  // Valid child types for the selected farm's species (excludes 'farm')
+  const childTypes: LocationType[] = species
+    ? speciesHierarchies[species].levels.filter((l) => l !== 'farm')
+    : [];
+
+  // Level of selected type: 1 = barn, 2 = pen/section
   const typeLevel = species && locationType
     ? speciesHierarchies[species].levels.indexOf(locationType)
     : -1;
 
-  // Filter farms by selected species
-  const availableFarms = farms.filter((f) => f.species === species);
-
-  // Get barns for the selected farm
-  const availableBarns = selectedFarmId ? getChildren(selectedFarmId) : [];
-
-  // Reset selections when species or type changes
-  useEffect(() => {
-    setSelectedFarmId(null);
-    onParentChange(null);
-  }, [species, locationType]);
-
   const handleFarmSelect = (farmId: string) => {
+    const farm = farms.find((f) => f.id === farmId);
+    if (!farm) return;
+
     setSelectedFarmId(farmId);
-    // If creating a barn, the farm is the parent
-    if (typeLevel === 1) {
-      onParentChange(farmId);
+    onSpeciesChange(farm.species);
+
+    // Default to barn since it's always the immediate child of a farm
+    const firstChildType = speciesHierarchies[farm.species].levels[1] ?? 'barn';
+    onTypeChange(firstChildType);
+    onParentChange(farmId); // barn parent = farm
+  };
+
+  const handleTypeSelect = (type: LocationType) => {
+    onTypeChange(type);
+    // If switching to barn: parent = farm; if pen/section: need barn → reset
+    if (type === 'barn' && selectedFarmId) {
+      onParentChange(selectedFarmId);
     } else {
-      // If creating a section/pen, need to also select barn
       onParentChange(null);
     }
   };
@@ -73,53 +85,49 @@ export function HierarchySelector({
 
   return (
     <div className="space-y-4">
-      {/* Species Selector */}
+      {/* Step 1: Farm selection */}
       <div className="space-y-2">
-        <Label>{t('form.species')}</Label>
-        <Select
-          value={species || ''}
-          onValueChange={(value) => {
-            onSpeciesChange(value as Species);
-            onTypeChange(speciesHierarchies[value as Species].levels[0]);
-            onParentChange(null);
-            setSelectedFarmId(null);
-          }}
-        >
+        <Label className="flex items-center gap-1.5">
+          <MapPin className="h-3.5 w-3.5 text-fg-tertiary" />
+          {t('types.farm')}
+        </Label>
+        <Select value={selectedFarmId || ''} onValueChange={handleFarmSelect}>
           <SelectTrigger>
-            <SelectValue placeholder={t('form.selectSpecies')} />
+            <SelectValue placeholder={t('form.selectFarm') } />
           </SelectTrigger>
           <SelectContent>
-            {speciesOptions.map((s) => (
-              <SelectItem key={s} value={s}>
-                {t(`species.${s}`)}
+            {farms.length === 0 ? (
+              <SelectItem value="__empty__" disabled>
+                {t('form.noFarmsAvailable')}
               </SelectItem>
-            ))}
+            ) : (
+              farms.map((farm) => (
+                <SelectItem key={farm.id} value={farm.id}>
+                  <span className="flex items-center gap-2">
+                    {farm.name}
+                    <Badge
+                      className={`text-2xs border-0 px-1.5 py-0 ${SPECIES_BADGE[farm.species]}`}
+                    >
+                      {t(`species.${farm.species}`)}
+                    </Badge>
+                  </span>
+                </SelectItem>
+              ))
+            )}
           </SelectContent>
         </Select>
-        {species && (
-          <p className="text-xs text-muted-foreground">
-            {t(`hierarchy.${species}`)}
-          </p>
-        )}
       </div>
 
-      {/* Location Type Selector */}
-      {species && (
+      {/* Step 2: Child type selection (only if the farm has more than one child level) */}
+      {selectedFarmId && childTypes.length > 1 && (
         <div className="space-y-2">
           <Label>{t('form.locationType')}</Label>
-          <Select
-            value={locationType || ''}
-            onValueChange={(value) => {
-              onTypeChange(value as LocationType);
-              onParentChange(null);
-              setSelectedFarmId(null);
-            }}
-          >
+          <Select value={locationType || ''} onValueChange={handleTypeSelect}>
             <SelectTrigger>
               <SelectValue placeholder={t('form.selectType')} />
             </SelectTrigger>
             <SelectContent>
-              {typeOptions.map((type) => (
+              {childTypes.map((type) => (
                 <SelectItem key={type} value={type}>
                   {t(`types.${type}`)}
                 </SelectItem>
@@ -129,49 +137,21 @@ export function HierarchySelector({
         </div>
       )}
 
-      {/* Farm Selector (for barns, pens, sections) */}
-      {typeLevel >= 1 && (
+      {/* Step 3: Barn selection (only for pen/section) */}
+      {selectedFarmId && typeLevel >= 2 && (
         <div className="space-y-2">
-          <Label>{t('types.farm')}</Label>
-          <Select
-            value={selectedFarmId || ''}
-            onValueChange={handleFarmSelect}
-          >
+          <Label className="flex items-center gap-1.5">
+            <Warehouse className="h-3.5 w-3.5 text-fg-tertiary" />
+            {t('types.barn')}
+          </Label>
+          <Select value={parentId || ''} onValueChange={handleBarnSelect}>
             <SelectTrigger>
-              <SelectValue placeholder="Selecciona una granja" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableFarms.length === 0 ? (
-                <SelectItem value="" disabled>
-                  No hay granjas disponibles
-                </SelectItem>
-              ) : (
-                availableFarms.map((farm) => (
-                  <SelectItem key={farm.id} value={farm.id}>
-                    {farm.name}
-                  </SelectItem>
-                ))
-              )}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
-
-      {/* Barn Selector (for pens, sections - level 2) */}
-      {typeLevel >= 2 && selectedFarmId && (
-        <div className="space-y-2">
-          <Label>{t('types.barn')}</Label>
-          <Select
-            value={parentId || ''}
-            onValueChange={handleBarnSelect}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecciona un galpón" />
+              <SelectValue placeholder={t('form.selectBarn')} />
             </SelectTrigger>
             <SelectContent>
               {availableBarns.length === 0 ? (
-                <SelectItem value="" disabled>
-                  No hay galpones en esta granja
+                <SelectItem value="__empty__" disabled>
+                  {t('form.noBarnsAvailable')}
                 </SelectItem>
               ) : (
                 availableBarns.map((barn) => (

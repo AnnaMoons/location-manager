@@ -9,6 +9,13 @@
     "barnIds": ["loc-002"],
     "penIds": ["loc-004", "loc-005"],
     "animalCount": 120,
+    "maleCount": 60,
+    "femaleCount": 60,
+    "initialWeight": 6.5,
+    "penDistribution": [
+      { "penId": "loc-004", "animalCount": 60, "sex": "male", "initialWeight": 6.8 },
+      { "penId": "loc-005", "animalCount": 60, "sex": "female", "initialWeight": 6.2 }
+    ],
     "averageAgeAtStart": 21,
     "startDate": "2025-10-15T00:00:00Z",
     "estimatedEndDate": "2026-02-15T00:00:00Z",
@@ -25,6 +32,12 @@
     "barnIds": ["loc-002"],
     "penIds": ["loc-005"],
     "animalCount": 95,
+    "maleCount": 95,
+    "femaleCount": 0,
+    "initialWeight": 7.2,
+    "penDistribution": [
+      { "penId": "loc-005", "animalCount": 95, "sex": "male", "initialWeight": 7.2 }
+    ],
     "averageAgeAtStart": 7,
     "startDate": "2025-12-20T00:00:00Z",
     "estimatedEndDate": "2026-04-20T00:00:00Z",
@@ -41,6 +54,12 @@
     "barnIds": ["loc-003"],
     "penIds": ["loc-006"],
     "animalCount": 110,
+    "maleCount": 0,
+    "femaleCount": 110,
+    "initialWeight": 5.8,
+    "penDistribution": [
+      { "penId": "loc-006", "animalCount": 110, "sex": "female", "initialWeight": 5.8 }
+    ],
     "averageAgeAtStart": 28,
     "startDate": "2025-11-10T00:00:00Z",
     "estimatedEndDate": "2026-03-10T00:00:00Z",
@@ -59,6 +78,7 @@
     "penIds": ["loc-013", "loc-014"],
     "animalCount": 15000,
     "averageAgeAtStart": 1,
+    "arrivalDate": "2025-12-17T00:00:00Z",
     "startDate": "2025-12-18T00:00:00Z",
     "estimatedEndDate": "2026-01-29T00:00:00Z",
     "status": "active",
@@ -75,6 +95,7 @@
     "penIds": ["loc-014"],
     "animalCount": 12000,
     "averageAgeAtStart": 1,
+    "arrivalDate": "2026-01-04T00:00:00Z",
     "startDate": "2026-01-05T00:00:00Z",
     "estimatedEndDate": "2026-02-16T00:00:00Z",
     "status": "active",
@@ -91,6 +112,7 @@
     "penIds": [],
     "animalCount": 8000,
     "averageAgeAtStart": 18,
+    "arrivalDate": "2025-11-30T00:00:00Z",
     "startDate": "2025-12-01T00:00:00Z",
     "status": "active",
     "createdAt": "2025-12-01T08:00:00Z",

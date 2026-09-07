@@ -40,7 +40,12 @@ export default function EditBatchPage({
         barnIds: batch.barnIds || [],
         penIds: batch.penIds || [],
         animalCount: batch.animalCount,
+        maleCount: batch.maleCount,
+        femaleCount: batch.femaleCount,
+        initialWeight: batch.initialWeight,
+        penDistribution: batch.penDistribution,
         averageAgeAtStart: batch.averageAgeAtStart,
+        arrivalDate: batch.arrivalDate,
         startDate: batch.startDate,
         estimatedEndDate: batch.estimatedEndDate,
       });
@@ -73,7 +78,13 @@ export default function EditBatchPage({
     setErrors({});
 
     try {
-      await updateBatch(id, formData as UpdateBatchInput);
+      // H-042: For poultry, set averageAgeAtStart to 0 (age is calculated from day 1)
+      const batchData = { ...formData } as UpdateBatchInput;
+      if (batchData.species === 'broilers' || batchData.species === 'layers') {
+        batchData.averageAgeAtStart = 0;
+      }
+
+      await updateBatch(id, batchData);
       router.push(`/lotes/${id}`);
     } catch (error) {
       setErrors({ submit: t('updateError') });
@@ -105,7 +116,7 @@ export default function EditBatchPage({
       </Card>
 
       {errors.submit && (
-        <p className="text-sm text-destructive text-center mt-4">
+        <p className="text-sm text-error text-center mt-4">
           {errors.submit}
         </p>
       )}

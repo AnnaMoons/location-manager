@@ -126,21 +126,21 @@ export default function DashboardPage() {
 
       {/* Info banner explicativo */}
       {stats.total > 0 && (
-        <div className="bg-muted/30 border border-border rounded-lg p-4">
+        <div className="bg-surface-2/30 border border-line rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <div className="p-2 rounded-md bg-primary/10 shrink-0">
-              <Cpu className="h-4 w-4 text-primary" />
+            <div className="p-2 rounded-md bg-brand-primary/10 shrink-0">
+              <Cpu className="h-4 w-4 text-brand-primary" />
             </div>
             <div className="space-y-1 text-sm">
-              <p className="font-medium text-foreground">
+              <p className="font-medium text-fg">
                 Entendiendo tus dispositivos
               </p>
-              <p className="text-muted-foreground leading-relaxed">
-                <span className="font-medium text-foreground">Sin instalar:</span> dispositivos que necesitan ubicación y configuración.
+              <p className="text-fg-tertiary leading-relaxed">
+                <span className="font-medium text-fg">Sin instalar:</span> dispositivos que necesitan ubicación y configuración.
                 {' · '}
-                <span className="font-medium text-foreground">Por configurar:</span> ya instalados en una ubicación, solo falta configurarlos.
+                <span className="font-medium text-fg">Por configurar:</span> ya instalados en una ubicación, solo falta configurarlos.
                 {' · '}
-                <span className="font-medium text-foreground">En producción:</span> instalados, configurados y recopilando datos.
+                <span className="font-medium text-fg">En producción:</span> instalados, configurados y recopilando datos.
               </p>
             </div>
           </div>
@@ -197,11 +197,11 @@ export default function DashboardPage() {
       {/* Quick Actions - Contextual based on device state */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+          <h2 className="text-sm font-semibold text-fg-tertiary uppercase tracking-wide">
             {t('quickActions')}
           </h2>
           {(stats.orphans > 0 || stats.pending > 0) && (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-fg-tertiary">
               Para dispositivos en tu cuenta
             </p>
           )}
@@ -211,16 +211,16 @@ export default function DashboardPage() {
           {/* Show orphan device action if there are orphans */}
           {stats.orphans > 0 && (
             <Link href="/dispositivos/huerfanos" className="block">
-              <div className="p-4 rounded-lg border border-destructive/50 bg-destructive/5 hover:bg-destructive/10 transition-colors h-full">
+              <div className="p-4 rounded-lg border border-error/50 bg-error/5 hover:bg-error/10 transition-colors h-full">
                 <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-md bg-destructive/20 shrink-0">
-                    <Link2 className="h-4 w-4 text-destructive" />
+                  <div className="p-2 rounded-md bg-error/20 shrink-0">
+                    <Link2 className="h-4 w-4 text-error" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm text-foreground">
+                    <p className="font-medium text-sm text-fg">
                       {t('installOrphanDevices', { count: stats.orphans })}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    <p className="text-xs text-fg-tertiary mt-1 leading-relaxed">
                       Asignar ubicación a dispositivos que ya tienes
                     </p>
                   </div>
@@ -238,10 +238,10 @@ export default function DashboardPage() {
                     <Package className="h-4 w-4 text-warning" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm text-foreground">
+                    <p className="font-medium text-sm text-fg">
                       {t('configurePendingDevices', { count: stats.pending })}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    <p className="text-xs text-fg-tertiary mt-1 leading-relaxed">
                       Completar configuración de los ya instalados
                     </p>
                   </div>
@@ -253,16 +253,16 @@ export default function DashboardPage() {
           {/* Always show create location if no urgent actions or show as third option */}
           {(stats.orphans === 0 && stats.pending === 0) && (
             <Link href="/ubicaciones/nueva" className="block">
-              <div className="p-4 rounded-lg border hover:bg-muted/50 transition-colors h-full">
+              <div className="p-4 rounded-lg border hover:bg-surface-2/50 transition-colors h-full">
                 <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-md bg-primary/10 shrink-0">
-                    <MapPin className="h-4 w-4 text-primary" />
+                  <div className="p-2 rounded-md bg-brand-primary/10 shrink-0">
+                    <MapPin className="h-4 w-4 text-brand-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm text-foreground">
+                    <p className="font-medium text-sm text-fg">
                       {t('createLocation')}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    <p className="text-xs text-fg-tertiary mt-1 leading-relaxed">
                       Agregar nueva granja o galpón
                     </p>
                   </div>
@@ -275,18 +275,12 @@ export default function DashboardPage() {
         {/* Secondary actions */}
         {(stats.orphans > 0 || stats.pending > 0) && (
           <div className="flex flex-wrap items-center gap-2 pt-1">
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/ubicaciones/nueva">
-                <MapPin className="h-3.5 w-3.5 mr-1.5" />
-                {t('createLocation')}
-              </Link>
+            <Button as={Link} href="/ubicaciones/nueva" variant="ghost" size="sm" icon={<MapPin className="h-3.5 w-3.5" />}>
+              {t('createLocation')}
             </Button>
             {stats.inProduction > 0 && (
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/lotes/nuevo">
-                  <Layers className="h-3.5 w-3.5 mr-1.5" />
-                  {t('createBatch')}
-                </Link>
+              <Button as={Link} href="/lotes/nuevo" variant="ghost" size="sm" icon={<Layers className="h-3.5 w-3.5" />}>
+                {t('createBatch')}
               </Button>
             )}
           </div>
@@ -298,7 +292,7 @@ export default function DashboardPage() {
         {/* Recent Batches */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            <h2 className="text-sm font-semibold text-fg-tertiary uppercase tracking-wide">
               {t('recentBatches.title')}
             </h2>
             <Link href="/lotes">
@@ -310,7 +304,7 @@ export default function DashboardPage() {
           </div>
 
           {recentBatches.length === 0 ? (
-            <p className="text-sm text-muted-foreground px-1 py-4 text-center border rounded-lg">
+            <p className="text-sm text-fg-tertiary px-1 py-4 text-center border rounded-lg">
               {tBatches('noBatches')}
             </p>
           ) : (
@@ -321,12 +315,12 @@ export default function DashboardPage() {
                   <Link
                     key={batch.id}
                     href={`/lotes/${batch.id}`}
-                    className="block px-4 py-3 rounded-lg border hover:bg-muted/50 transition-colors"
+                    className="block px-4 py-3 rounded-lg border hover:bg-surface-2/50 transition-colors"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0">
                         <p className="font-medium text-sm truncate">{batch.name}</p>
-                        <p className="text-xs text-muted-foreground truncate mt-0.5">
+                        <p className="text-xs text-fg-tertiary truncate mt-0.5">
                           {farm}{barn ? ` · ${barn}` : ''}
                           {' · '}{batch.animalCount.toLocaleString()} animales
                         </p>
@@ -335,7 +329,7 @@ export default function DashboardPage() {
                         <Badge variant={getBatchStatusVariant(batch.status)}>
                           {tBatches(`status.${batch.status}`)}
                         </Badge>
-                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        <ChevronRight className="h-4 w-4 text-fg-tertiary" />
                       </div>
                     </div>
                   </Link>
@@ -348,7 +342,7 @@ export default function DashboardPage() {
         {/* Recent Devices */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            <h2 className="text-sm font-semibold text-fg-tertiary uppercase tracking-wide">
               {t('recentDevices.title')}
             </h2>
             <Link href="/dispositivos">
@@ -360,7 +354,7 @@ export default function DashboardPage() {
           </div>
 
           {recentDevices.length === 0 ? (
-            <p className="text-sm text-muted-foreground px-1 py-4 text-center border rounded-lg">
+            <p className="text-sm text-fg-tertiary px-1 py-4 text-center border rounded-lg">
               {tDevices('noDevices')}
             </p>
           ) : (
@@ -371,12 +365,12 @@ export default function DashboardPage() {
                   <Link
                     key={device.id}
                     href={`/dispositivos/${device.id}`}
-                    className="block px-4 py-3 rounded-lg border hover:bg-muted/50 transition-colors"
+                    className="block px-4 py-3 rounded-lg border hover:bg-surface-2/50 transition-colors"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0">
                         <p className="font-medium text-sm font-mono truncate">{device.serialNumber}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
+                        <p className="text-xs text-fg-tertiary mt-0.5">
                           {getDeviceTypeLabel(device)}
                           {locationName && ` · ${locationName}`}
                         </p>

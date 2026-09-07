@@ -13,11 +13,13 @@ import { PigVisionConfigForm } from '@/components/devices/configs/PigVisionConfi
 import { ScaleConfigForm } from '@/components/devices/configs/ScaleConfigForm';
 import { SensorConfigForm } from '@/components/devices/configs/SensorConfigForm';
 import { useDevices } from '@/lib/hooks/useDevices';
+import { useLocations } from '@/lib/hooks/useLocations';
 import {
   DeviceConfig,
   PigVisionConfig,
   ScaleConfig,
   SensorConfig,
+  detectSensorProfileFromSerial,
 } from '@/lib/types/device';
 import {
   validatePigVisionConfig,
@@ -37,12 +39,24 @@ export default function ConfigureDevicePage({
   const tCommon = useTranslations('common');
   const router = useRouter();
   const { getDevice, configureDevice, isLoading } = useDevices();
+  const { getLocation } = useLocations();
 
   const device = getDevice(id);
+  const deviceLocation = device?.locationId ? getLocation(device.locationId) : null;
 
-  const [config, setConfig] = useState<Partial<DeviceConfig>>(
-    device?.configuration || {}
-  );
+  // For sensors: auto-detect profile from serial number if not already set
+  const initialConfig = (): Partial<DeviceConfig> => {
+    if (device?.type === 'sensor') {
+      const existing = (device.configuration as Partial<SensorConfig>) || {};
+      if (!existing.sensorProfile) {
+        const detected = detectSensorProfileFromSerial(device.serialNumber);
+        if (detected) return { ...existing, type: 'sensor', sensorProfile: detected };
+      }
+    }
+    return device?.configuration || {};
+  };
+
+  const [config, setConfig] = useState<Partial<DeviceConfig>>(initialConfig);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -166,7 +180,7 @@ export default function ConfigureDevicePage({
       </Card>
 
       {errors.submit && (
-        <p className="text-sm text-destructive text-center mt-4">{errors.submit}</p>
+        <p className="text-sm text-error text-center mt-4">{errors.submit}</p>
       )}
 
       <div className="flex gap-3 mt-6">

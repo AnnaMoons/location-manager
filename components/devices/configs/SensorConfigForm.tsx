@@ -1,16 +1,15 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { SensorConfig, SensorType } from '@/lib/types/device';
+  SensorConfig,
+  SENSOR_PROFILE_VARIABLES,
+  SENSOR_PROFILE_LABELS,
+  INTERNAL_SENSOR_THRESHOLDS,
+  SensorVariable,
+} from '@/lib/types/device';
+import { Thermometer, Droplets, Wind, Sun, Info } from 'lucide-react';
 
 interface SensorConfigFormProps {
   config: Partial<SensorConfig>;
@@ -18,144 +17,77 @@ interface SensorConfigFormProps {
   errors: Record<string, string>;
 }
 
-const sensorUnits: Record<SensorType, string> = {
-  temperature: '°C',
-  humidity: '%',
-  co2: 'ppm',
-  ammonia: 'ppm',
+const variableIcons: Record<SensorVariable, typeof Thermometer> = {
+  temperature: Thermometer,
+  humidity: Droplets,
+  co2: Wind,
+  ammonia: Wind,
+  light: Sun,
 };
 
-const sensorDefaults: Record<SensorType, { min?: number; max?: number }> = {
-  temperature: { min: 18, max: 30 },
-  humidity: { min: 40, max: 70 },
-  co2: { max: 3000 },
-  ammonia: { max: 25 },
+const variableLabels: Record<SensorVariable, string> = {
+  temperature: 'Temperatura',
+  humidity: 'Humedad',
+  co2: 'CO₂',
+  ammonia: 'NH₃ (Amoníaco)',
+  light: 'Luz',
 };
 
-export function SensorConfigForm({
-  config,
-  onChange,
-  errors,
-}: SensorConfigFormProps) {
+export function SensorConfigForm({ config }: SensorConfigFormProps) {
   const t = useTranslations('devices.configuration.sensor');
 
-  const updateConfig = (updates: Partial<SensorConfig>) => {
-    onChange({ ...config, ...updates, type: 'sensor' });
-  };
-
-  const unit = config.sensorType ? sensorUnits[config.sensorType] : '';
+  const selectedProfile = config.sensorProfile;
+  const variables = selectedProfile ? SENSOR_PROFILE_VARIABLES[selectedProfile] : [];
 
   return (
-    <div className="space-y-6">
-      {/* Sensor Type */}
-      <div className="space-y-2">
-        <Label>{t('sensorType')}</Label>
-        <Select
-          value={config.sensorType || ''}
-          onValueChange={(value: SensorType) => {
-            const defaults = sensorDefaults[value];
-            updateConfig({
-              sensorType: value,
-              alertThresholdMin: defaults.min,
-              alertThresholdMax: defaults.max,
-            });
-          }}
-        >
-          <SelectTrigger className={errors.sensorType ? 'border-destructive' : ''}>
-            <SelectValue placeholder={t('sensorTypePlaceholder')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="temperature">{t('temperature')}</SelectItem>
-            <SelectItem value="humidity">{t('humidity')}</SelectItem>
-            <SelectItem value="co2">{t('co2')}</SelectItem>
-            <SelectItem value="ammonia">{t('ammonia')}</SelectItem>
-          </SelectContent>
-        </Select>
-        {errors.sensorType && (
-          <p className="text-sm text-destructive">{errors.sensorType}</p>
-        )}
+    <div className="space-y-5">
+      {/* Managed internally notice */}
+      <div className="flex items-start gap-3 rounded-lg border bg-surface-2/40 px-4 py-3">
+        <Info className="h-4 w-4 mt-0.5 text-fg-tertiary shrink-0" />
+        <p className="text-sm text-fg-tertiary">
+          {t('managedInternally')}
+        </p>
       </div>
 
-      {/* Alert Thresholds */}
-      {config.sensorType && (
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="alertMin">{t('alertThresholdMin')}</Label>
-            <div className="flex gap-2">
-              <Input
-                id="alertMin"
-                type="number"
-                step="1"
-                value={config.alertThresholdMin ?? ''}
-                onChange={(e) =>
-                  updateConfig({
-                    alertThresholdMin: e.target.value
-                      ? parseFloat(e.target.value)
-                      : undefined,
-                  })
-                }
-                className={errors.alertThresholdMin ? 'border-destructive' : ''}
-              />
-              <span className="flex items-center text-sm text-muted-foreground w-12">
-                {unit}
-              </span>
-            </div>
-            {errors.alertThresholdMin && (
-              <p className="text-sm text-destructive">{errors.alertThresholdMin}</p>
-            )}
+      {/* Sensor profile — auto-resolved from serial */}
+      {selectedProfile && (
+        <div className="flex items-center justify-between px-4 py-3 rounded-lg border bg-surface-2/30">
+          <div>
+            <p className="text-xs text-fg-tertiary mb-0.5">{t('sensorProfile')}</p>
+            <p className="text-sm font-medium">{SENSOR_PROFILE_LABELS[selectedProfile]}</p>
           </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="alertMax">{t('alertThresholdMax')}</Label>
-            <div className="flex gap-2">
-              <Input
-                id="alertMax"
-                type="number"
-                step="1"
-                value={config.alertThresholdMax ?? ''}
-                onChange={(e) =>
-                  updateConfig({
-                    alertThresholdMax: e.target.value
-                      ? parseFloat(e.target.value)
-                      : undefined,
-                  })
-                }
-              />
-              <span className="flex items-center text-sm text-muted-foreground w-12">
-                {unit}
-              </span>
-            </div>
-          </div>
+          <Badge variant="outline" className="text-xs shrink-0">
+            {t('autoDetected')}
+          </Badge>
         </div>
       )}
 
-      {/* Reading Interval */}
-      <div className="space-y-2">
-        <Label htmlFor="readingInterval">{t('readingInterval')}</Label>
-        <div className="flex gap-2">
-          <Input
-            id="readingInterval"
-            type="number"
-            min="1"
-            step="1"
-            placeholder="300"
-            value={config.readingInterval || ''}
-            onChange={(e) =>
-              updateConfig({
-                readingInterval: parseInt(e.target.value) || undefined,
-              })
-            }
-            className={errors.readingInterval ? 'border-destructive' : ''}
-          />
-          <span className="flex items-center text-sm text-muted-foreground w-20">
-            {t('seconds')}
-          </span>
+      {/* Measured variables read-only */}
+      {variables.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-medium">{t('measuredVariables')}</p>
+          <div className="flex flex-wrap gap-2">
+            {variables.map((variable) => {
+              const Icon = variableIcons[variable];
+              const thresholds = INTERNAL_SENSOR_THRESHOLDS[variable];
+              return (
+                <div
+                  key={variable}
+                  className="flex items-center gap-2 rounded-lg border p-3 bg-surface-2/30"
+                >
+                  <Icon className="h-4 w-4 text-fg-tertiary" />
+                  <div>
+                    <p className="text-sm font-medium">{variableLabels[variable]}</p>
+                    <p className="text-xs text-fg-tertiary">
+                      {t('range')}: {thresholds.min} – {thresholds.max} {thresholds.unit}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground">{t('readingIntervalDesc')}</p>
-        {errors.readingInterval && (
-          <p className="text-sm text-destructive">{errors.readingInterval}</p>
-        )}
-      </div>
+      )}
     </div>
   );
 }

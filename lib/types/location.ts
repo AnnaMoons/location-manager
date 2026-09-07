@@ -5,6 +5,15 @@ export interface Coordinates {
   lng: number;
 }
 
+/** H-002: Structured rural address */
+export interface RuralAddress {
+  country?: string;
+  department: string;
+  municipality: string;
+  vereda?: string;
+  additionalInfo?: string;
+}
+
 export interface Location {
   id: string;
   name: string;
@@ -13,6 +22,8 @@ export interface Location {
   parentId: string | null;
   coordinates?: Coordinates;
   address?: string;
+  /** H-002: Structured address (department, municipality, vereda) */
+  ruralAddress?: RuralAddress;
   createdAt: string;
   updatedAt: string;
 }
@@ -28,12 +39,14 @@ export interface CreateLocationInput {
   parentId: string | null;
   coordinates?: Coordinates;
   address?: string;
+  ruralAddress?: RuralAddress;
 }
 
 export interface UpdateLocationInput {
   name?: string;
   coordinates?: Coordinates;
   address?: string;
+  ruralAddress?: RuralAddress;
 }
 
 export function buildLocationTree(locations: Location[]): LocationWithChildren[] {

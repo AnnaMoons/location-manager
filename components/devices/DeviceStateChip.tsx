@@ -17,9 +17,9 @@ export function DeviceStateChip({ state, repairSubState, size = 'md', showToolti
   const t = useTranslations('devices');
 
   const colors = (stateColors as Record<string, { bg: string; text: string; border: string }>)[state] || {
-    bg: 'bg-gray-100',
-    text: 'text-gray-700',
-    border: 'border-gray-300',
+    bg: 'bg-surface-2',
+    text: 'text-fg-tertiary',
+    border: 'border-line',
   };
 
   const translatedState = t(`states.${state}`);
@@ -50,7 +50,7 @@ export function DeviceStateChip({ state, repairSubState, size = 'md', showToolti
         {displayLabel}
       </span>
       {hasRepairDetail && size !== 'sm' && (
-        <span className="text-[10px] text-muted-foreground/70 font-medium">
+        <span className="text-2xs text-fg-tertiary/70 font-medium">
           En reparación
         </span>
       )}

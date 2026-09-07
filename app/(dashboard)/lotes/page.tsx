@@ -33,7 +33,7 @@ export default function BatchesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [speciesFilter, setSpeciesFilter] = useState<Species | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<BatchStatus | 'all'>('all');
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
 
   const batchesWithLocation = useMemo(
     () => getBatchesWithLocation(),
@@ -87,85 +87,73 @@ export default function BatchesPage() {
       ) : (
         <>
           {/* Filters + View Toggle */}
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={t('searchPlaceholder')}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9"
-                />
-              </div>
-              <Select
-                value={speciesFilter}
-                onValueChange={(value) =>
-                  setSpeciesFilter(value as Species | 'all')
-                }
-              >
-                <SelectTrigger className="w-full sm:w-[180px]">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder={t('filterBySpecies')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('allSpecies')}</SelectItem>
-                  <SelectItem value="pigs">{tSpecies('pigs')}</SelectItem>
-                  <SelectItem value="broilers">{tSpecies('broilers')}</SelectItem>
-                  <SelectItem value="layers">{tSpecies('layers')}</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select
-                value={statusFilter}
-                onValueChange={(value) =>
-                  setStatusFilter(value as BatchStatus | 'all')
-                }
-              >
-                <SelectTrigger className="w-full sm:w-[180px]">
-                  <SelectValue placeholder={t('filterByStatus')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('allStatuses')}</SelectItem>
-                  <SelectItem value="active">{t('status.active')}</SelectItem>
-                  <SelectItem value="completed">{t('status.completed')}</SelectItem>
-                  <SelectItem value="cancelled">{t('status.cancelled')}</SelectItem>
-                </SelectContent>
-              </Select>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-tertiary" />
+              <Input
+                placeholder={t('searchPlaceholder')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <Select
+              value={speciesFilter}
+              onValueChange={(value) => setSpeciesFilter(value as Species | 'all')}
+            >
+              <SelectTrigger className="w-full sm:w-[160px]">
+                <Filter className="h-4 w-4 mr-2 text-fg-tertiary" />
+                <SelectValue placeholder={t('filterBySpecies')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('allSpecies')}</SelectItem>
+                <SelectItem value="pigs">{tSpecies('pigs')}</SelectItem>
+                <SelectItem value="broilers">{tSpecies('broilers')}</SelectItem>
+                <SelectItem value="layers">{tSpecies('layers')}</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select
+              value={statusFilter}
+              onValueChange={(value) => setStatusFilter(value as BatchStatus | 'all')}
+            >
+              <SelectTrigger className="w-full sm:w-[160px]">
+                <SelectValue placeholder={t('filterByStatus')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('allStatuses')}</SelectItem>
+                <SelectItem value="active">{t('status.active')}</SelectItem>
+                <SelectItem value="completed">{t('status.completed')}</SelectItem>
+                <SelectItem value="cancelled">{t('status.cancelled')}</SelectItem>
+              </SelectContent>
+            </Select>
 
-              {/* View Toggle */}
-              <div className="flex items-center border rounded-lg p-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setViewMode('grid')}
-                  className={cn(
-                    'h-8 px-2.5',
-                    viewMode === 'grid' && 'bg-muted'
-                  )}
-                  title={t('viewGrid')}
-                >
-                  <LayoutGrid className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setViewMode('table')}
-                  className={cn(
-                    'h-8 px-2.5',
-                    viewMode === 'table' && 'bg-muted'
-                  )}
-                  title={t('viewTable')}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-              </div>
+            {/* View Toggle */}
+            <div className="flex items-center border rounded-lg p-1 shrink-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setViewMode('grid')}
+                className={cn('h-8 px-2.5', viewMode === 'grid' && 'bg-surface-2')}
+                title={t('viewGrid')}
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setViewMode('table')}
+                className={cn('h-8 px-2.5', viewMode === 'table' && 'bg-surface-2')}
+                title={t('viewTable')}
+              >
+                <List className="h-4 w-4" />
+              </Button>
             </div>
           </div>
 
           {/* Batch List */}
           {filteredBatches.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">{t('noResults')}</p>
+              <p className="text-fg-tertiary">{t('noResults')}</p>
             </div>
           ) : viewMode === 'grid' ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Lightbulb } from 'lucide-react';
+import { Ruler, AlertCircle } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import {
@@ -24,7 +24,6 @@ export function PigVisionConfigForm({
   config,
   onChange,
   errors,
-  deviceSerialNumber,
 }: PigVisionConfigFormProps) {
   const t = useTranslations('devices.configuration.pigvision');
 
@@ -32,103 +31,99 @@ export function PigVisionConfigForm({
     onChange({ ...config, ...updates, type: 'pigvision' });
   };
 
+  const parseDecimal = (value: string): number | undefined => {
+    const num = parseFloat(value);
+    return isNaN(num) ? undefined : num;
+  };
+
   return (
-    <div className="space-y-8">
-      {/* Device Serial Number */}
-      {deviceSerialNumber && (
-        <div className="text-sm font-mono text-muted-foreground">
-          {deviceSerialNumber}
+    <div className="space-y-6">
+      {/* Info contextual */}
+      <div className="flex items-start gap-3 rounded-lg border bg-surface-2/40 px-4 py-3">
+        <Ruler className="h-4 w-4 mt-0.5 text-fg-tertiary shrink-0" />
+        <p className="text-sm text-fg-tertiary">{t('heightInfo')}</p>
+      </div>
+
+      {/* Altura de instalación */}
+      <div className="space-y-2">
+        <Label>
+          {t('installationHeight')}
+          <span className="text-error ml-1">*</span>
+        </Label>
+        <p className="text-xs text-fg-tertiary">{t('installationHeightDesc')}</p>
+        <div className="flex gap-2">
+          <Input
+            type="number"
+            step="0.01"
+            min="1"
+            max="5"
+            placeholder="ej. 2.35"
+            value={config.installationHeight || ''}
+            onChange={(e) => updateConfig({ installationHeight: parseDecimal(e.target.value) })}
+            className={`flex-1 ${errors.installationHeight ? 'border-error' : ''}`}
+          />
+          <Select
+            value={config.installationHeightUnit || 'm'}
+            onValueChange={(value: 'm' | 'cm') => updateConfig({ installationHeightUnit: value })}
+          >
+            <SelectTrigger className="w-24">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="m">m</SelectItem>
+              <SelectItem value="cm">cm</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-      )}
-
-      {/* PigVision Section */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">PigVision</h3>
-
-        {/* Info Box */}
-        <div className="flex gap-3 p-4 bg-slate-100 rounded-lg border-l-4 border-slate-400">
-          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center">
-            <Lightbulb className="h-4 w-4 text-slate-500" />
+        {errors.installationHeight && (
+          <div className="flex items-center gap-1.5 text-sm text-error">
+            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+            {errors.installationHeight}
           </div>
-          <p className="text-sm text-slate-700">
-            {t('heightInfo')}{' '}
-            <a href="#" className="text-primary underline hover:no-underline">
-              {t('learnMore')}
-            </a>
-          </p>
-        </div>
+        )}
+      </div>
 
-        {/* Altura de instalación */}
-        <div className="space-y-2">
-          <Label>{t('installationHeight')} (*)</Label>
-          <div className="flex gap-2">
-            <Input
-              type="number"
-              step="0.01"
-              placeholder={t('heightPlaceholder')}
-              value={config.installationHeight || ''}
-              onChange={(e) =>
-                updateConfig({ installationHeight: parseFloat(e.target.value) || undefined })
-              }
-              className="flex-1"
-            />
-            <Select
-              value={config.installationHeightUnit || 'm'}
-              onValueChange={(value: 'm' | 'cm') =>
-                updateConfig({ installationHeightUnit: value })
-              }
-            >
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder={t('unitPlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="m">{t('unitMeters')}</SelectItem>
-                <SelectItem value="cm">{t('unitCentimeters')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          {errors.installationHeight && (
-            <p className="text-sm text-destructive">{errors.installationHeight}</p>
-          )}
+      {/* Confirmación de altura */}
+      <div className="space-y-2">
+        <Label>
+          {t('installationHeightConfirmation')}
+          <span className="text-error ml-1">*</span>
+        </Label>
+        <p className="text-xs text-fg-tertiary">{t('installationHeightConfirmationDesc')}</p>
+        <div className="flex gap-2">
+          <Input
+            type="number"
+            step="0.01"
+            min="1"
+            max="5"
+            placeholder="ej. 2.35"
+            value={config.installationHeightConfirmation || ''}
+            onChange={(e) =>
+              updateConfig({ installationHeightConfirmation: parseDecimal(e.target.value) })
+            }
+            className={`flex-1 ${errors.installationHeightConfirmation ? 'border-error' : ''}`}
+          />
+          <Select
+            value={config.installationHeightConfirmationUnit || 'm'}
+            onValueChange={(value: 'm' | 'cm') =>
+              updateConfig({ installationHeightConfirmationUnit: value })
+            }
+          >
+            <SelectTrigger className="w-24">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="m">m</SelectItem>
+              <SelectItem value="cm">cm</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-
-        {/* Confirmación de altura */}
-        <div className="space-y-2">
-          <Label>{t('installationHeightConfirmation')} (*)</Label>
-          <div className="flex gap-2">
-            <Input
-              type="number"
-              step="0.01"
-              placeholder={t('heightPlaceholder')}
-              value={config.installationHeightConfirmation || ''}
-              onChange={(e) =>
-                updateConfig({
-                  installationHeightConfirmation: parseFloat(e.target.value) || undefined,
-                })
-              }
-              className="flex-1"
-            />
-            <Select
-              value={config.installationHeightConfirmationUnit || 'm'}
-              onValueChange={(value: 'm' | 'cm') =>
-                updateConfig({ installationHeightConfirmationUnit: value })
-              }
-            >
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder={t('unitPlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="m">{t('unitMeters')}</SelectItem>
-                <SelectItem value="cm">{t('unitCentimeters')}</SelectItem>
-              </SelectContent>
-            </Select>
+        {errors.installationHeightConfirmation && (
+          <div className="flex items-center gap-1.5 text-sm text-error">
+            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+            {errors.installationHeightConfirmation}
           </div>
-          {errors.installationHeightConfirmation && (
-            <p className="text-sm text-destructive">
-              {errors.installationHeightConfirmation}
-            </p>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );

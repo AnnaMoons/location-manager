@@ -24,16 +24,16 @@ interface ActivityTimelineProps {
 }
 
 const actionConfig = {
-  created: { icon: Plus, color: 'text-blue-500' },
-  sold: { icon: ShoppingCart, color: 'text-green-500' },
-  configured: { icon: Settings, color: 'text-purple-500' },
-  activated: { icon: CheckCircle2, color: 'text-green-600' },
-  disabled: { icon: ShieldOff, color: 'text-orange-500' },
-  returned: { icon: RotateCcw, color: 'text-purple-500' },
-  repaired: { icon: Wrench, color: 'text-blue-500' },
-  killed: { icon: Skull, color: 'text-red-500' },
-  state_changed: { icon: RefreshCw, color: 'text-blue-500' },
-  location_changed: { icon: MapPin, color: 'text-yellow-500' },
+  created: { icon: Plus, color: 'text-brand-primary' },
+  sold: { icon: ShoppingCart, color: 'text-success' },
+  configured: { icon: Settings, color: 'text-brand-primary' },
+  activated: { icon: CheckCircle2, color: 'text-success' },
+  disabled: { icon: ShieldOff, color: 'text-warning-dark' },
+  returned: { icon: RotateCcw, color: 'text-warning-dark' },
+  repaired: { icon: Wrench, color: 'text-success' },
+  killed: { icon: Skull, color: 'text-error' },
+  state_changed: { icon: RefreshCw, color: 'text-fg-tertiary' },
+  location_changed: { icon: MapPin, color: 'text-brand-primary' },
 };
 
 export function ActivityTimeline({ history, className }: ActivityTimelineProps) {
@@ -42,8 +42,8 @@ export function ActivityTimeline({ history, className }: ActivityTimelineProps) 
   if (!history || history.length === 0) {
     return (
       <div className={cn("text-center py-8", className)}>
-        <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-        <p className="text-sm text-muted-foreground">{t('history.noHistory')}</p>
+        <AlertCircle className="w-8 h-8 text-fg-tertiary mx-auto mb-2" />
+        <p className="text-sm text-fg-tertiary">{t('history.noHistory')}</p>
       </div>
     );
   }
@@ -59,13 +59,13 @@ export function ActivityTimeline({ history, className }: ActivityTimelineProps) 
             <div className="flex flex-col items-center">
               <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center",
-                "bg-slate-100 border-2 border-white shadow-sm",
+                "bg-surface-2 border-2 border-white shadow-sm",
                 config.color
               )}>
                 <Icon className="w-4 h-4" />
               </div>
               {index < history.length - 1 && (
-                <div className="w-0.5 flex-1 bg-slate-200 my-2" />
+                <div className="w-0.5 flex-1 bg-surface-2 my-2" />
               )}
             </div>
             
@@ -74,13 +74,13 @@ export function ActivityTimeline({ history, className }: ActivityTimelineProps) 
                 <span className="font-medium text-sm">
                   {t(`history.actions.${entry.action}`)}
                 </span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-fg-tertiary">
                   {formatDate(entry.timestamp)}
                 </span>
               </div>
               
               {entry.details && (
-                <div className="mt-1 text-sm text-muted-foreground">
+                <div className="mt-1 text-sm text-fg-tertiary">
                   {entry.details.fromState && entry.details.toState && (
                     <span>
                       {t(`states.${entry.details.fromState}`) || entry.details.fromState} → {t(`states.${entry.details.toState}`) || entry.details.toState}

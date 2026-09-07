@@ -19,16 +19,12 @@ interface BatchTableProps {
   batches: BatchWithLocation[];
 }
 
-function getStatusColor(status: string) {
+function getStatusVariant(status: string): 'success' | 'secondary' | 'destructive' | 'default' {
   switch (status) {
-    case 'active':
-      return 'bg-green-100 text-green-800 hover:bg-green-100 hover:text-green-800 dark:bg-green-900 dark:text-green-200';
-    case 'completed':
-      return 'bg-gray-100 text-gray-800 hover:bg-gray-100 hover:text-gray-800 dark:bg-gray-800 dark:text-gray-200';
-    case 'cancelled':
-      return 'bg-red-100 text-red-800 hover:bg-red-100 hover:text-red-800 dark:bg-red-900 dark:text-red-200';
-    default:
-      return 'bg-gray-100 text-gray-800';
+    case 'active': return 'success';
+    case 'completed': return 'secondary';
+    case 'cancelled': return 'destructive';
+    default: return 'default';
   }
 }
 
@@ -53,10 +49,10 @@ export function BatchTable({ batches }: BatchTableProps) {
   }
 
   return (
-    <div className="border rounded-lg overflow-hidden">
+    <div className="border border-line rounded-md overflow-hidden">
       <Table>
         <TableHeader>
-          <TableRow className="bg-muted/50">
+          <TableRow className="bg-surface-2/50">
             <TableHead>{t('batchTable.name')}</TableHead>
             <TableHead>{t('batchTable.species')}</TableHead>
             <TableHead>{t('batchTable.status')}</TableHead>
@@ -79,25 +75,25 @@ export function BatchTable({ batches }: BatchTableProps) {
             );
 
             return (
-              <TableRow key={batch.id} className="hover:bg-muted/30">
+              <TableRow key={batch.id} className="hover:bg-surface-2/30">
                 {/* Nombre */}
                 <TableCell>
                   <Link
                     href={`/lotes/${batch.id}`}
-                    className="font-medium text-foreground hover:underline"
+                    className="font-medium text-fg hover:underline"
                   >
                     {batch.name}
                   </Link>
                 </TableCell>
 
                 {/* Especie */}
-                <TableCell className="text-sm text-muted-foreground">
+                <TableCell className="text-sm text-fg-tertiary">
                   {tSpecies(batch.species)}
                 </TableCell>
 
                 {/* Estado */}
                 <TableCell>
-                  <Badge variant="outline" className={getStatusColor(batch.status)}>
+                  <Badge variant={getStatusVariant(batch.status)}>
                     {t(`status.${batch.status}`)}
                   </Badge>
                 </TableCell>
@@ -106,11 +102,11 @@ export function BatchTable({ batches }: BatchTableProps) {
                 <TableCell>
                   {locationSummary ? (
                     <div className="flex items-center gap-1.5 text-sm">
-                      <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                      <span className="truncate max-w-[200px]">{locationSummary}</span>
+                      <MapPin className="h-3.5 w-3.5 text-fg-tertiary flex-shrink-0" />
+                      <span className="truncate max-w-50">{locationSummary}</span>
                     </div>
                   ) : (
-                    <span className="text-sm text-muted-foreground">-</span>
+                    <span className="text-sm text-fg-tertiary">-</span>
                   )}
                 </TableCell>
 
@@ -120,12 +116,12 @@ export function BatchTable({ batches }: BatchTableProps) {
                 </TableCell>
 
                 {/* Edad */}
-                <TableCell className="text-right text-sm text-muted-foreground tabular-nums">
+                <TableCell className="text-right text-sm text-fg-tertiary tabular-nums">
                   {currentAge} {t('days')}
                 </TableCell>
 
                 {/* Fecha inicio */}
-                <TableCell className="text-sm text-muted-foreground">
+                <TableCell className="text-sm text-fg-tertiary">
                   {new Date(batch.startDate).toLocaleDateString('es-ES', {
                     day: 'numeric',
                     month: 'short',
@@ -136,17 +132,17 @@ export function BatchTable({ batches }: BatchTableProps) {
                 {/* Días restantes */}
                 <TableCell className="text-right text-sm tabular-nums">
                   {batch.status !== 'active' ? (
-                    <span className="text-muted-foreground">-</span>
+                    <span className="text-fg-tertiary">-</span>
                   ) : daysRemaining !== null && daysRemaining > 0 ? (
-                    <span className="text-muted-foreground">
+                    <span className="text-fg-tertiary">
                       {daysRemaining} {t('days')}
                     </span>
                   ) : daysRemaining !== null ? (
-                    <span className="text-red-600 font-medium">
+                    <span className="text-error font-medium">
                       {t('endDatePassed')}
                     </span>
                   ) : (
-                    <span className="text-muted-foreground">-</span>
+                    <span className="text-fg-tertiary">-</span>
                   )}
                 </TableCell>
               </TableRow>

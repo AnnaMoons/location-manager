@@ -23,9 +23,9 @@ const deviceIcons = {
 };
 
 const healthIndicator = {
-  online: { icon: Wifi, color: 'text-green-500' },
-  offline: { icon: WifiOff, color: 'text-red-500' },
-  unknown: { icon: WifiOff, color: 'text-gray-400' },
+  online: { icon: Wifi, color: 'text-success' },
+  offline: { icon: WifiOff, color: 'text-error' },
+  unknown: { icon: WifiOff, color: 'text-fg-placeholder' },
 };
 
 export function DeviceCard({ device, showLocation = true }: DeviceCardProps) {
@@ -38,23 +38,23 @@ export function DeviceCard({ device, showLocation = true }: DeviceCardProps) {
 
   return (
     <Link href={`/dispositivos/${device.id}`}>
-      <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
+      <Card className="hover:bg-surface-2/50 transition-colors cursor-pointer">
         <CardContent className="p-4">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-full bg-primary/10">
-                <Icon className="h-5 w-5 text-primary" />
+              <div className="p-2 rounded-full bg-brand-primary/10">
+                <Icon className="h-5 w-5 text-brand-primary" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="font-medium">{device.serialNumber}</h3>
                   <Health.icon className={cn('h-4 w-4', Health.color)} />
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-fg-tertiary">
                   {t(`types.${device.type}`)}
                 </p>
                 {showLocation && (
-                  <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1 mt-1 text-sm text-fg-tertiary">
                     <MapPin className="h-3 w-3" />
                     <span>{location?.name || t('noLocation')}</span>
                   </div>
@@ -69,7 +69,7 @@ export function DeviceCard({ device, showLocation = true }: DeviceCardProps) {
               />
               {device.lastMeasurement && (
                 <div className="flex items-center gap-1 text-sm font-medium">
-                  <Activity className="h-3 w-3 text-muted-foreground" />
+                  <Activity className="h-3 w-3 text-fg-tertiary" />
                   <span>
                     {device.lastMeasurement.value} {device.lastMeasurement.unit}
                   </span>

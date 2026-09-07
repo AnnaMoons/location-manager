@@ -33,7 +33,13 @@ export default function NewBatchPage() {
     setErrors({});
 
     try {
-      const newBatch = await createBatch(formData as CreateBatchInput);
+      // H-042: For poultry, set averageAgeAtStart to 0 (age is calculated from day 1)
+      const batchData = { ...formData } as CreateBatchInput;
+      if (batchData.species === 'broilers' || batchData.species === 'layers') {
+        batchData.averageAgeAtStart = 0;
+      }
+
+      const newBatch = await createBatch(batchData);
       router.push(`/lotes/${newBatch.id}`);
     } catch (error) {
       setErrors({ submit: t('createError') });
@@ -65,7 +71,7 @@ export default function NewBatchPage() {
       </Card>
 
       {errors.submit && (
-        <p className="text-sm text-destructive text-center mt-4">
+        <p className="text-sm text-error text-center mt-4">
           {errors.submit}
         </p>
       )}

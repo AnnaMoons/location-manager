@@ -24,9 +24,9 @@ interface LocationCardProps {
 }
 
 const speciesColors: Record<string, string> = {
-  pigs: 'bg-pink-100 text-pink-700',
-  broilers: 'bg-orange-100 text-orange-700',
-  layers: 'bg-amber-100 text-amber-700',
+  pigs: 'bg-product-pigvision/40 text-fg-secondary',
+  broilers: 'bg-surface-blue-2 text-fg-secondary',
+  layers: 'bg-primitive-mint-500/60 text-fg-secondary',
 };
 
 const locationIcons: Record<LocationType, LucideIcon> = {
@@ -62,16 +62,17 @@ export function LocationCard({ location, childCount = 0, devices: providedDevice
     <Card
       className={cn(
         'transition-colors',
-        indent > 0 && 'border-l-4 border-l-primary/20'
+        indent > 0 && 'border-l-4 border-l-brand-primary/20'
       )}
+      // dinámico: sangría proporcional a la profundidad del árbol (prop indent)
       style={{ marginLeft: indent * 16 }}
     >
       <CardContent className="p-4">
-        <Link href={`/ubicaciones/${location.id}`} className="block hover:bg-muted/50 rounded-md -m-2 p-2 transition-colors">
+        <Link href={`/ubicaciones/${location.id}`} className="block hover:bg-surface-2/50 rounded-md -m-2 p-2 transition-colors">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-full bg-primary/10">
-                <Icon className="h-5 w-5 text-primary" />
+              <div className="p-2 rounded-full bg-brand-primary/10">
+                <Icon className="h-5 w-5 text-brand-primary" />
               </div>
               <div>
                 <h3 className="font-medium">{location.name}</h3>
@@ -85,7 +86,7 @@ export function LocationCard({ location, childCount = 0, devices: providedDevice
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-3 text-muted-foreground">
+            <div className="flex items-center gap-3 text-fg-tertiary">
               {displayDeviceCount > 0 && (
                 <div className="flex items-center gap-1 text-sm">
                   <Cpu className="h-4 w-4" />
@@ -102,7 +103,7 @@ export function LocationCard({ location, childCount = 0, devices: providedDevice
             </div>
           </div>
           {location.address && (
-            <p className="text-sm text-muted-foreground mt-2 ml-12">
+            <p className="text-sm text-fg-tertiary mt-2 ml-12">
               {location.address}
             </p>
           )}
@@ -113,16 +114,16 @@ export function LocationCard({ location, childCount = 0, devices: providedDevice
           <div className="mt-3 pt-3 border-t">
             <button
               onClick={handleDevicesToggle}
-              className="flex items-center gap-2 w-full text-left text-sm hover:bg-muted/50 rounded-lg p-2 -ml-2 transition-colors"
+              className="flex items-center gap-2 w-full text-left text-sm hover:bg-surface-2/50 rounded-lg p-2 -ml-2 transition-colors"
             >
               <div className={cn(
                 'p-0.5 rounded transition-transform duration-200',
                 devicesExpanded && 'rotate-0',
                 !devicesExpanded && '-rotate-90'
               )}>
-                <ChevronDown className="h-5 w-5 text-primary" />
+                <ChevronDown className="h-5 w-5 text-brand-primary" />
               </div>
-              <Cpu className="h-4 w-4 text-muted-foreground" />
+              <Cpu className="h-4 w-4 text-fg-tertiary" />
               <span className="font-medium">{tDevices('title')}</span>
               <Badge variant="secondary" className="ml-1">
                 {devices.length}
@@ -134,6 +135,7 @@ export function LocationCard({ location, childCount = 0, devices: providedDevice
                 'overflow-hidden transition-all duration-300 ease-in-out',
                 devicesExpanded ? 'opacity-100 mt-2' : 'opacity-0 max-h-0'
               )}
+              // dinámico: grid-template-rows animado no expresable con utilities Tailwind
               style={{
                 display: 'grid',
                 gridTemplateRows: devicesExpanded ? '1fr' : '0fr',
@@ -142,13 +144,13 @@ export function LocationCard({ location, childCount = 0, devices: providedDevice
               <div className="min-h-0 space-y-1 ml-5">
                 {devices.map((device) => (
                   <Link key={device.id} href={`/dispositivos/${device.id}`}>
-                    <div className="flex items-center justify-between p-2 rounded-md hover:bg-muted transition-colors gap-3">
+                    <div className="flex items-center justify-between p-2 rounded-md hover:bg-surface-2 transition-colors gap-3">
                       <div className="flex items-center gap-2 min-w-0 flex-1">
                         <SerialNumber serial={device.serialNumber} className="text-xs" />
-                        <span className="text-xs text-muted-foreground truncate">
+                        <span className="text-xs text-fg-tertiary truncate">
                           {tDevices(`types.${device.type}`)}
                           {device.type === 'sensor' && device.configuration?.type === 'sensor' && (device.configuration as SensorConfig).sensorProfile && (
-                            <span className="text-muted-foreground/70">
+                            <span className="text-fg-tertiary/70">
                               {' · '}{tDevices(`sensorProfiles.${(device.configuration as SensorConfig).sensorProfile}`)}
                             </span>
                           )}
@@ -159,7 +161,7 @@ export function LocationCard({ location, childCount = 0, devices: providedDevice
                         {device.lastMeasurement ? (
                           <LastMeasurement measurement={device.lastMeasurement} size="sm" />
                         ) : (
-                          <span className="text-xs text-muted-foreground">-</span>
+                          <span className="text-xs text-fg-tertiary">-</span>
                         )}
                         <DeviceStateChip
                           state={device.state}
@@ -168,11 +170,11 @@ export function LocationCard({ location, childCount = 0, devices: providedDevice
                           showTooltip={false}
                         />
                         {device.health === 'online' ? (
-                          <Wifi className="h-3 w-3 text-green-500" />
+                          <Wifi className="h-3 w-3 text-success" />
                         ) : device.health === 'offline' ? (
-                          <WifiOff className="h-3 w-3 text-red-500" />
+                          <WifiOff className="h-3 w-3 text-error" />
                         ) : (
-                          <WifiOff className="h-3 w-3 text-muted-foreground" />
+                          <WifiOff className="h-3 w-3 text-fg-tertiary" />
                         )}
                       </div>
                     </div>
