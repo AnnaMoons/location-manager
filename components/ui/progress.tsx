@@ -1,34 +1,17 @@
-"use client";
-
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import DsProgressRaw from "@ds/components/molecules/Progress";
+
+const DsProgress = DsProgressRaw as React.ComponentType<any>;
 
 interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
   value?: number;
   max?: number;
 }
 
-const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
-  ({ className, value = 0, max = 100, ...props }, ref) => {
-    const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
-
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "relative h-2 w-full overflow-hidden rounded-full bg-secondary",
-          className
-        )}
-        {...props}
-      >
-        <div
-          className="h-full bg-primary transition-all duration-300 ease-in-out"
-          style={{ width: `${percentage}%` }}
-        />
-      </div>
-    );
-  }
-);
-Progress.displayName = "Progress";
+/** Adapter over the Asimetrix DS Progress (variant="bar"). `max` is normalized to 0-100. */
+function Progress({ value = 0, max = 100, className, ...props }: ProgressProps) {
+  const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
+  return <DsProgress variant="bar" value={percentage} className={className} {...props} />;
+}
 
 export { Progress };

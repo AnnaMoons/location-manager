@@ -1,8 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { X } from 'lucide-react';
-import { Button } from './button';
+import DsToastRaw from '@ds/components/molecules/Toast';
+
+const DsToast = DsToastRaw as React.ComponentType<any>;
 
 export interface Toast {
   id: string;
@@ -50,37 +51,28 @@ export function useToast() {
   return context;
 }
 
+/** default→info, destructive→error: the only DS Toast types that don't share a name. */
+const TYPE_MAP: Record<NonNullable<Toast['variant']>, 'info' | 'success' | 'warning' | 'error'> = {
+  default: 'info',
+  success: 'success',
+  warning: 'warning',
+  destructive: 'error',
+};
+
 function ToastContainer({ toasts, dismiss }: { toasts: Toast[]; dismiss: (id: string) => void }) {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm">
+    <div className="fixed bottom-4 right-4 z-toast flex flex-col gap-2 max-w-sm">
       {toasts.map((t) => (
-        <ToastItem key={t.id} toast={t} onDismiss={() => dismiss(t.id)} />
+        <DsToast
+          key={t.id}
+          type={TYPE_MAP[t.variant || 'default']}
+          title={t.title}
+          body={t.description}
+          onClose={() => dismiss(t.id)}
+        />
       ))}
-    </div>
-  );
-}
-
-function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }) {
-  const variantStyles = {
-    default: 'bg-primary text-primary-foreground',
-    success: 'bg-green-600 text-white',
-    destructive: 'bg-destructive text-destructive-foreground',
-    warning: 'bg-yellow-500 text-white',
-  };
-
-  return (
-    <div
-      className={`flex items-start gap-3 p-4 rounded-lg shadow-lg ${variantStyles[toast.variant || 'default']}`}
-    >
-      <div className="flex-1">
-        {toast.title && <p className="font-medium">{toast.title}</p>}
-        {toast.description && <p className="text-sm opacity-90">{toast.description}</p>}
-      </div>
-      <button onClick={onDismiss} className="opacity-70 hover:opacity-100">
-        <X className="h-4 w-4" />
-      </button>
     </div>
   );
 }

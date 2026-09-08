@@ -1,41 +1,38 @@
 import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import DsBadgeRaw from "@ds/components/atoms/Badge";
 
-const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-  {
-    variants: {
-      variant: {
-        default:
-          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-        secondary:
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive:
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
-        success:
-          "border-transparent bg-green-100 text-green-700",
-        warning:
-          "border-transparent bg-yellow-100 text-yellow-700",
-        info:
-          "border-transparent bg-blue-100 text-blue-700",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-);
+const DsBadge = DsBadgeRaw as React.ComponentType<any>;
 
-export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+/**
+ * Adapter over the Asimetrix DS Badge (vendor/asimetrix-ds/components/atoms/Badge).
+ * Keeps the old shadcn variant names so existing call sites don't need to change.
+ */
 
-function Badge({ className, variant, ...props }: BadgeProps) {
-  return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
-  );
+export type BadgeVariant =
+  | "default"
+  | "secondary"
+  | "destructive"
+  | "outline"
+  | "success"
+  | "warning"
+  | "info";
+
+const VARIANT_MAP: Record<BadgeVariant, "crisis" | "caution" | "verdant" | "neutral" | "harbor" | "ghost"> = {
+  default: "harbor",
+  secondary: "neutral",
+  destructive: "crisis",
+  outline: "ghost",
+  success: "verdant",
+  warning: "caution",
+  info: "neutral",
+};
+
+export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
+  variant?: BadgeVariant;
 }
 
-export { Badge, badgeVariants };
+function Badge({ variant = "default", ...props }: BadgeProps) {
+  return <DsBadge variant={VARIANT_MAP[variant] ?? "neutral"} {...props} />;
+}
+
+export { Badge };
