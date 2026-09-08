@@ -1,0 +1,3 @@
+[submodule "vendor/asimetrix-ds"]
+	path = vendor/asimetrix-ds
+	url = https://github.com/DesarrolloAsimetrix/asimetrix-ds.git
