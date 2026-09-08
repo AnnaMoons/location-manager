@@ -17,10 +17,11 @@ import {
 import { HierarchySelector } from './HierarchySelector';
 import { LocationPicker } from './LocationPicker';
 import { useLocations } from '@/lib/hooks/useLocations';
-import { Location, CreateLocationInput, Coordinates } from '@/lib/types/location';
+import { Location, CreateLocationInput, Coordinates, RuralAddress } from '@/lib/types/location';
 import { Species, LocationType } from '@/lib/types/species';
 import { validateLocationInput } from '@/lib/utils/validation';
 import { LoadingSpinner } from '@/components/shared/LoadingState';
+import { SafeForm } from '@/components/shared/SafeForm';
 
 interface LocationFormProps {
   initialData?: Location;
@@ -29,6 +30,8 @@ interface LocationFormProps {
   initialSpecies?: Species | null;
   initialType?: LocationType | null;
   farmOnly?: boolean;
+  onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
 export function LocationForm({
@@ -38,6 +41,8 @@ export function LocationForm({
   initialSpecies,
   initialType,
   farmOnly = false,
+  onSuccess,
+  onCancel,
 }: LocationFormProps) {
   const t = useTranslations('locations.form');
   const tLoc = useTranslations('locations');
@@ -67,6 +72,7 @@ export function LocationForm({
     initialData?.coordinates
   );
   const [address, setAddress] = useState<string | undefined>(initialData?.address);
+  const [ruralAddress, setRuralAddress] = useState<RuralAddress | undefined>(initialData?.ruralAddress);
 
   // Check if we're creating a barn from the installation wizard
   useEffect(() => {
@@ -109,6 +115,7 @@ export function LocationForm({
       parentId,
       coordinates,
       address,
+      ruralAddress,
     };
 
     const validation = validateLocationInput(input);
@@ -125,7 +132,7 @@ export function LocationForm({
       if (mode === 'create') {
         newLocation = await createLocation(input as CreateLocationInput);
       } else if (initialData) {
-        await updateLocation(initialData.id, { name, coordinates, address });
+        await updateLocation(initialData.id, { name, coordinates, address, ruralAddress });
       }
       
       // Check if we should redirect back to device installation
@@ -155,6 +162,8 @@ export function LocationForm({
           sessionStorage.removeItem('createPenParentId');
         }
         router.push(redirectTo);
+      } else if (onSuccess) {
+        onSuccess();
       } else {
         router.push('/ubicaciones');
       }
@@ -166,7 +175,7 @@ export function LocationForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <SafeForm onSubmit={handleSubmit} className="space-y-6">
       <Card>
         <CardContent className="pt-6 space-y-6">
           {/* Hierarchy Selector (only in create mode, not for farm-only) */}
@@ -204,42 +213,52 @@ export function LocationForm({
           {/* Name */}
           <div className="space-y-2">
             <Label htmlFor="name">
-              {penFromWizard ? t('penName') : barnFromWizard ? t('barnName') : t('name')}
+              {penFromWizard ? t('penName')
+                : barnFromWizard ? t('barnName')
+                : locationType === 'barn' ? t('barnName')
+                : locationType === 'pen' ? t('penName')
+                : locationType === 'section' ? t('sectionName')
+                : t('name')}
             </Label>
             <Input
               id="name"
-              placeholder={penFromWizard ? t('penNamePlaceholder') : barnFromWizard ? t('barnNamePlaceholder') : t('namePlaceholder')}
+              placeholder={penFromWizard ? t('penNamePlaceholder')
+                : barnFromWizard ? t('barnNamePlaceholder')
+                : locationType === 'barn' ? t('barnNamePlaceholder')
+                : locationType === 'pen' ? t('penNamePlaceholder')
+                : locationType === 'section' ? t('sectionNamePlaceholder')
+                : t('namePlaceholder')}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className={errors.name ? 'border-destructive' : ''}
+              className={errors.name ? 'border-error' : ''}
             />
             {errors.name && (
-              <p className="text-sm text-destructive">{t(`validation.nameRequired`)}</p>
+              <p className="text-sm text-error">{t(`validation.nameRequired`)}</p>
             )}
           </div>
 
-          {/* Pre-filled info (when creating child location) */}
-          {mode === 'create' && isPreFilled && (
-            <div className="space-y-2 p-4 bg-muted rounded-lg">
-              <p className="text-sm">
-                <span className="text-muted-foreground">Especie:</span>{' '}
-                <span className="font-medium">{tLoc(`species.${species}`)}</span>
-              </p>
-              <p className="text-sm">
-                <span className="text-muted-foreground">Tipo:</span>{' '}
-                <span className="font-medium">{tLoc(`types.${locationType}`)}</span>
-              </p>
+          {/* Pre-filled info (when creating child location from modal) */}
+          {mode === 'create' && isPreFilled && !barnFromWizard && !penFromWizard && parentId && (
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-surface-2 border">
+              <div className="flex-1 min-w-0 space-y-0.5">
+                <p className="text-xs text-fg-tertiary">{tLoc(`types.${locationType === 'barn' ? 'farm' : 'barn'}`)}:</p>
+                <p className="text-sm font-medium truncate">{getLocation(parentId)?.name}</p>
+              </div>
+              <div className="text-right shrink-0 space-y-0.5">
+                <p className="text-xs text-fg-tertiary">{tLoc('species.label')}</p>
+                <p className="text-sm font-medium">{species ? tLoc(`species.${species}`) : ''}</p>
+              </div>
             </div>
           )}
 
           {/* Info when creating barn from installation wizard */}
           {mode === 'create' && barnFromWizard && parentId && (
-            <div className="space-y-2 p-4 bg-primary/10 border border-primary/20 rounded-lg">
-              <p className="text-sm text-primary dark:text-primary-foreground">
+            <div className="space-y-2 p-4 bg-brand-primary/10 border border-brand-primary/20 rounded-lg">
+              <p className="text-sm text-brand-primary dark:text-brand-fg">
                 {t('creatingBarnForDevice')}
               </p>
               <p className="text-sm">
-                <span className="text-muted-foreground">{tLoc('types.farm')}:</span>{' '}
+                <span className="text-fg-tertiary">{tLoc('types.farm')}:</span>{' '}
                 <span className="font-medium">{getLocation(parentId)?.name}</span>
               </p>
             </div>
@@ -247,12 +266,12 @@ export function LocationForm({
 
           {/* Info when creating pen from installation wizard */}
           {mode === 'create' && penFromWizard && parentId && (
-            <div className="space-y-2 p-4 bg-primary/10 border border-primary/20 rounded-lg">
-              <p className="text-sm text-primary dark:text-primary-foreground">
+            <div className="space-y-2 p-4 bg-brand-primary/10 border border-brand-primary/20 rounded-lg">
+              <p className="text-sm text-brand-primary dark:text-brand-fg">
                 {t('creatingPenForDevice')}
               </p>
               <p className="text-sm">
-                <span className="text-muted-foreground">{tLoc('types.barn')}:</span>{' '}
+                <span className="text-fg-tertiary">{tLoc('types.barn')}:</span>{' '}
                 <span className="font-medium">{getLocation(parentId)?.name}</span>
               </p>
             </div>
@@ -261,13 +280,13 @@ export function LocationForm({
           {(errors.species || errors.type || errors.parentId) && (
             <div className="space-y-1">
               {errors.species && (
-                <p className="text-sm text-destructive">{t('validation.speciesRequired')}</p>
+                <p className="text-sm text-error">{t('validation.speciesRequired')}</p>
               )}
               {errors.type && (
-                <p className="text-sm text-destructive">{t('validation.typeRequired')}</p>
+                <p className="text-sm text-error">{t('validation.typeRequired')}</p>
               )}
               {errors.parentId && (
-                <p className="text-sm text-destructive">{t('validation.parentRequired')}</p>
+                <p className="text-sm text-error">{t('validation.parentRequired')}</p>
               )}
             </div>
           )}
@@ -277,15 +296,17 @@ export function LocationForm({
             <LocationPicker
               coordinates={coordinates}
               address={address}
+              ruralAddress={ruralAddress}
               onCoordinatesChange={setCoordinates}
               onAddressChange={setAddress}
+              onRuralAddressChange={setRuralAddress}
             />
           )}
         </CardContent>
       </Card>
 
       {errors.submit && (
-        <p className="text-sm text-destructive text-center">{errors.submit}</p>
+        <p className="text-sm text-error text-center">{errors.submit}</p>
       )}
 
       <div className="flex gap-3">
@@ -293,9 +314,12 @@ export function LocationForm({
           type="button"
           variant="outline"
           onClick={() => {
+            if (onCancel) {
+              onCancel();
+              return;
+            }
             const redirectTo = sessionStorage.getItem('redirectAfterLocation');
             if (redirectTo) {
-              // Clear session storage and redirect to device wizard
               sessionStorage.removeItem('redirectAfterLocation');
               sessionStorage.removeItem('createBarnParentId');
               sessionStorage.removeItem('createPenParentId');
@@ -313,6 +337,6 @@ export function LocationForm({
           {isSubmitting ? <LoadingSpinner className="py-0" /> : tCommon('save')}
         </Button>
       </div>
-    </form>
+    </SafeForm>
   );
 }

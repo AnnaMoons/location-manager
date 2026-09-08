@@ -12,10 +12,24 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { CheckboxGroup } from '@/components/ui/checkbox';
-import { CreateBatchInput, BatchSex } from '@/lib/types/batch';
+import { CreateBatchInput, BatchSex, PenDistribution } from '@/lib/types/batch';
 import { Species, speciesHierarchies } from '@/lib/types/species';
 import { useLocations } from '@/lib/hooks/useLocations';
 import { Location } from '@/lib/types/location';
+
+// H-020: Typical cycle durations by species+sex (days)
+// H-043: Updated broiler durations per Germán's specification
+const CYCLE_DURATION: Record<string, Record<string, number>> = {
+  broilers: { male: 39, female: 35, mixed: 37 },
+  pigs: { male: 150, female: 150, mixed: 150 },
+  layers: { male: 504, female: 504, mixed: 504 },
+};
+
+function getDefaultCycleDays(species?: Species, sex?: string): number {
+  if (!species) return 90;
+  const speciesCycles = CYCLE_DURATION[species];
+  return speciesCycles?.[sex || 'mixed'] || 90;
+}
 
 interface BatchFormProps {
   initialData?: Partial<CreateBatchInput>;
@@ -33,6 +47,17 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
   );
   // Ref to suppress cascading resets when syncing from initialData
   const isSyncingRef = useRef(false);
+
+  // H-035: Auto-detect species when all farms share the same one
+  const allFarms = locations.filter((l) => l.type === 'farm');
+  const uniqueSpecies = Array.from(new Set(allFarms.map((f) => f.species)));
+  const singleSpecies = uniqueSpecies.length === 1 ? uniqueSpecies[0] : null;
+
+  useEffect(() => {
+    if (singleSpecies && !formData.species && !isSyncingRef.current) {
+      updateFormData({ species: singleSpecies as Species });
+    }
+  }, [singleSpecies]);
 
   const farms = formData.species
     ? filterBySpecies(formData.species).filter((l) => l.type === 'farm')
@@ -116,14 +141,17 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
     }
   }, [formData.barnIds]);
 
+  // H-020: Auto-suggest end date based on species+sex
+  // H-043: Update when sex changes to recalculate based on new duration
   useEffect(() => {
-    if (formData.startDate && !formData.estimatedEndDate) {
+    if (formData.startDate) {
+      const cycleDays = getDefaultCycleDays(formData.species, formData.sex);
       const startDate = new Date(formData.startDate);
       const estimatedEndDate = new Date(startDate);
-      estimatedEndDate.setDate(estimatedEndDate.getDate() + 90);
+      estimatedEndDate.setDate(estimatedEndDate.getDate() + cycleDays);
       updateFormData({ estimatedEndDate: estimatedEndDate.toISOString() });
     }
-  }, [formData.startDate]);
+  }, [formData.startDate, formData.sex, formData.species]);
 
   const farmOptions = farms.map((farm) => ({
     value: farm.id,
@@ -134,6 +162,11 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
     value: barn.id,
     label: barn.name,
   }));
+
+  // Single source of truth for species-specific field visibility, instead of repeating the
+  // same `formData.species === '...'` comparison at every conditional section below.
+  const isPigsSpecies = formData.species === 'pigs';
+  const isPoultrySpecies = formData.species === 'broilers' || formData.species === 'layers';
 
   return (
     <div className="space-y-6">
@@ -146,7 +179,7 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
           placeholder={t('namePlaceholder')}
         />
         {errors.name && (
-          <p className="text-sm text-destructive">{errors.name}</p>
+          <p className="text-sm text-error">{errors.name}</p>
         )}
       </div>
 
@@ -168,7 +201,7 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
           </SelectContent>
         </Select>
         {errors.species && (
-          <p className="text-sm text-destructive">{errors.species}</p>
+          <p className="text-sm text-error">{errors.species}</p>
         )}
       </div>
 
@@ -189,7 +222,7 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
             <SelectItem value="male">{t('sexMale')}</SelectItem>
           </SelectContent>
         </Select>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-fg-tertiary">
           {t('sexHint')}
         </p>
       </div>
@@ -200,12 +233,12 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
             <div className="flex items-center justify-between">
               <Label>{t('selectFarms')} (*)</Label>
               {formData.farmIds && formData.farmIds.length > 0 && (
-                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                <span className="text-xs bg-brand-primary/10 text-brand-primary px-2 py-1 rounded-full">
                   {formData.farmIds.length} {formData.farmIds.length === 1 ? 'granja' : 'granjas'}
                 </span>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mb-2">
+            <p className="text-xs text-fg-tertiary mb-2">
               {t('selectFarmsHint')}
             </p>
             <CheckboxGroup
@@ -214,7 +247,7 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
               onChange={(value) => updateFormData({ farmIds: value })}
             />
             {errors.farmIds && (
-              <p className="text-sm text-destructive">{errors.farmIds}</p>
+              <p className="text-sm text-error">{errors.farmIds}</p>
             )}
           </div>
 
@@ -223,12 +256,12 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
               <div className="flex items-center justify-between">
                 <Label>{t('selectBarns')} (*)</Label>
                 {formData.barnIds && formData.barnIds.length > 0 && (
-                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                  <span className="text-xs bg-brand-primary/10 text-brand-primary px-2 py-1 rounded-full">
                     {formData.barnIds.length} {formData.barnIds.length === 1 ? 'galpón' : 'galpones'}
                   </span>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground mb-2">
+              <p className="text-xs text-fg-tertiary mb-2">
                 {t('selectBarnsHint')}
               </p>
               <CheckboxGroup
@@ -237,7 +270,7 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
                 onChange={(value) => updateFormData({ barnIds: value })}
               />
               {errors.barnIds && (
-                <p className="text-sm text-destructive">{errors.barnIds}</p>
+                <p className="text-sm text-error">{errors.barnIds}</p>
               )}
             </div>
           )}
@@ -250,12 +283,12 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
                 <div className="flex items-center justify-between">
                   <Label>{t('selectPens')}</Label>
                   {formData.penIds && formData.penIds.length > 0 && (
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                    <span className="text-xs bg-brand-primary/10 text-brand-primary px-2 py-1 rounded-full">
                       {formData.penIds.length} {formData.penIds.length === 1 ? 'corral' : 'corrales'}
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground mb-2">
+                <p className="text-xs text-fg-tertiary mb-2">
                   {t('selectPensHint')}
                 </p>
                 <div className="space-y-4">
@@ -268,11 +301,11 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
                     return (
                       <div key={barnId} className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium text-muted-foreground">
+                          <p className="text-sm font-medium text-fg-tertiary">
                             {barn?.name}
                           </p>
                           {selectedPensInBarn > 0 && (
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-fg-tertiary">
                               {selectedPensInBarn}/{pens.length}
                             </span>
                           )}
@@ -284,7 +317,7 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
                               <div
                                 key={pen.id}
                                 className={`flex items-center gap-3 p-2 rounded-lg border transition-colors ${
-                                  isSelected ? 'border-primary bg-primary/5' : 'border-muted'
+                                  isSelected ? 'border-brand-primary bg-brand-primary/5' : 'border-surface-2'
                                 }`}
                               >
                                 <CheckboxGroup
@@ -316,7 +349,7 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
                   })}
                 </div>
                 {errors.penIds && (
-                  <p className="text-sm text-destructive">{errors.penIds}</p>
+                  <p className="text-sm text-error">{errors.penIds}</p>
                 )}
               </div>
             )}
@@ -335,56 +368,321 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
           }
           placeholder={t('animalCountPlaceholder')}
         />
+        <p className="text-xs text-fg-tertiary">{t('animalCountHint')}</p>
         {errors.animalCount && (
-          <p className="text-sm text-destructive">{errors.animalCount}</p>
+          <p className="text-sm text-error">{errors.animalCount}</p>
         )}
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="averageAgeAtStart">{t('averageAge')} (*)</Label>
-        <div className="flex gap-2 items-center">
-          <Input
-            id="averageAgeAtStart"
-            type="number"
-            min="0"
-            value={formData.averageAgeAtStart || ''}
-            onChange={(e) =>
-              updateFormData({
-                averageAgeAtStart: parseInt(e.target.value) || undefined,
-              })
-            }
-            placeholder={t('averageAgePlaceholder')}
-            className="flex-1"
-          />
-          <span className="text-sm text-muted-foreground">{t('days')}</span>
+      {/* H-022: Male/Female count for pigs (general breakdown) */}
+      {isPigsSpecies && (
+        <div className="space-y-3">
+          <div>
+            <Label>{t('sexBreakdownTitle')}</Label>
+            <p className="text-xs text-fg-tertiary mt-1">{t('sexBreakdownHint')}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="maleCount">{t('maleCount')}</Label>
+              <Input
+                id="maleCount"
+                type="number"
+                min="0"
+                value={formData.maleCount ?? ''}
+                onChange={(e) =>
+                  updateFormData({ maleCount: parseInt(e.target.value) || undefined })
+                }
+                placeholder="0"
+              />
+              {errors.maleCount && (
+                <p className="text-sm text-error">{errors.maleCount}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="femaleCount">{t('femaleCount')}</Label>
+              <Input
+                id="femaleCount"
+                type="number"
+                min="0"
+                value={formData.femaleCount ?? ''}
+                onChange={(e) =>
+                  updateFormData({ femaleCount: parseInt(e.target.value) || undefined })
+                }
+                placeholder="0"
+              />
+              {errors.femaleCount && (
+                <p className="text-sm text-error">{errors.femaleCount}</p>
+              )}
+            </div>
+          </div>
         </div>
-        {errors.averageAgeAtStart && (
-          <p className="text-sm text-destructive">{errors.averageAgeAtStart}</p>
-        )}
-      </div>
+      )}
 
-      <div className="space-y-2">
-        <Label htmlFor="startDate">{t('startDate')} (*)</Label>
-        <Input
-          id="startDate"
-          type="date"
-          value={
-            formData.startDate
-              ? new Date(formData.startDate).toISOString().split('T')[0]
-              : ''
-          }
-          onChange={(e) =>
-            updateFormData({
-              startDate: e.target.value
-                ? new Date(e.target.value).toISOString()
-                : undefined,
-            })
-          }
-        />
-        {errors.startDate && (
-          <p className="text-sm text-destructive">{errors.startDate}</p>
-        )}
-      </div>
+      {/* H-023: Initial weight for pigs */}
+      {isPigsSpecies && (
+        <div className="space-y-2">
+          <Label htmlFor="initialWeight">{t('initialWeight')}</Label>
+          <div className="flex gap-2 items-center">
+            <Input
+              id="initialWeight"
+              type="number"
+              min="0"
+              step="0.1"
+              value={formData.initialWeight ?? ''}
+              onChange={(e) =>
+                updateFormData({ initialWeight: parseFloat(e.target.value) || undefined })
+              }
+              placeholder={t('initialWeightPlaceholder')}
+              className="flex-1"
+            />
+            <span className="text-sm text-fg-tertiary">kg</span>
+          </div>
+          <p className="text-xs text-fg-tertiary">{t('initialWeightHint')}</p>
+          {errors.initialWeight && (
+            <p className="text-sm text-error">{errors.initialWeight}</p>
+          )}
+        </div>
+      )}
+
+      {/* H-022: Per-pen distribution for pigs with pens selected */}
+      {isPigsSpecies && formData.penIds && formData.penIds.length > 0 && (
+        <div className="space-y-3 p-4 rounded-lg border-2 border-brand-primary/20 bg-brand-primary/5">
+          <div>
+            <Label className="text-base">{t('penDistribution')}</Label>
+            <p className="text-xs text-fg-tertiary mt-1">{t('penDistributionHint')}</p>
+          </div>
+          <div className="space-y-3">
+            {formData.penIds.map((penId) => {
+              const pen = locations.find((l) => l.id === penId);
+              const existing = (formData.penDistribution || []).find((pd) => pd.penId === penId);
+              const totalAnimals = existing?.animalCount || 0;
+
+              return (
+                <div key={penId} className="p-4 rounded-lg border bg-surface shadow-sm space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-semibold">{pen?.name || penId}</Label>
+                    {totalAnimals > 0 && (
+                      <span className="text-xs bg-brand-primary/10 text-brand-primary px-2 py-1 rounded-full">
+                        {totalAnimals} {totalAnimals === 1 ? 'animal' : 'animales'}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <Label className="text-xs text-fg-tertiary">{t('animalsInPen')}</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        className="h-9 mt-1"
+                        value={existing?.animalCount ?? ''}
+                        onChange={(e) => {
+                          const dist = [...(formData.penDistribution || [])];
+                          const idx = dist.findIndex((pd) => pd.penId === penId);
+                          const entry: PenDistribution = {
+                            penId,
+                            animalCount: parseInt(e.target.value) || 0,
+                            sex: existing?.sex || 'mixed',
+                            initialWeight: existing?.initialWeight,
+                          };
+                          if (idx >= 0) dist[idx] = entry;
+                          else dist.push(entry);
+                          updateFormData({ penDistribution: dist });
+                        }}
+                        placeholder="0"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-fg-tertiary">{t('penSex')}</Label>
+                      <Select
+                        value={existing?.sex || 'mixed'}
+                        onValueChange={(value: BatchSex) => {
+                          const dist = [...(formData.penDistribution || [])];
+                          const idx = dist.findIndex((pd) => pd.penId === penId);
+                          const entry: PenDistribution = {
+                            penId,
+                            animalCount: existing?.animalCount || 0,
+                            sex: value,
+                            initialWeight: existing?.initialWeight,
+                          };
+                          if (idx >= 0) dist[idx] = entry;
+                          else dist.push(entry);
+                          updateFormData({ penDistribution: dist });
+                        }}
+                      >
+                        <SelectTrigger className="h-9 mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="mixed">{t('sexMixed')}</SelectItem>
+                          <SelectItem value="male">{t('sexMale')}</SelectItem>
+                          <SelectItem value="female">{t('sexFemale')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-fg-tertiary">{t('penWeightAvg')}</Label>
+                      <div className="flex gap-1 items-center mt-1">
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.1"
+                          className="h-9"
+                          placeholder="0.0"
+                          value={existing?.initialWeight ?? ''}
+                          onChange={(e) => {
+                            const dist = [...(formData.penDistribution || [])];
+                            const idx = dist.findIndex((pd) => pd.penId === penId);
+                            const entry: PenDistribution = {
+                              penId,
+                              animalCount: existing?.animalCount || 0,
+                              sex: existing?.sex || 'mixed',
+                              initialWeight: parseFloat(e.target.value) || undefined,
+                            };
+                            if (idx >= 0) dist[idx] = entry;
+                            else dist.push(entry);
+                            updateFormData({ penDistribution: dist });
+                          }}
+                        />
+                        <span className="text-xs text-fg-tertiary">kg</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Summary of distribution */}
+          {(() => {
+            const totalInPens = (formData.penDistribution || []).reduce(
+              (sum, pd) => sum + (pd.animalCount || 0),
+              0
+            );
+            const totalBatch = formData.animalCount || 0;
+            const hasOverflow = totalInPens > totalBatch;
+
+            return totalInPens > 0 ? (
+              <div className={`p-3 rounded-lg border ${hasOverflow ? 'border-error bg-error/5' : 'border-surface-2 bg-surface-2/30'}`}>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">{t('distributionSummary')}</span>
+                  <span className={`text-sm font-semibold ${hasOverflow ? 'text-error' : ''}`}>
+                    {totalInPens.toLocaleString()} / {totalBatch.toLocaleString()} {t('animals')}
+                  </span>
+                </div>
+                {hasOverflow && (
+                  <p className="text-xs text-error mt-1">{t('distributionOverflow')}</p>
+                )}
+              </div>
+            ) : null;
+          })()}
+
+          {errors.penDistribution && (
+            <p className="text-sm text-error">{errors.penDistribution}</p>
+          )}
+        </div>
+      )}
+
+      {/* H-042: For poultry, use arrival date and day 1 date instead of average age */}
+      {isPoultrySpecies ? (
+        <>
+          <div className="space-y-2">
+            <Label htmlFor="arrivalDate">{t('arrivalDate')} (*)</Label>
+            <Input
+              id="arrivalDate"
+              type="date"
+              value={
+                formData.arrivalDate
+                  ? new Date(formData.arrivalDate).toISOString().split('T')[0]
+                  : ''
+              }
+              onChange={(e) =>
+                updateFormData({
+                  arrivalDate: e.target.value
+                    ? new Date(e.target.value).toISOString()
+                    : undefined,
+                })
+              }
+            />
+            <p className="text-xs text-fg-tertiary">{t('arrivalDateHint')}</p>
+            {errors.arrivalDate && (
+              <p className="text-sm text-error">{errors.arrivalDate}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="startDate">{t('dayOneDate')} (*)</Label>
+            <Input
+              id="startDate"
+              type="date"
+              value={
+                formData.startDate
+                  ? new Date(formData.startDate).toISOString().split('T')[0]
+                  : ''
+              }
+              onChange={(e) =>
+                updateFormData({
+                  startDate: e.target.value
+                    ? new Date(e.target.value).toISOString()
+                    : undefined,
+                })
+              }
+            />
+            <p className="text-xs text-fg-tertiary">{t('dayOneDateHint')}</p>
+            {errors.startDate && (
+              <p className="text-sm text-error">{errors.startDate}</p>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="space-y-2">
+            <Label htmlFor="averageAgeAtStart">{t('averageAge')} (*)</Label>
+            <div className="flex gap-2 items-center">
+              <Input
+                id="averageAgeAtStart"
+                type="number"
+                min="0"
+                value={formData.averageAgeAtStart || ''}
+                onChange={(e) =>
+                  updateFormData({
+                    averageAgeAtStart: parseInt(e.target.value) || undefined,
+                  })
+                }
+                placeholder={t('averageAgePlaceholder')}
+                className="flex-1"
+              />
+              <span className="text-sm text-fg-tertiary">{t('days')}</span>
+            </div>
+            {errors.averageAgeAtStart && (
+              <p className="text-sm text-error">{errors.averageAgeAtStart}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="startDate">{t('startDate')} (*)</Label>
+            <Input
+              id="startDate"
+              type="date"
+              value={
+                formData.startDate
+                  ? new Date(formData.startDate).toISOString().split('T')[0]
+                  : ''
+              }
+              onChange={(e) =>
+                updateFormData({
+                  startDate: e.target.value
+                    ? new Date(e.target.value).toISOString()
+                    : undefined,
+                })
+              }
+            />
+            {errors.startDate && (
+              <p className="text-sm text-error">{errors.startDate}</p>
+            )}
+          </div>
+        </>
+      )}
 
       <div className="space-y-2">
         <Label htmlFor="estimatedEndDate">{t('estimatedEndDate')}</Label>
@@ -404,7 +702,11 @@ export function BatchForm({ initialData, onChange, errors }: BatchFormProps) {
             })
           }
         />
-        <p className="text-xs text-muted-foreground">{t('optional')}</p>
+        {isPoultrySpecies ? (
+          <p className="text-xs text-fg-tertiary">{t('estimatedEndDateHintPoultry')}</p>
+        ) : (
+          <p className="text-xs text-fg-tertiary">{t('optional')}</p>
+        )}
       </div>
     </div>
   );

@@ -60,7 +60,7 @@ export function NextActionCTA({ device, variant = 'button' }: NextActionCTAProps
 
   if (variant === 'inline') {
     return (
-      <Link href={href} className="flex items-center text-sm text-primary hover:underline">
+      <Link href={href} className="flex items-center text-sm text-brand-primary hover:underline">
         <Icon className="h-4 w-4 mr-1" />
         {t(labelKey)}
         <ChevronRight className="h-4 w-4" />
@@ -72,7 +72,8 @@ export function NextActionCTA({ device, variant = 'button' }: NextActionCTAProps
     return (
       <Link 
         href={href}
-        className="text-[#005980] hover:underline font-roboto text-xs leading-[20px] whitespace-nowrap"
+        className="text-brand-primary hover:underline font-roboto text-xs leading-5 whitespace-nowrap"
+        // dinámico: Tailwind no trae una utility para font-feature-settings
         style={{ fontFeatureSettings: '"liga" off, "clig" off' }}
       >
         {t(labelKey)}

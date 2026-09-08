@@ -3,28 +3,33 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Location, CreateLocationInput, UpdateLocationInput } from '../types/location';
 import { Device, DeviceConfig, DeviceState, DeviceHistoryEntry, DeviceHistoryAction } from '../types/device';
-import { Batch, CreateBatchInput, UpdateBatchInput, CloseBatchInput, SubBatch, CreateSubBatchInput } from '../types/batch';
+import { Batch, BatchStatus, CreateBatchInput, UpdateBatchInput, CloseBatchInput, SubBatch, CreateSubBatchInput } from '../types/batch';
 import { migrateAllBatches, needsBatchMigration } from '../utils/migration';
 import { validateDeviceInstallation } from '../utils/validation';
 import initialLocations from '../mock-data/locations.json';
 import initialDevices from '../mock-data/devices.json';
 import initialBatches from '../mock-data/batches.json';
 import initialSubBatches from '../mock-data/subbatches.json';
+import initialAlerts from '../mock-data/alerts.json';
+import { ConfiguredAlert } from '../types/alert';
 
 const STORAGE_KEY_LOCATIONS = 'smartfarm_locations';
 const STORAGE_KEY_DEVICES = 'smartfarm_devices';
 const STORAGE_KEY_BATCHES = 'smartfarm_batches';
 const STORAGE_KEY_SUB_BATCHES = 'smartfarm_subbatches';
+const STORAGE_KEY_ALERTS = 'smartfarm_alerts';
 const STORAGE_KEY_DATA_VERSION = 'smartfarm_data_version';
 
 // Increment this value to force a fresh reload from mock data
-const DATA_VERSION = 2;
+// v4: Ola 2 - arrivalDate for poultry, sub-batch status, dashboard improvements
+const DATA_VERSION = 5;
 
 interface DataContextType {
   locations: Location[];
   devices: Device[];
   batches: Batch[];
   subBatches: SubBatch[];
+  alerts: ConfiguredAlert[];
   isLoading: boolean;
   // Location operations
   createLocation: (input: CreateLocationInput) => Promise<Location>;
@@ -45,10 +50,15 @@ interface DataContextType {
   closeBatch: (id: string, input: CloseBatchInput) => Promise<Batch>;
   // SubBatch operations
   createSubBatch: (input: CreateSubBatchInput) => Promise<SubBatch>;
-  updateSubBatch: (id: string, input: Partial<CreateSubBatchInput>) => Promise<SubBatch>;
+  updateSubBatch: (id: string, input: Partial<CreateSubBatchInput> & { status?: BatchStatus }) => Promise<SubBatch>;
   deleteSubBatch: (id: string) => Promise<void>;
   getSubBatch: (id: string) => SubBatch | undefined;
   getSubBatchesByParent: (parentBatchId: string) => SubBatch[];
+  // Alert operations
+  createAlert: (alert: Omit<ConfiguredAlert, 'id' | 'createdAt' | 'updatedAt'>) => Promise<ConfiguredAlert>;
+  updateAlert: (id: string, updates: Partial<Omit<ConfiguredAlert, 'id' | 'createdAt'>>) => Promise<ConfiguredAlert>;
+  deleteAlert: (id: string) => Promise<void>;
+  getAlert: (id: string) => ConfiguredAlert | undefined;
   // Utility
   simulateDelay: () => Promise<void>;
 }
@@ -60,6 +70,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [devices, setDevices] = useState<Device[]>([]);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [subBatches, setSubBatches] = useState<SubBatch[]>([]);
+  const [alerts, setAlerts] = useState<ConfiguredAlert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load data from localStorage or use initial mock data
@@ -104,10 +115,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
         // Load subbatches
         const storedSubBatches = localStorage.getItem(STORAGE_KEY_SUB_BATCHES);
-        const loadedSubBatches = storedSubBatches 
-          ? JSON.parse(storedSubBatches) 
+        const loadedSubBatches = storedSubBatches
+          ? JSON.parse(storedSubBatches)
           : (initialSubBatches as SubBatch[]);
         setSubBatches(loadedSubBatches);
+
+        // Load alerts
+        const storedAlerts = localStorage.getItem(STORAGE_KEY_ALERTS);
+        setAlerts(storedAlerts ? JSON.parse(storedAlerts) : (initialAlerts as ConfiguredAlert[]));
       } catch {
         setLocations(initialLocations as Location[]);
         setDevices(initialDevices as Device[]);
@@ -118,6 +133,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         );
         setBatches(migratedBatches);
         setSubBatches(initialSubBatches as SubBatch[]);
+        setAlerts(initialAlerts as ConfiguredAlert[]);
       }
       setIsLoading(false);
     };
@@ -152,6 +168,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(STORAGE_KEY_SUB_BATCHES, JSON.stringify(subBatches));
     }
   }, [subBatches, isLoading]);
+
+  // Persist alerts to localStorage
+  useEffect(() => {
+    if (!isLoading) {
+      localStorage.setItem(STORAGE_KEY_ALERTS, JSON.stringify(alerts));
+    }
+  }, [alerts, isLoading]);
 
   const simulateDelay = () => new Promise<void>((resolve) => setTimeout(resolve, 300 + Math.random() * 200));
 
@@ -409,13 +432,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const newBatch: Batch = {
       id: `batch-${Date.now()}`,
       name: input.name,
-      species: input.sex === 'mixed' ? input.species : input.species,
+      species: input.species,
       sex: input.sex,
       farmIds: input.farmIds,
       barnIds: input.barnIds,
       penIds: input.penIds || [],
       animalCount: input.animalCount,
+      maleCount: input.maleCount,
+      femaleCount: input.femaleCount,
+      initialWeight: input.initialWeight,
+      penDistribution: input.penDistribution,
       averageAgeAtStart: input.averageAgeAtStart,
+      arrivalDate: input.arrivalDate,
       startDate: input.startDate,
       estimatedEndDate: input.estimatedEndDate,
       status: 'active',
@@ -523,7 +551,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return newSubBatch;
   };
 
-  const updateSubBatch = async (id: string, input: Partial<CreateSubBatchInput>): Promise<SubBatch> => {
+  const updateSubBatch = async (id: string, input: Partial<CreateSubBatchInput> & { status?: BatchStatus }): Promise<SubBatch> => {
     await simulateDelay();
 
     let updatedSubBatch: SubBatch | undefined;
@@ -581,6 +609,43 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return subBatches.filter((sb) => sb.parentBatchId === parentBatchId);
   };
 
+  const createAlert = async (input: Omit<ConfiguredAlert, 'id' | 'createdAt' | 'updatedAt'>): Promise<ConfiguredAlert> => {
+    await simulateDelay();
+    const newAlert: ConfiguredAlert = {
+      ...input,
+      id: `alert-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setAlerts((prev) => [...prev, newAlert]);
+    return newAlert;
+  };
+
+  const updateAlert = async (id: string, updates: Partial<Omit<ConfiguredAlert, 'id' | 'createdAt'>>): Promise<ConfiguredAlert> => {
+    await simulateDelay();
+    let updated: ConfiguredAlert | undefined;
+    setAlerts((prev) =>
+      prev.map((a) => {
+        if (a.id === id) {
+          updated = { ...a, ...updates, updatedAt: new Date().toISOString() };
+          return updated;
+        }
+        return a;
+      })
+    );
+    if (!updated) throw new Error('Alert not found');
+    return updated;
+  };
+
+  const deleteAlert = async (id: string): Promise<void> => {
+    await simulateDelay();
+    setAlerts((prev) => prev.filter((a) => a.id !== id));
+  };
+
+  const getAlert = (id: string): ConfiguredAlert | undefined => {
+    return alerts.find((a) => a.id === id);
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -588,6 +653,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         devices,
         batches,
         subBatches,
+        alerts,
         isLoading,
         createLocation,
         updateLocation,
@@ -608,6 +674,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
         deleteSubBatch,
         getSubBatch,
         getSubBatchesByParent,
+        createAlert,
+        updateAlert,
+        deleteAlert,
+        getAlert,
         simulateDelay,
       }}
     >

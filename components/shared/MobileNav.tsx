@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Home, MapPin, Cpu, Layers } from 'lucide-react';
+import { Home, MapPin, Cpu, Layers, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -11,6 +11,7 @@ const navItems = [
   { href: '/ubicaciones', icon: MapPin, labelKey: 'locations' },
   { href: '/lotes', icon: Layers, labelKey: 'batches' },
   { href: '/dispositivos', icon: Cpu, labelKey: 'devices' },
+  { href: '/alertas', icon: Bell, labelKey: 'alerts' },
 ];
 
 export function MobileNav() {
@@ -18,7 +19,7 @@ export function MobileNav() {
   const t = useTranslations('nav');
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-surface border-t border-line md:hidden">
       <div className="flex items-center justify-around">
         {navItems.map((item) => {
           const isActive = pathname === item.href ||
@@ -32,8 +33,8 @@ export function MobileNav() {
               className={cn(
                 'flex flex-col items-center justify-center py-3 px-4 min-w-[64px] touch-target transition-colors',
                 isActive
-                  ? 'text-primary'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'text-brand-primary'
+                  : 'text-fg-tertiary hover:text-fg'
               )}
             >
               <Icon className="h-6 w-6" />

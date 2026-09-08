@@ -25,10 +25,10 @@ export function DeviceTable({ devices }: DeviceTableProps) {
   }
 
   return (
-    <div className="border rounded-lg overflow-hidden">
+    <div className="border border-line rounded-md overflow-hidden">
       <Table>
         <TableHeader>
-          <TableRow className="bg-muted/50">
+          <TableRow className="bg-surface-2/50">
             <TableHead className="w-80">{t('deviceTable.device')}</TableHead>
             <TableHead className="w-28">{t('deviceTable.state')}</TableHead>
             <TableHead className="">{t('deviceTable.location')}</TableHead>
@@ -42,30 +42,30 @@ export function DeviceTable({ devices }: DeviceTableProps) {
             const locationPath = device.locationId ? getPath(device.locationId) : [];
             
             return (
-              <TableRow key={device.id} className="hover:bg-muted/30">
+              <TableRow key={device.id} className="hover:bg-surface-2/30">
                 {/* Dispositivo */}
                 <TableCell className="w-80">
                   <Link href={`/dispositivos/${device.id}`} className="block">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-primary/10">
-                        <DeviceIcon type={device.type} className="h-5 w-5 text-primary" />
+                      <div className="p-2 rounded-lg bg-brand-primary/10">
+                        <DeviceIcon type={device.type} className="h-5 w-5 text-brand-primary" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <p className="font-medium text-foreground">
+                          <p className="font-medium text-fg">
                             <SerialNumber serial={device.serialNumber} className="text-sm" />
                           </p>
-                          <span className="text-[10px] text-muted-foreground/70 font-mono">
+                          <span className="text-2xs text-fg-tertiary/70 font-mono">
                             ID: <SerialNumber serial={device.serialNumber} showShortId className="text-xs" />
                           </span>
                         </div>
                         <div className="mt-0.5">
                           {device.type === 'sensor' && device.configuration?.type === 'sensor' && (device.configuration as SensorConfig).sensorProfile ? (
-                            <span className="text-sm text-muted-foreground">
+                            <span className="text-sm text-fg-tertiary">
                               {SENSOR_PROFILE_LABELS[(device.configuration as SensorConfig).sensorProfile!]}
                             </span>
                           ) : (
-                            <span className="text-sm text-muted-foreground capitalize">
+                            <span className="text-sm text-fg-tertiary capitalize">
                               {t(`types.${device.type}`)}
                             </span>
                           )}
@@ -88,25 +88,25 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                 <TableCell className="">
                   {location ? (
                     <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                      <MapPin className="h-4 w-4 text-fg-tertiary flex-shrink-0" />
                       <span className="truncate" title={locationPath.map(l => l.name).join(' › ')}>
                         {locationPath.map((loc, index) => (
                           <span key={loc.id} className="inline-flex items-center">
                             <Link 
                               href={`/ubicaciones/${loc.id}`}
-                              className="hover:underline hover:text-primary"
+                              className="hover:underline hover:text-brand-primary"
                             >
                               {loc.name}
                             </Link>
                             {index < locationPath.length - 1 && (
-                              <span className="mx-0.5 text-muted-foreground/50">›</span>
+                              <span className="mx-0.5 text-fg-tertiary/50">›</span>
                             )}
                           </span>
                         ))}
                       </span>
                     </div>
                   ) : (
-                    <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-2 text-sm text-fg-tertiary">
                       <MapPin className="h-4 w-4 flex-shrink-0" />
                       {t('noLocation')}
                     </span>
@@ -118,7 +118,7 @@ export function DeviceTable({ devices }: DeviceTableProps) {
                   {device.lastMeasurement ? (
                     <LastMeasurement measurement={device.lastMeasurement} size="md" showIcon />
                   ) : (
-                    <span className="text-sm text-muted-foreground">-</span>
+                    <span className="text-sm text-fg-tertiary">-</span>
                   )}
                 </TableCell>
 

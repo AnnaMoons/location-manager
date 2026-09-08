@@ -62,7 +62,7 @@ export function DeviceQRCode({
             size === 'lg' && 'w-48 h-48'
           )}
         />
-        <p className="text-xs text-center text-muted-foreground font-mono">
+        <p className="text-xs text-center text-fg-tertiary font-mono">
           {serialNumber}
         </p>
       </div>
@@ -102,7 +102,7 @@ export function DeviceQRCode({
 
             {/* Serial Number */}
             <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-1">
+              <p className="text-sm text-fg-tertiary mb-1">
                 Número de serie
               </p>
               <p className="text-lg font-mono font-bold">
@@ -111,11 +111,11 @@ export function DeviceQRCode({
             </div>
 
             {/* Instructions */}
-            <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+            <div className="bg-surface-2/50 rounded-lg p-4 space-y-2">
               <p className="text-sm font-medium">
                 💡 Usos del código QR:
               </p>
-              <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
+              <ul className="text-sm text-fg-tertiary space-y-1 ml-4 list-disc">
                 <li>Escanear para identificar dispositivos sin leer el serial</li>
                 <li>Imprimir y pegar como etiqueta de respaldo</li>
                 <li>Acceso rápido desde dispositivos móviles</li>

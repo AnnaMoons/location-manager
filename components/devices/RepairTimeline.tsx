@@ -44,17 +44,17 @@ export function RepairTimeline({ currentSubState, compact = false }: RepairTimel
                 className={cn(
                   'flex items-center justify-center rounded-full',
                   'transition-all',
-                  isCurrent && 'w-7 h-7 bg-primary',
-                  isComplete && 'w-5 h-5 bg-primary/30',
-                  isPending && 'w-5 h-5 bg-muted'
+                  isCurrent && 'w-7 h-7 bg-brand-primary',
+                  isComplete && 'w-5 h-5 bg-brand-primary/30',
+                  isPending && 'w-5 h-5 bg-surface-2'
                 )}
               >
                 <Icon
                   className={cn(
                     'transition-all',
-                    isCurrent && 'h-4 w-4 text-primary-foreground',
-                    isComplete && 'h-3 w-3 text-primary',
-                    isPending && 'h-3 w-3 text-muted-foreground'
+                    isCurrent && 'h-4 w-4 text-brand-fg',
+                    isComplete && 'h-3 w-3 text-brand-primary',
+                    isPending && 'h-3 w-3 text-fg-tertiary'
                   )}
                 />
               </div>
@@ -62,7 +62,7 @@ export function RepairTimeline({ currentSubState, compact = false }: RepairTimel
                 <div
                   className={cn(
                     'w-6 h-0.5 mx-1',
-                    index < currentIndex ? 'bg-primary/30' : 'bg-muted'
+                    index < currentIndex ? 'bg-brand-primary/30' : 'bg-surface-2'
                   )}
                 />
               )}
@@ -88,17 +88,17 @@ export function RepairTimeline({ currentSubState, compact = false }: RepairTimel
               <div
                 className={cn(
                   'flex items-center justify-center rounded-full transition-all',
-                  isCurrent && 'w-8 h-8 bg-primary',
+                  isCurrent && 'w-8 h-8 bg-brand-primary',
                   isComplete && 'w-6 h-6 bg-success',
-                  isPending && 'w-6 h-6 bg-muted'
+                  isPending && 'w-6 h-6 bg-surface-2'
                 )}
               >
                 <Icon
                   className={cn(
                     'transition-all',
-                    isCurrent && 'h-4 w-4 text-primary-foreground',
+                    isCurrent && 'h-4 w-4 text-brand-fg',
                     isComplete && 'h-3.5 w-3.5 text-success-foreground',
-                    isPending && 'h-3.5 w-3.5 text-muted-foreground'
+                    isPending && 'h-3.5 w-3.5 text-fg-tertiary'
                   )}
                 />
               </div>
@@ -106,7 +106,7 @@ export function RepairTimeline({ currentSubState, compact = false }: RepairTimel
                 <div
                   className={cn(
                     'w-0.5 h-8 my-1',
-                    index < currentIndex ? 'bg-success' : 'bg-muted'
+                    index < currentIndex ? 'bg-success' : 'bg-surface-2'
                   )}
                 />
               )}
@@ -117,15 +117,15 @@ export function RepairTimeline({ currentSubState, compact = false }: RepairTimel
               <p
                 className={cn(
                   'text-sm font-medium transition-colors',
-                  isCurrent && 'text-foreground',
-                  isComplete && 'text-muted-foreground',
-                  isPending && 'text-muted-foreground/60'
+                  isCurrent && 'text-fg',
+                  isComplete && 'text-fg-tertiary',
+                  isPending && 'text-fg-tertiary/60'
                 )}
               >
                 {step.label}
               </p>
               {isCurrent && (
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-xs text-fg-tertiary mt-0.5">
                   Estado actual
                 </p>
               )}

@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { AlertCircle } from 'lucide-react';
 import { ScaleConfig } from '@/lib/types/device';
 
 interface ScaleConfigFormProps {
@@ -18,79 +19,25 @@ interface ScaleConfigFormProps {
   errors: Record<string, string>;
 }
 
-export function ScaleConfigForm({
-  config,
-  onChange,
-  errors,
-}: ScaleConfigFormProps) {
+export function ScaleConfigForm({ config, onChange, errors }: ScaleConfigFormProps) {
   const t = useTranslations('devices.configuration.scale');
 
   const updateConfig = (updates: Partial<ScaleConfig>) => {
     onChange({ ...config, ...updates, type: 'scale' });
   };
 
+  const unit = config.unit || 'kg';
+
   return (
     <div className="space-y-6">
-      {/* Max Weight */}
-      <div className="space-y-2">
-        <Label htmlFor="maxWeight">{t('maxWeight')}</Label>
-        <div className="flex gap-2">
-          <Input
-            id="maxWeight"
-            type="number"
-            min="0"
-            step="10"
-            placeholder="500"
-            value={config.maxWeight || ''}
-            onChange={(e) =>
-              updateConfig({ maxWeight: parseFloat(e.target.value) || undefined })
-            }
-            className={errors.maxWeight ? 'border-destructive' : ''}
-          />
-          <span className="flex items-center text-sm text-muted-foreground w-12">
-            {config.unit || 'kg'}
-          </span>
-        </div>
-        <p className="text-xs text-muted-foreground">{t('maxWeightDesc')}</p>
-        {errors.maxWeight && (
-          <p className="text-sm text-destructive">{errors.maxWeight}</p>
-        )}
-      </div>
-
-      {/* Tare Weight */}
-      <div className="space-y-2">
-        <Label htmlFor="tareWeight">{t('tareWeight')}</Label>
-        <div className="flex gap-2">
-          <Input
-            id="tareWeight"
-            type="number"
-            min="0"
-            step="0.1"
-            placeholder="0"
-            value={config.tareWeight ?? ''}
-            onChange={(e) =>
-              updateConfig({ tareWeight: parseFloat(e.target.value) || 0 })
-            }
-            className={errors.tareWeight ? 'border-destructive' : ''}
-          />
-          <span className="flex items-center text-sm text-muted-foreground w-12">
-            {config.unit || 'kg'}
-          </span>
-        </div>
-        <p className="text-xs text-muted-foreground">{t('tareWeightDesc')}</p>
-        {errors.tareWeight && (
-          <p className="text-sm text-destructive">{errors.tareWeight}</p>
-        )}
-      </div>
-
-      {/* Unit */}
+      {/* Unit — first, so max/tare inputs show the right unit */}
       <div className="space-y-2">
         <Label>{t('unit')}</Label>
         <Select
-          value={config.unit || 'kg'}
+          value={unit}
           onValueChange={(value: 'kg' | 'lb') => updateConfig({ unit: value })}
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-40">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -99,7 +46,72 @@ export function ScaleConfigForm({
           </SelectContent>
         </Select>
         {errors.unit && (
-          <p className="text-sm text-destructive">{errors.unit}</p>
+          <div className="flex items-center gap-1.5 text-sm text-error">
+            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+            {errors.unit}
+          </div>
+        )}
+      </div>
+
+      {/* Max Weight */}
+      <div className="space-y-2">
+        <Label htmlFor="maxWeight">
+          {t('maxWeight')}
+          <span className="text-error ml-1">*</span>
+        </Label>
+        <p className="text-xs text-fg-tertiary">{t('maxWeightDesc')}</p>
+        <div className="flex gap-2">
+          <Input
+            id="maxWeight"
+            type="number"
+            min="0"
+            step="10"
+            placeholder="500"
+            value={config.maxWeight ?? ''}
+            onChange={(e) => {
+              const val = parseFloat(e.target.value);
+              updateConfig({ maxWeight: isNaN(val) ? undefined : val });
+            }}
+            className={`flex-1 ${errors.maxWeight ? 'border-error' : ''}`}
+          />
+          <span className="flex items-center text-sm text-fg-tertiary w-10">{unit}</span>
+        </div>
+        {errors.maxWeight && (
+          <div className="flex items-center gap-1.5 text-sm text-error">
+            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+            {errors.maxWeight}
+          </div>
+        )}
+      </div>
+
+      {/* Tare Weight */}
+      <div className="space-y-2">
+        <Label htmlFor="tareWeight">
+          {t('tareWeight')}
+          <span className="text-error ml-1">*</span>
+        </Label>
+        <p className="text-xs text-fg-tertiary">{t('tareWeightDesc')}</p>
+        <div className="flex gap-2">
+          <Input
+            id="tareWeight"
+            type="number"
+            min="0"
+            step="0.1"
+            placeholder="0"
+            value={config.tareWeight ?? ''}
+            onChange={(e) => {
+              const val = parseFloat(e.target.value);
+              updateConfig({ tareWeight: isNaN(val) ? undefined : val });
+            }}
+            className={`flex-1 ${errors.tareWeight ? 'border-error' : ''}`}
+          />
+          <span className="flex items-center text-sm text-fg-tertiary w-10">{unit}</span>
+        </div>
+        {errors.tareWeight && (
+          <div className="flex items-center gap-1.5 text-sm text-error">
+            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+            {errors.tareWeight}
+          </div>
         )}
       </div>
 

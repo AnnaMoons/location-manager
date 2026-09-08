@@ -15,18 +15,18 @@ export function DeviceMiniCard({ device, className }: DeviceMiniCardProps) {
     <Link 
       href={`/dispositivos/${device.id}`}
       className={cn(
-        "block p-4 rounded-lg border bg-card hover:border-primary hover:shadow-sm transition-all",
+        "block p-4 rounded-lg border bg-card-bg hover:border-brand-primary hover:shadow-sm transition-all",
         className
       )}
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-surface-2 flex items-center justify-center">
             <DeviceIcon type={device.type} className="w-5 h-5" />
           </div>
           <div>
             <p className="font-medium text-sm">{device.serialNumber}</p>
-            <p className="text-xs text-muted-foreground capitalize">
+            <p className="text-xs text-fg-tertiary capitalize">
               {device.type}
             </p>
           </div>
@@ -35,14 +35,14 @@ export function DeviceMiniCard({ device, className }: DeviceMiniCardProps) {
       </div>
       
       {device.locationId && (
-        <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+        <div className="mt-3 flex items-center gap-1.5 text-xs text-fg-tertiary">
           <MapPin className="w-3 h-3" />
           <span className="truncate">{device.locationId}</span>
         </div>
       )}
       
       {device.lastSeen && (
-        <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+        <div className="mt-1 flex items-center gap-1.5 text-xs text-fg-tertiary">
           <Activity className="w-3 h-3" />
           <span>Última vez: {formatLastSeen(device.lastSeen)}</span>
         </div>

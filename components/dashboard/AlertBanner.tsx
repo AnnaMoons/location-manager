@@ -15,9 +15,9 @@ interface AlertBannerProps {
 }
 
 const variantStyles = {
-  warning: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-  error: 'bg-red-50 border-red-200 text-red-800',
-  info: 'bg-blue-50 border-blue-200 text-blue-800',
+  warning: 'bg-warning-light border-warning text-warning-dark',
+  error: 'bg-error-light border-error text-error',
+  info: 'bg-surface-blue border-brand-primary/30 text-brand-primary',
 };
 
 export function AlertBanner({
@@ -34,15 +34,15 @@ export function AlertBanner({
   return (
     <div
       className={cn(
-        'rounded-lg border p-4 flex items-center gap-3',
+        'rounded-lg border px-4 py-2.5 flex items-center gap-2.5',
         variantStyles[variant]
       )}
     >
-      <AlertTriangle className="h-5 w-5 shrink-0" />
-      <p className="flex-1 text-sm font-medium">{message}</p>
+      <AlertTriangle className="h-4 w-4 shrink-0" />
+      <p className="flex-1 text-sm">{message}</p>
       {actionLabel && actionHref && (
         <Link href={actionHref}>
-          <Button size="sm" variant="outline" className="shrink-0">
+          <Button size="sm" variant="outline" className="shrink-0 h-7 text-xs px-3">
             {actionLabel}
           </Button>
         </Link>

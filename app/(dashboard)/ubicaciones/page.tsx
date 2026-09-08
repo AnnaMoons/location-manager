@@ -25,12 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import Popover, { POPOVER_ITEM, POPOVER_SECTION } from '@/components/ui/popover';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { LoadingState } from '@/components/shared/LoadingState';
@@ -54,9 +49,9 @@ interface AddModalTarget {
 /* ─── Species config ───────────────────────────────────────── */
 
 const SPECIES_BADGE_STYLES: Record<Species, string> = {
-  pigs: 'bg-asimetrix-accent-pink text-foreground',
-  broilers: 'bg-asimetrix-accent-mint text-foreground',
-  layers: 'bg-asimetrix-accent-steel text-foreground',
+  pigs: 'bg-product-pigvision text-fg',
+  broilers: 'bg-primitive-mint-500 text-fg',
+  layers: 'bg-surface-blue-2 text-fg',
 };
 
 /* ─── Device display config ────────────────────────────────── */
@@ -69,17 +64,17 @@ type DeviceChipDef = {
 };
 
 const SENSOR_PROFILE_CHIP: Record<SensorProfile, DeviceChipDef> = {
-  temp_humidity:       { label: 'T+H',       icon: Thermometer, bg: 'bg-accent',                   text: 'text-primary' },
-  temp_humidity_co2:   { label: 'T+H+CO₂',   icon: Wind,        bg: 'bg-asimetrix-accent-mint',     text: 'text-foreground' },
-  temp_humidity_nh3:   { label: 'T+H+NH₃',   icon: Wind,        bg: 'bg-asimetrix-accent-pink',     text: 'text-foreground' },
-  temp_humidity_light: { label: 'T+H+Luz',   icon: Sun,         bg: 'bg-asimetrix-accent-steel',    text: 'text-foreground' },
+  temp_humidity:       { label: 'T+H',       icon: Thermometer, bg: 'bg-surface-blue',                   text: 'text-brand-primary' },
+  temp_humidity_co2:   { label: 'T+H+CO₂',   icon: Wind,        bg: 'bg-primitive-mint-500',     text: 'text-fg' },
+  temp_humidity_nh3:   { label: 'T+H+NH₃',   icon: Wind,        bg: 'bg-product-pigvision',     text: 'text-fg' },
+  temp_humidity_light: { label: 'T+H+Luz',   icon: Sun,         bg: 'bg-surface-blue-2',    text: 'text-fg' },
 };
 
 const DEVICE_TYPE_CHIP: Record<string, DeviceChipDef> = {
-  sensor:    { label: 'Sensor',    icon: Thermometer, bg: 'bg-accent',                text: 'text-primary' },
-  pigvision: { label: 'PigVision', icon: Camera,      bg: 'bg-asimetrix-accent-pink', text: 'text-foreground' },
-  scale:     { label: 'Báscula',   icon: Weight,      bg: 'bg-asimetrix-accent-steel',text: 'text-foreground' },
-  gateway:   { label: 'Gateway',   icon: Wifi,        bg: 'bg-muted',                 text: 'text-muted-foreground' },
+  sensor:    { label: 'Sensor',    icon: Thermometer, bg: 'bg-surface-blue',                text: 'text-brand-primary' },
+  pigvision: { label: 'PigVision', icon: Camera,      bg: 'bg-product-pigvision', text: 'text-fg' },
+  scale:     { label: 'Báscula',   icon: Weight,      bg: 'bg-surface-blue-2',text: 'text-fg' },
+  gateway:   { label: 'Gateway',   icon: Wifi,        bg: 'bg-surface-2',                 text: 'text-fg-tertiary' },
 };
 
 type DeviceGroup = DeviceChipDef & { count: number };
@@ -101,7 +96,7 @@ function groupDevices(devices: Device[]): DeviceGroup[] {
       }
     } else {
       key = d.type;
-      chip = DEVICE_TYPE_CHIP[d.type] ?? { label: d.type, icon: Cpu, bg: 'bg-muted', text: 'text-muted-foreground' };
+      chip = DEVICE_TYPE_CHIP[d.type] ?? { label: d.type, icon: Cpu, bg: 'bg-surface-2', text: 'text-fg-tertiary' };
     }
 
     const existing = map.get(key);
@@ -210,7 +205,7 @@ export default function LocationsPage() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-tertiary" />
           <Input
             placeholder={t('searchPlaceholder')}
             value={searchQuery}
@@ -322,23 +317,23 @@ function FarmCard({
     : null;
 
   return (
-    <Card className="overflow-hidden border-l-4 border-l-primary">
+    <Card className="overflow-hidden border-l-4 border-l-brand-primary">
       {/* Farm header */}
       <div className="flex items-start px-4 py-4 gap-3 group/header">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="p-1.5 shrink-0 mt-0.5 rounded-md bg-muted/50 hover:bg-accent hover:border-primary/30 border border-border/50 transition-all group cursor-pointer shadow-sm hover:shadow"
+          className="p-1.5 shrink-0 mt-0.5 rounded-md bg-surface-2/50 hover:bg-surface-blue hover:border-brand-primary/30 border border-line/50 transition-all group cursor-pointer shadow-sm hover:shadow"
           aria-label={isExpanded ? "Contraer granja" : "Expandir granja"}
           title={`Clic para ${isExpanded ? 'contraer' : 'expandir'}`}
         >
           {isExpanded ? (
-            <ChevronDown className="h-6 w-6 text-foreground group-hover:text-primary group-hover:scale-110 transition-all" />
+            <ChevronDown className="h-6 w-6 text-fg group-hover:text-brand-primary group-hover:scale-110 transition-all" />
           ) : (
-            <ChevronRight className="h-6 w-6 text-foreground group-hover:text-primary group-hover:scale-110 transition-all" />
+            <ChevronRight className="h-6 w-6 text-fg group-hover:text-brand-primary group-hover:scale-110 transition-all" />
           )}
         </button>
 
-        <MapPin className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5 group-hover/header:text-primary transition-colors" />
+        <MapPin className="h-5 w-5 text-fg-tertiary shrink-0 mt-0.5 group-hover/header:text-brand-primary transition-colors" />
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -349,24 +344,24 @@ function FarmCard({
               {farm.name}
             </Link>
             <Badge
-              className={`text-[11px] font-medium border-0 ${SPECIES_BADGE_STYLES[farm.species]}`}
+              className={`text-micro font-medium border-0 ${SPECIES_BADGE_STYLES[farm.species]}`}
             >
               {t(`species.${farm.species}`)}
             </Badge>
           </div>
           {address && (
-            <p className="text-sm text-muted-foreground mt-0.5 truncate">
+            <p className="text-sm text-fg-tertiary mt-0.5 truncate">
               {address}
             </p>
           )}
 
           {/* Farm operational summary */}
           {(avgTemp !== null || totalAnimals > 0) && (
-            <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5 text-xs text-muted-foreground">
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5 text-xs text-fg-tertiary">
               {avgTemp !== null && (
                 <span className="flex items-center gap-1">
                   <Thermometer className="h-3 w-3" />
-                  <span className="font-medium text-foreground tabular-nums">
+                  <span className="font-medium text-fg tabular-nums">
                     {avgTemp}°C promedio
                   </span>
                 </span>
@@ -374,7 +369,7 @@ function FarmCard({
 
               {totalAnimals > 0 && (
                 <span className="flex items-center gap-1">
-                  <span className="font-medium text-foreground">
+                  <span className="font-medium text-fg">
                     {totalAnimals} animales
                   </span>
                 </span>
@@ -390,23 +385,23 @@ function FarmCard({
         <div className="flex items-center gap-3 shrink-0">
           {/* Consolidated stats */}
           {barnCount > 0 && (
-            <span className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
+            <span className="flex items-center gap-1 text-xs text-fg-tertiary whitespace-nowrap">
               <Warehouse className="h-3.5 w-3.5" />
-              <span className="font-medium text-foreground">{barnCount}</span>
+              <span className="font-medium text-fg">{barnCount}</span>
               {t('barnCount', { count: barnCount }).replace(`${barnCount} `, '')}
             </span>
           )}
           {totalPens > 0 && penType && (
-            <span className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
+            <span className="flex items-center gap-1 text-xs text-fg-tertiary whitespace-nowrap">
               <Fence className="h-3.5 w-3.5" />
-              <span className="font-medium text-foreground">{totalPens}</span>
+              <span className="font-medium text-fg">{totalPens}</span>
               {penLabel.replace(`${totalPens} `, '')}
             </span>
           )}
           {totalDevices > 0 && (
-            <span className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
+            <span className="flex items-center gap-1 text-xs text-fg-tertiary whitespace-nowrap">
               <Cpu className="h-3.5 w-3.5" />
-              <span className="font-medium text-foreground">{totalDevices}</span>
+              <span className="font-medium text-fg">{totalDevices}</span>
               dispositivos
             </span>
           )}
@@ -423,7 +418,7 @@ function FarmCard({
 
           {/* Add barn */}
           <button
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors py-2 pl-3"
+            className="flex items-center gap-2 text-sm text-fg-tertiary hover:text-fg transition-colors py-2 pl-3"
             onClick={() => onAddChild({ parentId: farm.id, type: 'barn', species: farm.species, title: t('addBarnAction') })}
           >
             <Plus className="h-4 w-4" />
@@ -475,27 +470,27 @@ function BarnRow({
     : null;
 
   return (
-    <div className="rounded-lg border border-l-[3px] border-l-secondary">
+    <div className="rounded-lg border border-l-[3px] border-l-brand-accent">
       {/* Barn header */}
       <div className="flex items-start px-3 py-3 gap-2 group/header">
         {canAddChildren && penCount > 0 ? (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 shrink-0 mt-0.5 rounded-md bg-muted/50 hover:bg-accent hover:border-primary/30 border border-border/50 transition-all group cursor-pointer shadow-sm hover:shadow"
+            className="p-1 shrink-0 mt-0.5 rounded-md bg-surface-2/50 hover:bg-surface-blue hover:border-brand-primary/30 border border-line/50 transition-all group cursor-pointer shadow-sm hover:shadow"
             aria-label={isExpanded ? "Contraer galpón" : "Expandir galpón"}
             title={`Clic para ${isExpanded ? 'contraer' : 'expandir'}`}
           >
             {isExpanded ? (
-              <ChevronDown className="h-5 w-5 text-foreground group-hover:text-primary group-hover:scale-110 transition-all" />
+              <ChevronDown className="h-5 w-5 text-fg group-hover:text-brand-primary group-hover:scale-110 transition-all" />
             ) : (
-              <ChevronRight className="h-5 w-5 text-foreground group-hover:text-primary group-hover:scale-110 transition-all" />
+              <ChevronRight className="h-5 w-5 text-fg group-hover:text-brand-primary group-hover:scale-110 transition-all" />
             )}
           </button>
         ) : (
           <div className="w-7 shrink-0" />
         )}
 
-        <Warehouse className="h-4 w-4 text-primary shrink-0 mt-0.5 group-hover/header:text-primary/80 transition-colors" />
+        <Warehouse className="h-4 w-4 text-brand-primary shrink-0 mt-0.5 group-hover/header:text-brand-primary/80 transition-colors" />
 
         <div className="flex-1 min-w-0">
           <Link
@@ -507,11 +502,11 @@ function BarnRow({
 
           {/* Barn operational summary */}
           {(avgTemp !== null || totalAnimals > 0) && (
-            <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1 text-xs text-muted-foreground">
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1 text-xs text-fg-tertiary">
               {avgTemp !== null && (
                 <span className="flex items-center gap-1">
                   <Thermometer className="h-3 w-3" />
-                  <span className="font-medium text-foreground tabular-nums">
+                  <span className="font-medium text-fg tabular-nums">
                     {avgTemp}°C
                   </span>
                 </span>
@@ -519,7 +514,7 @@ function BarnRow({
 
               {totalAnimals > 0 && (
                 <span className="flex items-center gap-1">
-                  <span className="font-medium text-foreground">
+                  <span className="font-medium text-fg">
                     {totalAnimals} animales
                   </span>
                 </span>
@@ -534,13 +529,13 @@ function BarnRow({
 
         <div className="flex items-center gap-2 ml-2 shrink-0">
           {totalBarnDevices > 0 && (
-            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1 text-xs text-fg-tertiary">
               <Cpu className="h-3.5 w-3.5" />
               {totalBarnDevices}
             </span>
           )}
           {penCount > 0 && (
-            <Badge className="text-[11px] whitespace-nowrap bg-secondary text-secondary-foreground hover:bg-secondary/80">
+            <Badge className="text-micro whitespace-nowrap bg-surface-2 text-fg hover:bg-surface-2/80">
               {countLabel}
             </Badge>
           )}
@@ -562,7 +557,7 @@ function BarnRow({
       {canAddChildren && (
         <div className="mx-3 mb-3">
           <button
-            className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5 pl-2"
+            className="flex items-center gap-2 text-xs text-fg-tertiary hover:text-fg transition-colors py-1.5 pl-2"
             onClick={() => onAddChild({
               parentId: barn.id,
               type: childType ?? 'pen',
@@ -609,7 +604,7 @@ function PenRow({ pen, devices, batches }: { pen: LocationWithChildren; devices:
     : null;
 
   return (
-    <div className="flex items-start py-2 px-3 rounded-md border border-l-[3px] border-l-info">
+    <div className="flex items-start py-2 px-3 rounded-md border border-l-[3px] border-l-surface-blue">
       <Fence className="h-3.5 w-3.5 text-success mr-2 shrink-0 mt-0.5" />
 
       <div className="flex-1 min-w-0">
@@ -621,11 +616,11 @@ function PenRow({ pen, devices, batches }: { pen: LocationWithChildren; devices:
         </Link>
 
         {/* Operational summary */}
-        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs text-muted-foreground">
+        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs text-fg-tertiary">
           {currentTemp && (
             <span className="flex items-center gap-1" title={sensorProfile ? `Sensor: ${SENSOR_PROFILE_SHORT_LABELS[sensorProfile]}` : 'Temperatura actual'}>
               <Thermometer className="h-3 w-3" />
-              <span className="font-medium text-foreground tabular-nums">
+              <span className="font-medium text-fg tabular-nums">
                 {currentTemp.value}°C
               </span>
             </span>
@@ -634,7 +629,7 @@ function PenRow({ pen, devices, batches }: { pen: LocationWithChildren; devices:
           {currentWeight && (
             <span className="flex items-center gap-1">
               <Weight className="h-3 w-3" />
-              <span className="font-medium text-foreground tabular-nums">
+              <span className="font-medium text-fg tabular-nums">
                 {currentWeight.toFixed(1)} kg
               </span>
             </span>
@@ -642,7 +637,7 @@ function PenRow({ pen, devices, batches }: { pen: LocationWithChildren; devices:
 
           {animalCount && (
             <span className="flex items-center gap-1">
-              <span className="font-medium text-foreground">
+              <span className="font-medium text-fg">
                 {animalCount} {sex === 'male' ? '♂ machos' : sex === 'female' ? '♀ hembras' : sex === 'mixed' ? 'animales' : 'animales'}
               </span>
             </span>
@@ -650,7 +645,7 @@ function PenRow({ pen, devices, batches }: { pen: LocationWithChildren; devices:
 
           {daysInPen !== null && (
             <span className="flex items-center gap-1">
-              <span className="font-medium text-foreground">
+              <span className="font-medium text-fg">
                 {daysInPen} días
               </span>
             </span>
@@ -665,7 +660,7 @@ function PenRow({ pen, devices, batches }: { pen: LocationWithChildren; devices:
           )}
 
           {weightDevice && (
-            <span className="flex items-center gap-1 font-mono text-[10px]">
+            <span className="flex items-center gap-1 font-mono text-2xs">
               {weightDevice.serialNumber}
             </span>
           )}
@@ -678,7 +673,7 @@ function PenRow({ pen, devices, batches }: { pen: LocationWithChildren; devices:
 
       <div className="flex items-center gap-2 ml-2 shrink-0">
         {devices.length > 0 && (
-          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1 text-xs text-fg-tertiary">
             <Cpu className="h-3 w-3" />
             {devices.length}
           </span>
@@ -695,21 +690,19 @@ function LocationMenu({ locationId }: { locationId: string }) {
   const t = useTranslations('locations');
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className="p-1 rounded-md hover:bg-muted transition-colors">
-          <MoreVertical className="h-4 w-4 text-muted-foreground" />
+    <Popover
+      trigger={
+        <button className="p-1 rounded-md hover:bg-surface-2 transition-colors">
+          <MoreVertical className="h-4 w-4 text-fg-tertiary" />
         </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem asChild>
-          <Link href={`/ubicaciones/${locationId}`}>{t('viewDetails')}</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href={`/ubicaciones/${locationId}/editar`}>{t('edit')}</Link>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      }
+      position="bottom"
+    >
+      <div className={POPOVER_SECTION}>
+        <Link href={`/ubicaciones/${locationId}`} className={POPOVER_ITEM}>{t('viewDetails')}</Link>
+        <Link href={`/ubicaciones/${locationId}/editar`} className={POPOVER_ITEM}>{t('edit')}</Link>
+      </div>
+    </Popover>
   );
 }
 
@@ -722,7 +715,7 @@ function getDeviceChip(device: Device): DeviceChipDef {
     const profile = (device.configuration as SensorConfig).sensorProfile;
     if (profile && SENSOR_PROFILE_CHIP[profile]) return SENSOR_PROFILE_CHIP[profile];
   }
-  return DEVICE_TYPE_CHIP[device.type] ?? { label: device.type, icon: Cpu, bg: 'bg-muted', text: 'text-muted-foreground' };
+  return DEVICE_TYPE_CHIP[device.type] ?? { label: device.type, icon: Cpu, bg: 'bg-surface-2', text: 'text-fg-tertiary' };
 }
 
 function DeviceChips({ devices }: { devices: Device[] }) {
@@ -746,7 +739,7 @@ function DeviceChips({ devices }: { devices: Device[] }) {
         );
       })}
       {overflow > 0 && (
-        <span className="inline-flex items-center text-xs text-muted-foreground bg-muted rounded-md px-2 py-0.5">
+        <span className="inline-flex items-center text-xs text-fg-tertiary bg-surface-2 rounded-md px-2 py-0.5">
           +{overflow}
         </span>
       )}

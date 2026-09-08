@@ -43,80 +43,88 @@ export function getAvailableTransitions(from: DeviceState): StateTransition[] {
   return validTransitions.filter((t) => t.from === from);
 }
 
+/**
+ * 12 lifecycle states need 12 visually distinct treatments, but the DS's semantic layer only
+ * defines 3 state colors (success/warning/error) plus brand-primary/brand-accent — not enough
+ * to keep every state distinguishable. States with a clear positive/negative meaning use those
+ * semantic tokens; the purely-neutral in-between states borrow named DS *primitive* scales
+ * (still real, documented DS colors — see vendor/asimetrix-ds/app/globals.css primitives layer)
+ * instead of generic Tailwind palette colors that have no relationship to the DS at all.
+ */
 export const stateColors: Record<DeviceState, { bg: string; text: string; border: string }> = {
   unassigned: {
-    bg: 'bg-slate-100 hover:bg-slate-100',
-    text: 'text-slate-600 hover:text-slate-600',
-    border: 'border-slate-300',
+    bg: 'bg-surface-2 hover:bg-surface-2',
+    text: 'text-fg-tertiary hover:text-fg-tertiary',
+    border: 'border-line',
   },
   available: {
-    bg: 'bg-gray-100 hover:bg-gray-100',
-    text: 'text-gray-600 hover:text-gray-600',
-    border: 'border-gray-300',
+    bg: 'bg-surface-2 hover:bg-surface-2',
+    text: 'text-fg-secondary hover:text-fg-secondary',
+    border: 'border-line',
   },
   registered: {
-    bg: 'bg-blue-100 hover:bg-blue-100',
-    text: 'text-blue-700 hover:text-blue-700',
-    border: 'border-blue-300',
+    bg: 'bg-brand-primary/10 hover:bg-brand-primary/10',
+    text: 'text-brand-primary hover:text-brand-primary',
+    border: 'border-brand-primary/30',
   },
   installed: {
-    bg: 'bg-cyan-100 hover:bg-cyan-100',
-    text: 'text-cyan-700 hover:text-cyan-700',
-    border: 'border-cyan-300',
+    bg: 'bg-primitive-mistblue-100 hover:bg-primitive-mistblue-100',
+    text: 'text-primitive-mistblue-900 hover:text-primitive-mistblue-900',
+    border: 'border-primitive-mistblue-500',
   },
   configured: {
-    bg: 'bg-violet-100 hover:bg-violet-100',
-    text: 'text-violet-700 hover:text-violet-700',
-    border: 'border-violet-300',
+    bg: 'bg-primitive-indigo-100 hover:bg-primitive-indigo-100',
+    text: 'text-primitive-indigo-700 hover:text-primitive-indigo-700',
+    border: 'border-primitive-indigo-300',
   },
   in_production: {
-    bg: 'bg-emerald-100 hover:bg-emerald-100',
-    text: 'text-emerald-700 hover:text-emerald-700',
-    border: 'border-emerald-300',
+    bg: 'bg-success-light hover:bg-success-light',
+    text: 'text-success hover:text-success',
+    border: 'border-success/40',
   },
   production: {
-    bg: 'bg-green-100 hover:bg-green-100',
-    text: 'text-green-700 hover:text-green-700',
-    border: 'border-green-300',
+    bg: 'bg-success-light hover:bg-success-light',
+    text: 'text-success hover:text-success',
+    border: 'border-success/40',
   },
   maintenance: {
-    bg: 'bg-amber-100 hover:bg-amber-100',
-    text: 'text-amber-700 hover:text-amber-700',
-    border: 'border-amber-300',
+    bg: 'bg-warning-light hover:bg-warning-light',
+    text: 'text-warning-dark hover:text-warning-dark',
+    border: 'border-warning',
   },
   disabled: {
-    bg: 'bg-orange-100 hover:bg-orange-100',
-    text: 'text-orange-700 hover:text-orange-700',
-    border: 'border-orange-300',
+    bg: 'bg-primitive-clay-100 hover:bg-primitive-clay-100',
+    text: 'text-primitive-clay-700 hover:text-primitive-clay-700',
+    border: 'border-primitive-clay-300',
   },
   uninstalled: {
-    bg: 'bg-stone-100 hover:bg-stone-100',
-    text: 'text-stone-600 hover:text-stone-600',
-    border: 'border-stone-300',
+    bg: 'bg-surface-2 hover:bg-surface-2',
+    text: 'text-fg-disabled hover:text-fg-disabled',
+    border: 'border-line',
   },
   returned: {
-    bg: 'bg-yellow-100 hover:bg-yellow-100',
-    text: 'text-yellow-700 hover:text-yellow-700',
-    border: 'border-yellow-300',
+    bg: 'bg-warning-light hover:bg-warning-light',
+    text: 'text-warning-dark hover:text-warning-dark',
+    border: 'border-warning',
   },
   dead: {
-    bg: 'bg-red-100 hover:bg-red-100',
-    text: 'text-red-700 hover:text-red-700',
-    border: 'border-red-300',
+    bg: 'bg-error-light hover:bg-error-light',
+    text: 'text-error hover:text-error',
+    border: 'border-error/40',
   },
 };
 
 export const healthColors: Record<string, { bg: string; text: string }> = {
   online: {
-    bg: 'bg-green-500',
-    text: 'text-green-700',
+    bg: 'bg-success',
+    text: 'text-success',
   },
   offline: {
-    bg: 'bg-red-500',
-    text: 'text-red-700',
+    bg: 'bg-error',
+    text: 'text-error',
   },
   unknown: {
-    bg: 'bg-gray-400',
-    text: 'text-gray-700',
+    bg: 'bg-fg-placeholder',
+    text: 'text-fg-tertiary',
   },
 };

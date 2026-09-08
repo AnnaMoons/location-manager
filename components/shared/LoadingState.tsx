@@ -19,7 +19,7 @@ export function LoadingState({ className, count = 3 }: LoadingStateProps) {
 
 function LoadingCard() {
   return (
-    <div className="rounded-lg border bg-card p-4 space-y-3">
+    <div className="rounded-lg border bg-card-bg p-4 space-y-3">
       <div className="flex items-center space-x-3">
         <div className="h-10 w-10 rounded-full skeleton" />
         <div className="space-y-2 flex-1">
@@ -38,7 +38,7 @@ function LoadingCard() {
 export function LoadingSpinner({ className }: { className?: string }) {
   return (
     <div className={cn('flex items-center justify-center py-8', className)}>
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-primary border-t-transparent" />
     </div>
   );
 }

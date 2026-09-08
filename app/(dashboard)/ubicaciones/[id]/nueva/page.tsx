@@ -40,8 +40,8 @@ export default function NewChildLocationPage({
     return (
       <EmptyState
         icon={MapPin}
-        title="No se pueden agregar hijos"
-        description="Este tipo de ubicación no permite ubicaciones hijas"
+        title={t('cannotAddChildren')}
+        description={t('cannotAddChildrenDesc')}
         actionLabel="Volver"
         actionHref={`/ubicaciones/${id}`}
       />

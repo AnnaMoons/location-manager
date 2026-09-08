@@ -175,7 +175,7 @@ export function useBatches() {
     return contextCreateSubBatch(input);
   };
 
-  const updateSubBatch = async (id: string, input: Partial<CreateSubBatchInput>): Promise<SubBatch> => {
+  const updateSubBatch = async (id: string, input: Partial<CreateSubBatchInput> & { status?: BatchStatus }): Promise<SubBatch> => {
     return contextUpdateSubBatch(id, input);
   };
 

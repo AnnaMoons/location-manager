@@ -8,9 +8,10 @@
     "companyId": "company-001",
     "configuration": {
       "type": "pigvision",
-      "cameraHeight": 120,
-      "detectionZone": "full",
-      "sensitivity": "medium"
+      "installationHeight": 2.35,
+      "installationHeightUnit": "m",
+      "installationHeightConfirmation": 2.35,
+      "installationHeightConfirmationUnit": "m"
     },
     "lastSeen": "2024-12-19T14:30:00Z",
     "health": "online",
@@ -55,9 +56,10 @@
     "companyId": "company-001",
     "configuration": {
       "type": "pigvision",
-      "cameraHeight": 115,
-      "detectionZone": "full",
-      "sensitivity": "high"
+      "installationHeight": 2.40,
+      "installationHeightUnit": "m",
+      "installationHeightConfirmation": 2.40,
+      "installationHeightConfirmationUnit": "m"
     },
     "lastSeen": "2024-12-19T14:25:00Z",
     "health": "online",
@@ -225,16 +227,16 @@
   },
   {
     "id": "dev-006",
-    "serialNumber": "SN-2024-001",
+    "serialNumber": "SN-TH-001",
     "type": "sensor",
     "state": "production",
     "locationId": "loc-002",
     "companyId": "company-001",
     "configuration": {
       "type": "sensor",
+      "sensorProfile": "temp_humidity",
+      "readingIntervalMinutes": 5,
       "sensorType": "temperature",
-      "alertThresholdMin": 18,
-      "alertThresholdMax": 28,
       "readingInterval": 300
     },
     "lastSeen": "2024-12-19T14:29:00Z",
@@ -273,16 +275,16 @@
   },
   {
     "id": "dev-007",
-    "serialNumber": "SN-2024-002",
+    "serialNumber": "SN-TH-002",
     "type": "sensor",
     "state": "production",
     "locationId": "loc-002",
     "companyId": "company-001",
     "configuration": {
       "type": "sensor",
+      "sensorProfile": "temp_humidity",
+      "readingIntervalMinutes": 5,
       "sensorType": "humidity",
-      "alertThresholdMin": 40,
-      "alertThresholdMax": 70,
       "readingInterval": 300
     },
     "lastSeen": "2024-12-19T14:29:30Z",
@@ -321,15 +323,16 @@
   },
   {
     "id": "dev-008",
-    "serialNumber": "SN-2024-003",
+    "serialNumber": "SN-THA-001",
     "type": "sensor",
     "state": "returned",
     "locationId": "loc-003",
     "companyId": "company-001",
     "configuration": {
       "type": "sensor",
+      "sensorProfile": "temp_humidity_nh3",
+      "readingIntervalMinutes": 10,
       "sensorType": "ammonia",
-      "alertThresholdMax": 25,
       "readingInterval": 600
     },
     "lastSeen": "2024-12-18T10:00:00Z",
@@ -434,16 +437,23 @@
   },
   {
     "id": "dev-012",
-    "serialNumber": "SN-2024-004",
+    "serialNumber": "SN-THC-001",
     "type": "sensor",
     "state": "production",
     "locationId": "loc-011",
     "companyId": "company-001",
     "configuration": {
       "type": "sensor",
+      "sensorProfile": "temp_humidity_co2",
+      "readingIntervalMinutes": 3,
+      "temperatureCurve": [
+        { "dayFrom": 1, "dayTo": 7, "targetTemp": 32, "alertMin": 30, "alertMax": 34 },
+        { "dayFrom": 8, "dayTo": 14, "targetTemp": 29, "alertMin": 27, "alertMax": 31 },
+        { "dayFrom": 15, "dayTo": 21, "targetTemp": 27, "alertMin": 25, "alertMax": 29 },
+        { "dayFrom": 22, "dayTo": 28, "targetTemp": 24, "alertMin": 22, "alertMax": 26 },
+        { "dayFrom": 29, "dayTo": 42, "targetTemp": 21, "alertMin": 19, "alertMax": 23 }
+      ],
       "sensorType": "temperature",
-      "alertThresholdMin": 20,
-      "alertThresholdMax": 32,
       "readingInterval": 180
     },
     "lastSeen": "2024-12-19T14:20:00Z",
@@ -482,15 +492,16 @@
   },
   {
     "id": "dev-013",
-    "serialNumber": "SN-2024-005",
+    "serialNumber": "SN-THC-002",
     "type": "sensor",
     "state": "production",
     "locationId": "loc-011",
     "companyId": "company-001",
     "configuration": {
       "type": "sensor",
+      "sensorProfile": "temp_humidity_co2",
+      "readingIntervalMinutes": 5,
       "sensorType": "co2",
-      "alertThresholdMax": 3000,
       "readingInterval": 300
     },
     "lastSeen": "2024-12-19T14:22:00Z",
@@ -529,7 +540,7 @@
   },
   {
     "id": "dev-014",
-    "serialNumber": "SN-2024-006",
+    "serialNumber": "SN-TH-003",
     "type": "sensor",
     "state": "registered",
     "locationId": "loc-012",
@@ -603,7 +614,7 @@
   },
   {
     "id": "dev-016",
-    "serialNumber": "SN-2024-007",
+    "serialNumber": "SN-THL-001",
     "type": "sensor",
     "state": "registered",
     "locationId": null,
@@ -628,9 +639,10 @@
     "companyId": "company-001",
     "configuration": {
       "type": "pigvision",
-      "cameraHeight": 100,
-      "detectionZone": "partial",
-      "sensitivity": "low"
+      "installationHeight": 2.30,
+      "installationHeightUnit": "m",
+      "installationHeightConfirmation": 2.30,
+      "installationHeightConfirmationUnit": "m"
     },
     "lastSeen": "2024-12-19T14:10:00Z",
     "health": "online",

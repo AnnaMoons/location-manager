@@ -10,7 +10,7 @@ interface LocationBreadcrumbProps {
 export function LocationBreadcrumb({ path, className }: LocationBreadcrumbProps) {
   if (!path || path.length === 0) {
     return (
-      <span className="text-sm text-muted-foreground italic">
+      <span className="text-sm text-fg-tertiary italic">
         Sin ubicación asignada
       </span>
     );
@@ -21,13 +21,13 @@ export function LocationBreadcrumb({ path, className }: LocationBreadcrumbProps)
       {path.map((location, index) => (
         <span key={location.id} className="flex items-center">
           {index > 0 && (
-            <ChevronRight className="w-4 h-4 text-muted-foreground mx-1" />
+            <ChevronRight className="w-4 h-4 text-fg-tertiary mx-1" />
           )}
           <span
             className={cn(
               index === path.length - 1 
-                ? "font-medium text-foreground" 
-                : "text-muted-foreground hover:text-foreground transition-colors"
+                ? "font-medium text-fg" 
+                : "text-fg-tertiary hover:text-fg transition-colors"
             )}
           >
             {location.name}

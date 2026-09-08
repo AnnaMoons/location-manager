@@ -1,4 +1,4 @@
-import { PigVisionConfig, ScaleConfig, SensorConfig, DeviceConfig, Device, DeviceType } from '../types/device';
+import { PigVisionConfig, ScaleConfig, SensorConfig, DeviceConfig, Device, DeviceType, SENSOR_PROFILE_VARIABLES } from '../types/device';
 import { CreateLocationInput } from '../types/location';
 import { CreateBatchInput, CloseBatchInput, Batch, requiresCloseReason } from '../types/batch';
 import { Location } from '../types/location';
@@ -20,8 +20,8 @@ export function validatePigVisionConfig(config: Partial<PigVisionConfig>): Valid
       ? config.installationHeight / 100
       : config.installationHeight;
 
-    if (heightInMeters < 2.30 || heightInMeters > 2.45) {
-      errors.installationHeight = 'La altura debe estar entre 2.30 y 2.45 metros';
+    if (heightInMeters < 1.80 || heightInMeters > 3.00) {
+      errors.installationHeight = 'La altura debe estar entre 1.80 y 3.00 metros';
     }
   }
 
@@ -57,9 +57,11 @@ export function validateScaleConfig(config: Partial<ScaleConfig>): ValidationRes
   }
 
   if (config.tareWeight === undefined || config.tareWeight === null) {
-    errors.tareWeight = 'Ingresa el peso de tara';
+    errors.tareWeight = 'Ingresa el peso de tara (usa 0 si no hay plataforma)';
   } else if (config.tareWeight < 0) {
     errors.tareWeight = 'El peso de tara no puede ser negativo';
+  } else if (config.maxWeight !== undefined && config.tareWeight >= config.maxWeight) {
+    errors.tareWeight = 'El peso de tara debe ser menor al peso máximo';
   }
 
   if (!config.unit) {
@@ -72,31 +74,9 @@ export function validateScaleConfig(config: Partial<ScaleConfig>): ValidationRes
   };
 }
 
-export function validateSensorConfig(config: Partial<SensorConfig>): ValidationResult {
-  const errors: Record<string, string> = {};
-
-  if (!config.sensorType) {
-    errors.sensorType = 'Selecciona el tipo de sensor';
-  }
-
-  if (config.readingInterval === undefined || config.readingInterval === null) {
-    errors.readingInterval = 'Ingresa el intervalo de lectura';
-  } else if (config.readingInterval < 1) {
-    errors.readingInterval = 'El intervalo debe ser de al menos 1 segundo';
-  }
-
-  if (
-    config.alertThresholdMin !== undefined &&
-    config.alertThresholdMax !== undefined &&
-    config.alertThresholdMin >= config.alertThresholdMax
-  ) {
-    errors.alertThresholdMin = 'El umbral mínimo debe ser menor que el máximo';
-  }
-
-  return {
-    valid: Object.keys(errors).length === 0,
-    errors,
-  };
+export function validateSensorConfig(_config: Partial<SensorConfig>): ValidationResult {
+  // Sensor configuration is managed internally by Asimetrix — nothing to validate
+  return { valid: true, errors: {} };
 }
 
 export function validateDeviceConfig(config: DeviceConfig): ValidationResult {
@@ -206,14 +186,54 @@ export function validateBatchInput(
     errors.animalCount = 'La cantidad debe ser mayor a 0';
   }
 
-  if (input.averageAgeAtStart === undefined || input.averageAgeAtStart === null) {
-    errors.averageAgeAtStart = 'La edad promedio inicial es obligatoria';
-  } else if (input.averageAgeAtStart < 0) {
-    errors.averageAgeAtStart = 'La edad no puede ser negativa';
+  // H-022: Validate male/female counts add up for pigs
+  if (input.species === 'pigs' && input.maleCount !== undefined && input.femaleCount !== undefined) {
+    if (input.animalCount && (input.maleCount + input.femaleCount) > input.animalCount) {
+      errors.maleCount = 'La suma de machos y hembras no puede superar el total de animales';
+    }
   }
 
-  if (!input.startDate) {
-    errors.startDate = 'La fecha de inicio es obligatoria';
+  // H-023: Initial weight is required for pigs
+  if (input.species === 'pigs') {
+    if (input.initialWeight !== undefined && input.initialWeight <= 0) {
+      errors.initialWeight = 'El peso inicial debe ser mayor a 0';
+    }
+  }
+
+  // H-022: Validate pen distribution totals
+  if (input.penDistribution && input.penDistribution.length > 0 && input.animalCount) {
+    const totalInPens = input.penDistribution.reduce((sum, pd) => sum + pd.animalCount, 0);
+    if (totalInPens > input.animalCount) {
+      errors.penDistribution = 'La suma de animales por corral no puede superar el total del lote';
+    }
+  }
+
+  // H-042: For poultry, arrival date is required; for others, average age is required
+  if (input.species === 'broilers' || input.species === 'layers') {
+    if (!input.arrivalDate) {
+      errors.arrivalDate = 'La fecha de llegada es obligatoria para aves';
+    }
+    if (!input.startDate) {
+      errors.startDate = 'La fecha de día 1 es obligatoria';
+    }
+    // Validate that day 1 is on or after arrival date
+    if (input.arrivalDate && input.startDate) {
+      const arrival = new Date(input.arrivalDate);
+      const dayOne = new Date(input.startDate);
+      if (dayOne < arrival) {
+        errors.startDate = 'La fecha de día 1 no puede ser anterior a la fecha de llegada';
+      }
+    }
+  } else {
+    // For pigs, average age is required
+    if (input.averageAgeAtStart === undefined || input.averageAgeAtStart === null) {
+      errors.averageAgeAtStart = 'La edad promedio inicial es obligatoria';
+    } else if (input.averageAgeAtStart < 0) {
+      errors.averageAgeAtStart = 'La edad no puede ser negativa';
+    }
+    if (!input.startDate) {
+      errors.startDate = 'La fecha de inicio es obligatoria';
+    }
   }
 
   if (input.startDate && input.estimatedEndDate) {

@@ -9,6 +9,7 @@ interface PageHeaderProps {
   title: string;
   subtitle?: string;
   backHref?: string;
+  onBack?: () => void;
   actions?: ReactNode;
   showBack?: boolean;
 }
@@ -17,13 +18,16 @@ export function PageHeader({
   title,
   subtitle,
   backHref,
+  onBack,
   actions,
   showBack = false,
 }: PageHeaderProps) {
   const router = useRouter();
 
   const handleBack = () => {
-    if (backHref) {
+    if (onBack) {
+      onBack();
+    } else if (backHref) {
       router.push(backHref);
     } else {
       router.back();
@@ -32,7 +36,7 @@ export function PageHeader({
 
   return (
     <div className="flex items-start justify-between gap-4 mb-6">
-      <div className="flex items-start gap-3">
+      <div className="flex items-center gap-3">
         {showBack && (
           <Button
             variant="ghost"
@@ -46,7 +50,7 @@ export function PageHeader({
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
           {subtitle && (
-            <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
+            <p className="text-base text-fg-tertiary mt-1">{subtitle}</p>
           )}
         </div>
       </div>

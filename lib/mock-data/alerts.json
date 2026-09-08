@@ -1,0 +1,136 @@
+[
+  {
+    "id": "alert-001",
+    "name": "CO₂ crítico Galpón Norte",
+    "active": true,
+    "type": "environmental",
+    "locationId": "loc-002",
+    "condition": {
+      "variable": "co2",
+      "greaterThan": 3000,
+      "lessThan": null,
+      "durationMinutes": 15,
+      "autoAgeUpdate": false,
+      "sensorFilter": "all"
+    },
+    "channels": {
+      "whatsapp": { "enabled": true, "recipients": [{ "id": "r-001", "countryCode": "+57", "phone": "3001234567" }] },
+      "email":    { "enabled": true, "recipients": [{ "id": "r-002", "email": "encargado@granjasanjose.co" }] },
+      "sms":      { "enabled": false, "recipients": [] }
+    },
+    "createdAt": "2026-01-10T08:00:00Z",
+    "updatedAt": "2026-03-15T10:20:00Z"
+  },
+  {
+    "id": "alert-002",
+    "name": "Temperatura alta Galpón Norte",
+    "active": true,
+    "type": "environmental",
+    "locationId": "loc-002",
+    "condition": {
+      "variable": "temperature",
+      "greaterThan": 28,
+      "lessThan": 16,
+      "durationMinutes": 10,
+      "autoAgeUpdate": true,
+      "sensorFilter": "average"
+    },
+    "channels": {
+      "whatsapp": { "enabled": true, "recipients": [{ "id": "r-003", "countryCode": "+57", "phone": "3109876543" }] },
+      "email":    { "enabled": false, "recipients": [] },
+      "sms":      { "enabled": false, "recipients": [] }
+    },
+    "createdAt": "2026-01-10T08:30:00Z",
+    "updatedAt": "2026-04-01T09:00:00Z"
+  },
+  {
+    "id": "alert-003",
+    "name": "Humedad crítica Galpón Sur",
+    "active": false,
+    "type": "environmental",
+    "locationId": "loc-003",
+    "condition": {
+      "variable": "humidity",
+      "greaterThan": 85,
+      "lessThan": 40,
+      "durationMinutes": 20,
+      "autoAgeUpdate": false,
+      "sensorFilter": "all"
+    },
+    "channels": {
+      "whatsapp": { "enabled": false, "recipients": [] },
+      "email":    { "enabled": true, "recipients": [{ "id": "r-004", "email": "admin@granjasanjose.co" }] },
+      "sms":      { "enabled": true, "recipients": [{ "id": "r-005", "countryCode": "+57", "phone": "3154445566" }] }
+    },
+    "createdAt": "2026-02-05T11:00:00Z",
+    "updatedAt": "2026-02-20T14:00:00Z"
+  },
+  {
+    "id": "alert-004",
+    "name": "Peso bajo Corral A1",
+    "active": true,
+    "type": "pigvision",
+    "locationId": "loc-004",
+    "deviceId": "dev-001",
+    "condition": {
+      "variable": "weight",
+      "greaterThan": null,
+      "lessThan": 20,
+      "durationMinutes": 5,
+      "autoAgeUpdate": true,
+      "sensorFilter": "average"
+    },
+    "channels": {
+      "whatsapp": { "enabled": true, "recipients": [{ "id": "r-006", "countryCode": "+57", "phone": "3201112233" }] },
+      "email":    { "enabled": true, "recipients": [{ "id": "r-007", "email": "veterinario@granjasanjose.co" }] },
+      "sms":      { "enabled": false, "recipients": [] }
+    },
+    "createdAt": "2026-02-12T09:00:00Z",
+    "updatedAt": "2026-04-10T16:30:00Z"
+  },
+  {
+    "id": "alert-005",
+    "name": "Señal WiFi baja PV Corral A1",
+    "active": true,
+    "type": "pigvision",
+    "locationId": "loc-004",
+    "deviceId": "dev-001",
+    "condition": {
+      "variable": "wifisignal",
+      "greaterThan": null,
+      "lessThan": -75,
+      "durationMinutes": 30,
+      "autoAgeUpdate": false,
+      "sensorFilter": "all"
+    },
+    "channels": {
+      "whatsapp": { "enabled": true, "recipients": [{ "id": "r-008", "countryCode": "+57", "phone": "3001234567" }] },
+      "email":    { "enabled": false, "recipients": [] },
+      "sms":      { "enabled": false, "recipients": [] }
+    },
+    "createdAt": "2026-03-01T10:00:00Z",
+    "updatedAt": "2026-03-01T10:00:00Z"
+  },
+  {
+    "id": "alert-006",
+    "name": "NH₃ elevado Galpón Sur",
+    "active": true,
+    "type": "environmental",
+    "locationId": "loc-003",
+    "condition": {
+      "variable": "nh3",
+      "greaterThan": 15,
+      "lessThan": null,
+      "durationMinutes": 10,
+      "autoAgeUpdate": false,
+      "sensorFilter": "all"
+    },
+    "channels": {
+      "whatsapp": { "enabled": true, "recipients": [{ "id": "r-009", "countryCode": "+57", "phone": "3109876543" }] },
+      "email":    { "enabled": true, "recipients": [{ "id": "r-010", "email": "encargado@granjasanjose.co" }] },
+      "sms":      { "enabled": false, "recipients": [] }
+    },
+    "createdAt": "2026-03-20T07:00:00Z",
+    "updatedAt": "2026-04-02T08:00:00Z"
+  }
+]

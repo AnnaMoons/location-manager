@@ -206,7 +206,7 @@ export function SubBatchDialog({
 
         <div className="space-y-4 py-4">
           {/* Batch Info */}
-          <div className="p-3 bg-muted rounded-lg">
+          <div className="p-3 bg-surface-2 rounded-lg">
             <p className="text-sm font-medium">{batch.name}</p>
           </div>
 
@@ -220,7 +220,7 @@ export function SubBatchDialog({
               placeholder={tForm('namePlaceholder')}
             />
             {errors.name && (
-              <p className="text-sm text-destructive">{errors.name}</p>
+              <p className="text-sm text-error">{errors.name}</p>
             )}
           </div>
 
@@ -244,17 +244,17 @@ export function SubBatchDialog({
           {/* Pens Selection */}
           <div className="space-y-3">
             <Label>{t('selectPens')}</Label>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-fg-tertiary">
               {t('selectPensForSubBatch')}
             </p>
             
             {/* Used Pens */}
             {Object.keys(usedPensGroupedByBarn).length > 0 && (
               <div className="space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">{t('usedPens')}</p>
+                <p className="text-xs font-medium text-fg-tertiary">{t('usedPens')}</p>
                 {Object.entries(usedPensGroupedByBarn).map(([barnId, pens]) => (
                   <div key={barnId} className="space-y-1">
-                    <p className="text-xs text-muted-foreground">{getBarnName(barnId)}</p>
+                    <p className="text-xs text-fg-tertiary">{getBarnName(barnId)}</p>
                     <div className="flex flex-wrap gap-1">
                       {pens.map(pen => (
                         <Badge key={pen.id} variant="secondary" className="text-xs opacity-60">
@@ -271,7 +271,7 @@ export function SubBatchDialog({
             {Object.keys(pensGroupedByBarn).length > 0 ? (
               Object.entries(pensGroupedByBarn).map(([barnId, pens]) => (
                 <div key={barnId} className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">
+                  <p className="text-sm font-medium text-fg-tertiary">
                     {getBarnName(barnId)}
                   </p>
                   <div className="space-y-2">
@@ -281,14 +281,14 @@ export function SubBatchDialog({
                         <div
                           key={pen.id}
                           className={`flex items-center gap-3 p-2 rounded-lg border transition-colors ${
-                            isSelected ? 'border-primary bg-primary/5' : 'border-muted'
+                            isSelected ? 'border-brand-primary bg-brand-primary/5' : 'border-surface-2'
                           }`}
                         >
                           <input
                             type="checkbox"
                             checked={isSelected}
                             onChange={(e) => handlePenToggle(pen.id, e.target.checked)}
-                            className="h-4 w-4 rounded border-gray-300"
+                            className="h-4 w-4 rounded border-line"
                           />
                           <span className="flex-1 text-sm">{pen.name}</span>
                         </div>
@@ -298,11 +298,11 @@ export function SubBatchDialog({
                 </div>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">{t('noAvailablePens')}</p>
+              <p className="text-sm text-fg-tertiary">{t('noAvailablePens')}</p>
             )}
             
             {errors.penIds && (
-              <p className="text-sm text-destructive">{errors.penIds}</p>
+              <p className="text-sm text-error">{errors.penIds}</p>
             )}
           </div>
         </div>

@@ -194,11 +194,11 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
         <CardContent>
           <dl className="space-y-2">
             <div className="flex justify-between">
-              <dt className="text-sm text-muted-foreground">{t('serial')}</dt>
+              <dt className="text-sm text-fg-tertiary">{t('serial')}</dt>
               <dd className="font-medium">{device.serialNumber}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-sm text-muted-foreground">{t('deviceType')}</dt>
+              <dt className="text-sm text-fg-tertiary">{t('deviceType')}</dt>
               <dd className="font-medium">
                 {device.type === 'gateway' ? 'Gateway' : device.type}
               </dd>
@@ -214,12 +214,12 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
             <MapPin className="h-5 w-5" />
             {t('selectLocation')}
           </CardTitle>
-          <p className="text-sm text-muted-foreground">{t('selectLocationDesc')}</p>
+          <p className="text-sm text-fg-tertiary">{t('selectLocationDesc')}</p>
         </CardHeader>
         <CardContent className="space-y-4">
           {allFarms.length === 0 ? (
             <div className="text-center py-6">
-              <p className="text-muted-foreground mb-4">
+              <p className="text-fg-tertiary mb-4">
                 {allFarmsUnfiltered.length > 0
                    ? t('noCompatibleFarms')
                    : t('noLocations')}
@@ -258,7 +258,7 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
                   </SelectContent>
                 </Select>
                 {isGateway && (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-fg-tertiary">
                     {t('gatewayRestriction')}
                   </p>
                 )}
@@ -287,8 +287,8 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
                       </Select>
                     </>
                   ) : (
-                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <p className="text-sm text-yellow-800 mb-3">
+                    <div className="p-4 bg-warning-light border border-warning rounded-lg">
+                      <p className="text-sm text-warning-dark mb-3">
                         {t('noBarnsInFarm')}
                       </p>
                       <Button
@@ -331,8 +331,8 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
                       </Select>
                     </>
                   ) : requiresPenLevel ? (
-                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <p className="text-sm text-yellow-800 mb-3">
+                    <div className="p-4 bg-warning-light border border-warning rounded-lg">
+                      <p className="text-sm text-warning-dark mb-3">
                         {t('noPensInBarn')}
                       </p>
                       <Button
@@ -361,7 +361,7 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
                   sessionStorage.setItem('redirectAfterLocation', `/dispositivos/${device.id}/instalar${isChangingLocation ? '?cambiar=true' : ''}`);
                   router.push('/ubicaciones/nueva');
                 }}
-                className="flex items-center text-sm text-primary hover:underline"
+                className="flex items-center text-sm text-brand-primary hover:underline"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 {t('createLocation')}
@@ -373,15 +373,15 @@ export function InstallationWizard({ device, isChangingLocation = false }: Insta
 
       {/* Installation Error */}
       {installError && (
-        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-          <p className="text-sm text-destructive">{installError}</p>
+        <div className="p-4 bg-error/10 border border-error/20 rounded-lg">
+          <p className="text-sm text-error">{installError}</p>
         </div>
       )}
 
       {/* Installation Warning */}
       {installWarning && (
-        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-sm text-yellow-800">{installWarning}</p>
+        <div className="p-4 bg-warning-light border border-warning rounded-lg">
+          <p className="text-sm text-warning-dark">{installWarning}</p>
         </div>
       )}
 
